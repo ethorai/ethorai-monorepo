@@ -35,18 +35,32 @@
   - `./mvnw flyway:migrate` → exit 0
   - `./mvnw test` → exit 0
   - `./mvnw -Pdb-reset-local flyway:clean flyway:migrate` → exit 0
+- Scaffolded frontend app at [apps/admin-web](../apps/admin-web) (Next.js 16 + TypeScript).
+- Implemented admin generation flow:
+  - [src/app/generate/page.tsx](../apps/admin-web/src/app/generate/page.tsx) form with preview panel
+  - [src/lib/api.ts](../apps/admin-web/src/lib/api.ts) typed client for generate request/response
+  - [src/app/api/generate/route.ts](../apps/admin-web/src/app/api/generate/route.ts) proxy route to backend (`API_BASE_URL`, default `http://localhost:8080`)
+- Replaced boilerplate home page with entry point to generate workspace:
+  - [src/app/page.tsx](../apps/admin-web/src/app/page.tsx)
+- Applied custom typography/theme and metadata:
+  - [src/app/layout.tsx](../apps/admin-web/src/app/layout.tsx)
+  - [src/app/globals.css](../apps/admin-web/src/app/globals.css)
+  - [next.config.ts](../apps/admin-web/next.config.ts) with `turbopack.root` to silence monorepo lockfile warning
+- Verified frontend checks:
+  - `npm run lint` → exit 0
+  - `npm run build` → exit 0
 
 ### Next 3 Tasks
 
-1. Build minimal Next.js admin page (generate form + preview).
-2. Define admin API contract for form submission + preview payload.
-3. Add section-level regeneration endpoint.
+1. Define admin API contract for form submission + preview payload.
+2. Add dashboard page listing generated pages by profile ID.
+3. Add single page detail view by page ID in admin app.
 
 ### Now (updated)
 
 1. ~~GET-based contract integration test~~ DONE
 2. ~~Maven helper commands/profiles~~ DONE
-3. Build minimal Next.js admin page: generate form + preview.
+3. ~~Build minimal Next.js admin page: generate form + preview~~ DONE
 
 ### Current Blocker
 

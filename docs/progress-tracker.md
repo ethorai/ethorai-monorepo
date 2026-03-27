@@ -13,13 +13,15 @@ Integration tests are in place (mocked smoke + optional real OpenAI external tes
 Real OpenAI call has been validated successfully with local .env key.
 Integration tests expanded: GET /api/pages/{id} contract test verifies POST→GET persistence.
 Copilot workspace instructions auto-loaded from `.github/copilot-instructions.md`.
+Minimal Next.js admin app scaffolded at `apps/admin-web` with `/generate` form + preview and API proxy.
 
 ## Now / Next / Later
 
 ### Now
 
-- [ ] Build minimal Next.js admin page: generate form + preview
 - [ ] Define admin API contract for Next.js form submission + preview payload
+- [ ] Add dashboard page listing generated pages by profile ID
+- [ ] Add single page detail view by page ID in admin app
 
 ### Next
 
@@ -52,6 +54,7 @@ Copilot workspace instructions auto-loaded from `.github/copilot-instructions.md
 - [x] Full test suite executed successfully
 - [x] GET-based contract test to verify persisted data via API responses (2 tests)
 - [x] Maven helper workflow: local reset profile + shared run configurations (app, migrate, tests, reset)
+- [x] Minimal Next.js admin page: generate form + preview + backend proxy route
 
 ## Key Commands
 
@@ -68,6 +71,13 @@ From [apps/api](../apps/api):
 - Test: `./mvnw test`
 - Smoke IT only: `./mvnw -Dtest=GeneratePageIntegrationTest test`
 - External OpenAI IT only: `./mvnw -Dtest=GeneratePageOpenAiExternalIT test`
+
+From [apps/admin-web](../apps/admin-web):
+
+- Install deps: `npm install`
+- Dev server: `npm run dev`
+- Lint: `npm run lint`
+- Build: `npm run build`
 
 ## Resume Protocol
 
