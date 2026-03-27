@@ -49,6 +49,14 @@
 - Verified frontend checks:
   - `npm run lint` → exit 0
   - `npm run build` → exit 0
+- Admin-web style rationale documented:
+  - Objective: position the UI as a calm professional workspace (not a marketing template look).
+  - Visual direction: warm neutral palette + soft radial background to reduce clinical coldness while preserving trust.
+  - Typography: serif display for structure/authority + geometric sans for forms/readability.
+  - Interaction model: split form/preview layout to keep generation workflow explicit and reduce cognitive switching.
+  - Backend coupling: proxy route in Next.js to avoid browser CORS friction and keep API base URL configurable per developer.
+- Prompt alignment fix after live validation failure (`Forbidden term detected: résultats`):
+  - Updated [PromptAssemblyService](../apps/api/src/main/java/com/ai/therapists/api/generation/PromptAssemblyService.java) to include French forbidden vocabulary explicitly in system instructions.
 
 ### Next 3 Tasks
 

@@ -14,6 +14,7 @@ Real OpenAI call has been validated successfully with local .env key.
 Integration tests expanded: GET /api/pages/{id} contract test verifies POST→GET persistence.
 Copilot workspace instructions auto-loaded from `.github/copilot-instructions.md`.
 Minimal Next.js admin app scaffolded at `apps/admin-web` with `/generate` form + preview and API proxy.
+Admin-web style intentionally follows a calm professional workspace direction (warm neutral palette, serif/sans pairing, split form/preview workflow).
 
 ## Now / Next / Later
 

@@ -23,9 +23,11 @@ public class PromptAssemblyService {
                 - NEVER: sales-oriented, inspirational, urgent, emotional, casual, promotional.
 
                 ## Vocabulary Rules
-                FORBIDDEN words: heal, healing, cure, cured, fix, fixed, eliminate, guarantee, guaranteed, \
+                FORBIDDEN words (English): heal, healing, cure, cured, fix, fixed, eliminate, guarantee, guaranteed, \
                 results, transformation, transformative, breakthrough, proven, best, top, expert, life-changing, struggle.
-                USE INSTEAD: support, work with, accompany, explore, provide a space, collaborative, adapted to each person.
+                FORBIDDEN words (French): guérir, guérison, éliminer, garantie, résultats, transformation, \
+                percée, prouvé, meilleur, expert, lutte.
+                USE INSTEAD: accompagner, travailler ensemble, explorer, offrir un espace, collaboratif, adapté à chaque personne.
 
                 ## Claims Rules
                 - Never promise or imply outcomes.
