@@ -11,12 +11,13 @@ OpenAI integration is wired and configurable via environment variable.
 Monorepo structure is now in place: `apps/api`, `docs`, `infra`.
 Integration tests are in place (mocked smoke + optional real OpenAI external test).
 Real OpenAI call has been validated successfully with local .env key.
+Integration tests expanded: GET /api/pages/{id} contract test verifies POST→GET persistence.
+Copilot workspace instructions auto-loaded from `.github/copilot-instructions.md`.
 
 ## Now / Next / Later
 
 ### Now
 
-- [ ] Add GET-based contract test to verify persisted data via API responses
 - [ ] Add Maven helper commands/profiles for migrate/reset/verify workflow
 - [ ] Build minimal Next.js admin page: generate form + preview
 
@@ -49,6 +50,7 @@ Real OpenAI call has been validated successfully with local .env key.
 - [x] API exception mapping for 400 / 422 / 502 implemented
 - [x] Unit + integration tests added for validation/error paths
 - [x] Full test suite executed successfully
+- [x] GET-based contract test to verify persisted data via API responses (2 tests)
 
 ## Key Commands
 

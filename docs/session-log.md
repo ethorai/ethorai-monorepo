@@ -16,12 +16,25 @@
   - [OutputValidationServiceTest](../apps/api/src/test/java/com/ai/therapists/api/generation/OutputValidationServiceTest.java)
   - [GenerationErrorIntegrationTest](../apps/api/src/test/java/com/ai/therapists/api/GenerationErrorIntegrationTest.java)
 - Verified all tests pass with full suite run (`./mvnw test`, exit code 0).
+- Implemented GET-based contract integration test:
+  - [GetPageIntegrationTest](../apps/api/src/test/java/com/ai/therapists/api/GetPageIntegrationTest.java)
+  - Verifies POST→GET persistence: create via `/api/generate`, verify via `GET /api/pages/{id}`
+  - Tests both successful read and 404 not-found scenario
+  - Full test suite now 11 tests, all passing (exit code 0)
+- Added `.github/copilot-instructions.md` for auto-loading workspace context across sessions/machines
+- Discussed context window management: repo memory for AI, committed docs for humans, test boundaries
 
 ### Next 3 Tasks
 
 1. Add GET-based contract integration test to verify persisted content via API responses.
 2. Add Maven helper commands/profiles for migrate/reset/verify workflow.
 3. Start minimal Next.js admin page (generate form + preview).
+
+### Now (updated)
+
+1. ~~GET-based contract integration test~~ DONE
+2. Add Maven helper commands/profiles for migrate/reset/verify workflow.
+3. Build minimal Next.js admin page: generate form + preview.
 
 ### Current Blocker
 
