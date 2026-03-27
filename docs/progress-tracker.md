@@ -16,21 +16,21 @@ Real OpenAI call has been validated successfully with local .env key.
 
 ### Now
 
-- [ ] Add output guardrails validator service (minimum rules)
-- [ ] Wire validator into generation orchestrator
-- [ ] Add API error mapping for generation failures
-
-### Next
-
 - [ ] Add GET-based contract test to verify persisted data via API responses
 - [ ] Add Maven helper commands/profiles for migrate/reset/verify workflow
 - [ ] Build minimal Next.js admin page: generate form + preview
 
-### Later
+### Next
 
 - [ ] Section-level regeneration endpoint
 - [ ] Async generation + status polling
 - [ ] Auth + billing + custom domains
+
+### Later
+
+- [ ] Role-specific disclaimer templates and stricter semantic checks
+- [ ] Regeneration loop with max attempts and explainability details
+- [ ] CI pipeline with automated integration test run
 
 ## Completed Milestones
 
@@ -44,6 +44,11 @@ Real OpenAI call has been validated successfully with local .env key.
 - [x] Integration smoke test using typed Java payload object
 - [x] Optional real OpenAI external integration test (enabled from local env)
 - [x] Real OpenAI response verified end-to-end from integration test
+- [x] Output guardrails validator service implemented
+- [x] Generation failure logging (`GENERATION_FAILED`) wired in orchestrator
+- [x] API exception mapping for 400 / 422 / 502 implemented
+- [x] Unit + integration tests added for validation/error paths
+- [x] Full test suite executed successfully
 
 ## Key Commands
 

@@ -1,5 +1,42 @@
 # Session Log
 
+## 2026-03-27
+
+### Done Today
+
+- Implemented output validation layer:
+  - [OutputValidationService](../apps/api/src/main/java/com/ai/therapists/api/generation/OutputValidationService.java)
+  - [GenerationValidationException](../apps/api/src/main/java/com/ai/therapists/api/generation/GenerationValidationException.java)
+- Wired validation into [GenerationOrchestrator](../apps/api/src/main/java/com/ai/therapists/api/generation/GenerationOrchestrator.java) before persistence.
+- Added failure logging on generation errors (`GENERATION_FAILED`) with payload in event log.
+- Added centralized HTTP error handling:
+  - [GenerationExceptionHandler](../apps/api/src/main/java/com/ai/therapists/api/generation/GenerationExceptionHandler.java)
+  - [GenerationErrorResponse](../apps/api/src/main/java/com/ai/therapists/api/generation/GenerationErrorResponse.java)
+- Added tests:
+  - [OutputValidationServiceTest](../apps/api/src/test/java/com/ai/therapists/api/generation/OutputValidationServiceTest.java)
+  - [GenerationErrorIntegrationTest](../apps/api/src/test/java/com/ai/therapists/api/GenerationErrorIntegrationTest.java)
+- Verified all tests pass with full suite run (`./mvnw test`, exit code 0).
+
+### Next 3 Tasks
+
+1. Add GET-based contract integration test to verify persisted content via API responses.
+2. Add Maven helper commands/profiles for migrate/reset/verify workflow.
+3. Start minimal Next.js admin page (generate form + preview).
+
+### Current Blocker
+
+No blocker.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From [apps/api](../apps/api):
+`./mvnw test`
+
+---
+
 ## 2026-03-15 (Final checkpoint before first commit)
 
 ### Done Today
