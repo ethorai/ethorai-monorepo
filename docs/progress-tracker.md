@@ -18,8 +18,8 @@ Copilot workspace instructions auto-loaded from `.github/copilot-instructions.md
 
 ### Now
 
-- [ ] Add Maven helper commands/profiles for migrate/reset/verify workflow
 - [ ] Build minimal Next.js admin page: generate form + preview
+- [ ] Define admin API contract for Next.js form submission + preview payload
 
 ### Next
 
@@ -51,6 +51,7 @@ Copilot workspace instructions auto-loaded from `.github/copilot-instructions.md
 - [x] Unit + integration tests added for validation/error paths
 - [x] Full test suite executed successfully
 - [x] GET-based contract test to verify persisted data via API responses (2 tests)
+- [x] Maven helper workflow: local reset profile + shared run configurations (app, migrate, tests, reset)
 
 ## Key Commands
 
@@ -61,6 +62,7 @@ From repo root:
 From [apps/api](../apps/api):
 
 - Run migration: `./mvnw flyway:migrate`
+- Reset local DB (explicit profile): `./mvnw -Pdb-reset-local flyway:clean flyway:migrate`
 - Generate jOOQ: `./mvnw jooq-codegen:generate`
 - Compile: `./mvnw compile`
 - Test: `./mvnw test`

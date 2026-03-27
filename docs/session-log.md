@@ -23,17 +23,29 @@
   - Full test suite now 11 tests, all passing (exit code 0)
 - Added `.github/copilot-instructions.md` for auto-loading workspace context across sessions/machines
 - Discussed context window management: repo memory for AI, committed docs for humans, test boundaries
+- Added Maven safety/profile workflow in [apps/api/pom.xml](../apps/api/pom.xml):
+  - `flyway.cleanDisabled=true` by default
+  - `db-reset-local` profile toggles `flyway.cleanDisabled=false` for explicit local reset
+- Added shared IntelliJ run configurations in project `.run/` for dropdown execution:
+  - `API - Run App`
+  - `API - Run All Tests`
+  - `API - Flyway Migrate`
+  - `API - Flyway Reset Local`
+- Verified commands from terminal:
+  - `./mvnw flyway:migrate` → exit 0
+  - `./mvnw test` → exit 0
+  - `./mvnw -Pdb-reset-local flyway:clean flyway:migrate` → exit 0
 
 ### Next 3 Tasks
 
-1. Add GET-based contract integration test to verify persisted content via API responses.
-2. Add Maven helper commands/profiles for migrate/reset/verify workflow.
-3. Start minimal Next.js admin page (generate form + preview).
+1. Build minimal Next.js admin page (generate form + preview).
+2. Define admin API contract for form submission + preview payload.
+3. Add section-level regeneration endpoint.
 
 ### Now (updated)
 
 1. ~~GET-based contract integration test~~ DONE
-2. Add Maven helper commands/profiles for migrate/reset/verify workflow.
+2. ~~Maven helper commands/profiles~~ DONE
 3. Build minimal Next.js admin page: generate form + preview.
 
 ### Current Blocker
