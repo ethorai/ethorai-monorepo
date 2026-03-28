@@ -1,5 +1,44 @@
 # Session Log
 
+## 2026-03-28
+
+### Done Today
+
+- Defined current admin HTTP contract in existing documentation:
+  - [docs/generation-flow.md](generation-flow.md)
+  - Covers `POST /api/generate`, `GET /api/pages/{id}`, `GET /api/pages?profileId=...`, `PUT /api/pages/{id}/sections/{sectionType}`, and `POST /api/pages/{id}/publish`
+- Aligned frontend API client with the documented contract:
+  - [src/lib/api.ts](../apps/admin-web/src/lib/api.ts)
+  - Added shared enum types (`SectionType`, `PageStatus`), stricter `GeneratedSections`, centralized error parsing, and helper methods for read/update/publish flows
+- Fixed stricter typing in preview rendering:
+  - [src/app/generate/page.tsx](../apps/admin-web/src/app/generate/page.tsx)
+- Verified frontend checks again after contract alignment:
+  - `npm run lint` → exit 0
+  - `npm run build` → exit 0
+
+### Next 3 Tasks
+
+1. Add dashboard page listing generated pages by profile ID.
+2. Add single page detail view by page ID in admin app.
+3. Add publish action from admin page detail view.
+
+### Current Blocker
+
+No blocker.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From [apps/api](../apps/api):
+`./mvnw test`
+
+From [apps/admin-web](../apps/admin-web):
+`npm run dev`
+
+---
+
 ## 2026-03-27
 
 ### Done Today
@@ -60,9 +99,9 @@
 
 ### Next 3 Tasks
 
-1. Define admin API contract for form submission + preview payload.
-2. Add dashboard page listing generated pages by profile ID.
-3. Add single page detail view by page ID in admin app.
+1. Add dashboard page listing generated pages by profile ID.
+2. Add single page detail view by page ID in admin app.
+3. Add publish action from admin page detail view.
 
 ### Now (updated)
 

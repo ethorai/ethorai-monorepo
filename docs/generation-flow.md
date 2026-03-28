@@ -199,3 +199,167 @@ Support maintainability and trust.
 - Regeneration triggers (if any)
 
 This data is internal and not exposed to end users.
+
+---
+
+## Admin HTTP Contract (Current)
+
+This is the current contract used by `apps/admin-web` to communicate with `apps/api`.
+
+### 1. Generate Page Draft
+
+`POST /api/generate`
+
+Request body:
+
+```json
+{
+  "fullName": "Najib Slassi",
+  "role": "THERAPIST",
+  "location": "Paris",
+  "audiences": ["Adults"],
+  "areasOfSupport": ["Stress", "Anxiety"],
+  "approach": "Integrative",
+  "sessionFormat": "ONLINE",
+  "expectations": ["Confidentiality", "Respect"],
+  "contactMethod": "EMAIL",
+  "contactValue": "najib@email.com"
+}
+```
+
+Success response: `201 Created`
+
+Headers:
+
+- `Location: /api/pages/{pageId}`
+
+Response body:
+
+```json
+{
+  "pageId": "uuid",
+  "profileId": "uuid",
+  "fullName": "Najib Slassi",
+  "role": "THERAPIST",
+  "sections": {
+    "HEADER": "...",
+    "HERO": "...",
+    "AREAS_OF_SUPPORT": "...",
+    "HOW_I_WORK": "...",
+    "WHAT_YOU_CAN_EXPECT": "...",
+    "SESSION_FORMATS": "...",
+    "CONTACT": "...",
+    "DISCLAIMER": "...",
+    "FOOTER": "..."
+  },
+  "status": "DRAFT"
+}
+```
+
+Error responses:
+
+- `400 Bad Request` for invalid input payload
+- `422 Unprocessable Entity` for guardrail/validation failure
+- `502 Bad Gateway` for AI generation failure
+
+### 2. Get Single Generated Page
+
+`GET /api/pages/{id}`
+
+Success response: `200 OK`
+
+Response body: same shape as `POST /api/generate` response.
+
+Error responses:
+
+- `404 Not Found` if page does not exist
+
+### 3. List Pages For One Profile
+
+`GET /api/pages?profileId={uuid}`
+
+Success response: `200 OK`
+
+Response body:
+
+```json
+[
+  {
+    "pageId": "uuid",
+    "profileId": "uuid",
+    "fullName": "Najib Slassi",
+    "role": "THERAPIST",
+    "sections": {
+      "HEADER": "..."
+    },
+    "status": "DRAFT"
+  }
+]
+```
+
+Error responses:
+
+- `404 Not Found` if the profile does not exist
+
+### 4. Update One Section
+
+`PUT /api/pages/{id}/sections/{sectionType}`
+
+Request body:
+
+```text
+<p>Updated section content</p>
+```
+
+Success response: `204 No Content`
+
+Error responses:
+
+- `404 Not Found` if page does not exist
+
+### 5. Publish Draft
+
+`POST /api/pages/{id}/publish`
+
+Success response: `204 No Content`
+
+Error responses:
+
+- `404 Not Found` if page does not exist
+
+### Shared Enums
+
+Role values:
+
+- `PSYCHOLOGIST`
+- `THERAPIST`
+- `COUNSELOR`
+
+Session format values:
+
+- `ONLINE`
+- `IN_PERSON`
+- `BOTH`
+
+Contact method values:
+
+- `EMAIL`
+- `PHONE`
+- `BOOKING_LINK`
+
+Page status values:
+
+- `DRAFT`
+- `PUBLISHED`
+
+Section keys:
+
+- `HEADER`
+- `HERO`
+- `AREAS_OF_SUPPORT`
+- `HOW_I_WORK`
+- `WHAT_YOU_CAN_EXPECT`
+- `SESSION_FORMATS`
+- `CONTACT`
+- `DISCLAIMER`
+- `FOOTER`

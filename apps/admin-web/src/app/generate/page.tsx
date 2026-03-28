@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import {
   generateLandingPage,
   GeneratedPageResponse,
+  SectionType,
   TherapistInput,
 } from "@/lib/api";
 
@@ -33,7 +34,7 @@ const initialState: FormState = {
   contactValue: "",
 };
 
-const sectionOrder = [
+const sectionOrder: SectionType[] = [
   "HEADER",
   "HERO",
   "AREAS_OF_SUPPORT",

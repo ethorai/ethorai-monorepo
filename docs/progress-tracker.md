@@ -20,9 +20,9 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 
 ### Now
 
-- [ ] Define admin API contract for Next.js form submission + preview payload
 - [ ] Add dashboard page listing generated pages by profile ID
 - [ ] Add single page detail view by page ID in admin app
+- [ ] Add publish action from admin page detail view
 
 ### Next
 
@@ -56,6 +56,7 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 - [x] GET-based contract test to verify persisted data via API responses (2 tests)
 - [x] Maven helper workflow: local reset profile + shared run configurations (app, migrate, tests, reset)
 - [x] Minimal Next.js admin page: generate form + preview + backend proxy route
+- [x] Admin API contract defined and aligned in docs + frontend client
 
 ## Key Commands
 
