@@ -242,19 +242,26 @@ Response body:
   "fullName": "Najib Slassi",
   "role": "THERAPIST",
   "sections": {
-    "HEADER": "...",
-    "HERO": "...",
-    "AREAS_OF_SUPPORT": "...",
-    "HOW_I_WORK": "...",
-    "WHAT_YOU_CAN_EXPECT": "...",
-    "SESSION_FORMATS": "...",
-    "CONTACT": "...",
-    "DISCLAIMER": "...",
-    "FOOTER": "..."
+    "HEADER": "{\"name\":\"Najib Slassi\",\"role\":\"THERAPIST\",\"location\":\"Paris\",\"phone\":null,\"email\":\"najib@email.com\"}",
+    "HERO": "{\"heading\":\"Je travaille avec les adultes\",\"subheading\":\"Un accompagnement psychologique dans un cadre respectueux et confidentiel.\"}",
+    "AREAS_OF_SUPPORT": "{\"title\":\"Domaines d'accompagnement\",\"items\":[\"Stress\",\"Anxiété\"]}",
+    "HOW_I_WORK": "{\"title\":\"Ma pratique\",\"description\":\"J'adopte une approche intégrative et collaborative.\"}",
+    "WHAT_YOU_CAN_EXPECT": "{\"title\":\"Ce que vous pouvez attendre\",\"statements\":[\"Un espace confidentiel\",\"Une écoute respectueuse\"]}",
+    "SESSION_FORMATS": "{\"title\":\"Formats de séances\",\"formats\":[{\"type\":\"ONLINE\",\"details\":\"Séances en ligne\"}]}",
+    "CONTACT": "{\"title\":\"Contact\",\"description\":\"Contactez-moi pour une première séance.\",\"cta_text\":\"Prendre rendez-vous\",\"phone\":null,\"email\":\"najib@email.com\"}",
+    "DISCLAIMER": "{\"text\":\"Les séances ne se substituent pas à un avis médical.\"}",
+    "FOOTER": "{\"name\":\"Najib Slassi\",\"role\":\"THERAPIST\",\"location\":\"Paris\",\"phone\":null,\"email\":\"najib@email.com\"}"
   },
   "status": "DRAFT"
 }
 ```
+
+Notes:
+
+- The AI now generates structured JSON per section, not free HTML.
+- The backend currently stores each section as a JSON string inside the `sections` map.
+- `apps/admin-web` parses those strings and renders them through shared templates.
+- Returning structured section objects directly is still a planned follow-up.
 
 Error responses:
 
@@ -290,7 +297,7 @@ Response body:
     "fullName": "Najib Slassi",
     "role": "THERAPIST",
     "sections": {
-      "HEADER": "..."
+      "HEADER": "{\"name\":\"Najib Slassi\",\"role\":\"THERAPIST\",\"location\":\"Paris\",\"phone\":null,\"email\":\"najib@email.com\"}"
     },
     "status": "DRAFT"
   }
@@ -308,8 +315,13 @@ Error responses:
 Request body:
 
 ```text
-<p>Updated section content</p>
+{"title":"Ma pratique","description":"Approche intégrative et collaborative."}
 ```
+
+Notes:
+
+- The current endpoint still accepts plain text at HTTP level.
+- With structured sections, the intended payload is a JSON string matching the target section shape.
 
 Success response: `204 No Content`
 

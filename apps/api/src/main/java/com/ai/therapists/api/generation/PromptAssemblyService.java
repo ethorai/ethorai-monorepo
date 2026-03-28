@@ -61,8 +61,7 @@ public class PromptAssemblyService {
 
     public String assembleUserPrompt(TherapistInput input) {
         return """
-                Generate a landing page for the therapist below. Return a JSON object with exactly these keys: %s.
-                Each value is the HTML content for that section (use simple HTML: <h1>, <h2>, <p>, <ul>, <li>, no classes or styles).
+                Generate a structured landing page for the therapist below. Return a JSON object with the exact structure below.
 
                 ## Therapist Information
                 - Full Name: %s
@@ -76,9 +75,71 @@ public class PromptAssemblyService {
                 - Contact Method: %s
                 - Contact Value: %s
 
-                Return ONLY the JSON object, no markdown fences, no explanation.
+                ## JSON Structure (return ONLY this object, no markdown, no explanation):
+
+                {
+                  "HEADER": {
+                    "name": "therapist full name",
+                    "role": "professional role",
+                    "location": "city/country",
+                    "phone": "phone or null",
+                    "email": "email or null"
+                  },
+                  "HERO": {
+                    "heading": "headline (max 12 words)",
+                    "subheading": "explanation of who practice is for"
+                  },
+                  "AREAS_OF_SUPPORT": {
+                    "title": "section title",
+                    "items": ["topic1", "topic2", "topic3", ...]
+                  },
+                  "HOW_I_WORK": {
+                    "title": "section title",
+                    "description": "one paragraph describing the therapeutic approach"
+                  },
+                  "WHAT_YOU_CAN_EXPECT": {
+                    "title": "section title",
+                    "statements": ["statement1", "statement2", "statement3", ...]
+                  },
+                  "SESSION_FORMATS": {
+                    "title": "section title",
+                    "formats": [
+                      {"type": "ONLINE", "details": "details about online sessions"},
+                      {"type": "IN_PERSON", "details": "details about in-person sessions"}
+                    ]
+                  },
+                  "CONTACT": {
+                    "title": "section title",
+                    "description": "description of contact/booking",
+                    "cta_text": "3-4 word call to action",
+                    "phone": "phone or null",
+                    "email": "email or null"
+                  },
+                  "DISCLAIMER": {
+                    "text": "ethical disclaimer adapted to role"
+                  },
+                  "FOOTER": {
+                    "name": "therapist full name",
+                    "role": "professional role",
+                    "location": "city/country",
+                    "phone": "phone or null",
+                    "email": "email or null"
+                  }
+                }
+
+                ## Rules for Each Field
+                - All strings must be in French
+                - All null values should be JSON null (not empty strings)
+                - HERO heading: maximum 12 words
+                - AREAS_OF_SUPPORT items: 3-7 topics, neutral & descriptive
+                - HOW_I_WORK description: 1-2 sentences, process-oriented
+                - WHAT_YOU_CAN_EXPECT statements: 3-5 short statements about the environment
+                - SESSION_FORMATS formats: list the applicable formats
+                - CONTACT cta_text: 3-4 words, neutral CTA like "Book a session"
+                - DISCLAIMER text: mandatory, calm tone, no legal advice
+
+                Return ONLY the JSON object.
                 """.formatted(
-                sectionKeys(),
                 input.fullName(),
                 input.role().name(),
                 input.location() != null ? input.location() : "Non spécifié",

@@ -1,5 +1,7 @@
 package com.ai.therapists.api.page;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
@@ -20,6 +22,7 @@ import static com.ai.therapists.api.jooq.Tables.LANDING_PAGE;
 public class LandingPageRepository {
 
     private final DSLContext dsl;
+    private final ObjectMapper objectMapper;
 
     public UUID insert(UUID profileId, Map<SectionType, String> sections, JSONB generationLog) {
         return dsl.insertInto(LANDING_PAGE)
@@ -90,36 +93,39 @@ public class LandingPageRepository {
     }
 
     private String sectionsToJson(Map<SectionType, String> sections) {
-        if (sections == null || sections.isEmpty()) return "{}";
-        return "{" + sections.entrySet().stream()
-                .map(e -> "\"" + e.getKey().name() + "\":\"" + e.getValue().replace("\"", "\\\"") + "\"")
-                .collect(Collectors.joining(",")) + "}";
+        if (sections == null || sections.isEmpty()) {
+            return "{}";
+        }
+
+        try {
+            return objectMapper.writeValueAsString(sections);
+        } catch (Exception ex) {
+            throw new IllegalStateException("Unable to serialize landing page sections", ex);
+        }
     }
 
     private Map<SectionType, String> sectionsFromJson(JSONB jsonb) {
         if (jsonb == null || jsonb.data() == null || jsonb.data().equals("{}")) {
             return new EnumMap<>(SectionType.class);
         }
-        // Simple parsing: {"KEY":"value","KEY2":"value2"}
-        Map<SectionType, String> result = new EnumMap<>(SectionType.class);
-        String data = jsonb.data();
-        data = data.substring(1, data.length() - 1); // remove { }
-        if (data.isEmpty()) return result;
+        try {
+            Map<String, String> rawSections = objectMapper.readValue(
+                    jsonb.data(),
+                    new TypeReference<Map<String, String>>() {
+                    }
+            );
 
-        // Split on "," that are between entries (not inside values)
-        // Simple approach: split on `","` pattern between key-value pairs
-        String[] pairs = data.split(",(?=\"[A-Z])");
-        for (String pair : pairs) {
-            int colonIdx = pair.indexOf(":");
-            if (colonIdx < 0) continue;
-            String key = pair.substring(0, colonIdx).trim().replaceAll("^\"|\"$", "");
-            String value = pair.substring(colonIdx + 1).trim().replaceAll("^\"|\"$", "");
-            try {
-                result.put(SectionType.valueOf(key), value.replace("\\\"", "\""));
-            } catch (IllegalArgumentException ignored) {
-                // Skip unknown section types
-            }
+            Map<SectionType, String> result = new EnumMap<>(SectionType.class);
+            rawSections.forEach((key, value) -> {
+                try {
+                    result.put(SectionType.valueOf(key), value);
+                } catch (IllegalArgumentException ignored) {
+                    // Skip unknown section types
+                }
+            });
+            return result;
+        } catch (Exception ex) {
+            throw new IllegalStateException("Unable to deserialize landing page sections", ex);
         }
-        return result;
     }
 }

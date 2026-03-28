@@ -6,6 +6,7 @@ import com.ai.therapists.api.profile.ContactMethod;
 import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
+import com.ai.therapists.api.test.StructuredSectionsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
@@ -82,7 +83,10 @@ class GeneratePageIntegrationTest {
                 .andExpect(jsonPath("$.fullName", is(fullName)))
                 .andExpect(jsonPath("$.role", is("PSYCHOLOGIST")))
                 .andExpect(jsonPath("$.status", is("DRAFT")))
-                .andExpect(jsonPath("$.sections.HEADER", is("Dr Test - PSYCHOLOGIST")));
+                .andExpect(jsonPath("$.sections.HEADER").exists())
+                .andExpect(jsonPath("$.sections.HERO").exists())
+                .andExpect(jsonPath("$.sections.AREAS_OF_SUPPORT").exists())
+                .andExpect(jsonPath("$.sections.DISCLAIMER").exists());
 
         org.junit.jupiter.api.Assertions.assertEquals(profilesBefore + 1, dsl.fetchCount(THERAPIST_PROFILE));
         org.junit.jupiter.api.Assertions.assertEquals(pagesBefore + 1, dsl.fetchCount(LANDING_PAGE));
@@ -96,17 +100,8 @@ class GeneratePageIntegrationTest {
         @Primary
         AiGenerationService aiGenerationService() {
             AiGenerationService mock = Mockito.mock(AiGenerationService.class);
-            Mockito.when(mock.generate(any())).thenReturn(Map.of(
-                    SectionType.HEADER, "Dr Test - PSYCHOLOGIST",
-                    SectionType.HERO, "Je travaille avec Adults",
-                    SectionType.AREAS_OF_SUPPORT, "Stress, Life transitions",
-                    SectionType.HOW_I_WORK, "Approche intégrative",
-                    SectionType.WHAT_YOU_CAN_EXPECT, "Confidentialité, respect",
-                    SectionType.SESSION_FORMATS, "ONLINE",
-                    SectionType.CONTACT, "EMAIL: hello@example.com",
-                    SectionType.DISCLAIMER, "Les séances ne se substituent pas à un suivi médical.",
-                    SectionType.FOOTER, "Dr Test - Paris"
-            ));
+            StructuredSectionsBuilder builder = new StructuredSectionsBuilder();
+            Mockito.when(mock.generate(any())).thenReturn(builder.buildTestSections());
             return mock;
         }
     }

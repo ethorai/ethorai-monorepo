@@ -97,7 +97,7 @@ Persisted entity representing a generated landing page.
 public class LandingPage {
     @Id UUID id;
     @ManyToOne TherapistProfile profile;
-    Map<SectionType, String> sections;  // stored as JSONB
+    Map<SectionType, String> sections;  // stored as JSONB, each value is a serialized structured section object
     @Enumerated PageStatus status;
     GenerationLog generationLog;        // stored as JSONB
     Instant createdAt;
@@ -122,6 +122,12 @@ public enum SectionType {
 ```
 
 Maps 1:1 to the landing page structure (see landing-page-structure.md).
+
+Current storage convention:
+
+- The map key is the section identifier (`HEADER`, `HERO`, etc.)
+- The map value is a JSON string representing the structured payload of that section
+- Example: `sections.get(SectionType.HERO)` stores something like `{ "heading": "...", "subheading": "..." }`
 
 ### PageStatus
 
@@ -195,6 +201,7 @@ Returned to the frontend after generation.
 ```java
 public record GeneratedPageResponse(
     UUID pageId,
+    UUID profileId,
     String fullName,
     RoleType role,
     Map<SectionType, String> sections,
@@ -202,13 +209,20 @@ public record GeneratedPageResponse(
 )
 ```
 
+Notes:
+
+- The AI now generates structured section objects, not raw HTML fragments.
+- The current API response still exposes `sections` as `Map<SectionType, String>` for transition compatibility.
+- Each string value is serialized JSON for the corresponding structured section.
+- A later cleanup can expose fully typed section objects directly in the API.
+
 ---
 
 ## Relationships
 
 ```
 TherapistProfile 1 ──── * LandingPage
-                           └── sections (Map<SectionType, String>)
+                           └── sections (Map<SectionType, String serialized JSON>)
                            └── generationLog (GenerationLog)
 
 EventLog (append-only, references any entity by type + id)

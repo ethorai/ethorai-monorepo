@@ -1,6 +1,7 @@
 package com.ai.therapists.api.generation;
 
 import com.ai.therapists.api.page.SectionType;
+import com.ai.therapists.api.test.StructuredSectionsBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;
@@ -59,16 +60,6 @@ class OutputValidationServiceTest {
     }
 
     private Map<SectionType, String> validSections() {
-        Map<SectionType, String> sections = new EnumMap<>(SectionType.class);
-        sections.put(SectionType.HEADER, "<h1>Dr Test - Psychologist</h1>");
-        sections.put(SectionType.HERO, "<h2>Accompagnement psychologique pour adultes</h2>");
-        sections.put(SectionType.AREAS_OF_SUPPORT, "<ul><li>Stress</li></ul>");
-        sections.put(SectionType.HOW_I_WORK, "<p>Approche intégrative et collaborative.</p>");
-        sections.put(SectionType.WHAT_YOU_CAN_EXPECT, "<p>Un espace confidentiel et respectueux.</p>");
-        sections.put(SectionType.SESSION_FORMATS, "<p>Séances en ligne.</p>");
-        sections.put(SectionType.CONTACT, "<p>Contact par email.</p>");
-        sections.put(SectionType.DISCLAIMER, "<p>Ce service ne remplace pas un avis médical.</p>");
-        sections.put(SectionType.FOOTER, "<p>Dr Test - Paris</p>");
-        return sections;
+        return new StructuredSectionsBuilder().buildTestSections();
     }
 }

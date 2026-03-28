@@ -8,6 +8,8 @@ import com.ai.therapists.api.profile.ContactMethod;
 import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
+import com.ai.therapists.api.section_data.HowIWorkData;
+import com.ai.therapists.api.test.StructuredSectionsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,17 +65,13 @@ class GenerationErrorIntegrationTest {
     void generate_returns422_whenGeneratedContentViolatesGuardrails() throws Exception {
         int eventsBefore = dsl.fetchCount(EVENT_LOG);
 
-        Mockito.when(aiGenerationService.generate(any())).thenReturn(Map.of(
-                SectionType.HEADER, "Dr Test - PSYCHOLOGIST",
-                SectionType.HERO, "Je travaille avec Adults",
-                SectionType.AREAS_OF_SUPPORT, "Stress, Life transitions",
-                SectionType.HOW_I_WORK, "I help people heal quickly.",
-                SectionType.WHAT_YOU_CAN_EXPECT, "Confidentialité, respect",
-                SectionType.SESSION_FORMATS, "ONLINE",
-                SectionType.CONTACT, "EMAIL: hello@example.com",
-                SectionType.DISCLAIMER, "Les séances ne se substituent pas à un suivi médical.",
-                SectionType.FOOTER, "Dr Test - Paris"
-        ));
+        Map<SectionType, String> invalidSections = new StructuredSectionsBuilder().buildTestSections();
+        // Inject forbidden term into HOW_I_WORK
+        ObjectMapper mapper = new ObjectMapper();
+        HowIWorkData invalidData = new HowIWorkData("Ma pratique", "I help people heal quickly.");
+        invalidSections.put(SectionType.HOW_I_WORK, mapper.writeValueAsString(invalidData));
+        
+        Mockito.when(aiGenerationService.generate(any())).thenReturn(invalidSections);
 
         mockMvc.perform(post("/api/generate")
                         .contentType(MediaType.APPLICATION_JSON)

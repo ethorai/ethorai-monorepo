@@ -15,12 +15,65 @@
 - Verified frontend checks again after contract alignment:
   - `npm run lint` → exit 0
   - `npm run build` → exit 0
+- Implemented dashboard flow for listing pages by profile ID:
+  - [src/app/dashboard/page.tsx](../apps/admin-web/src/app/dashboard/page.tsx)
+  - Search by `profileId`, empty/error states, result cards, and direct JSON access for each page
+- Added Next.js proxy routes for page reads:
+  - [src/app/api/pages/route.ts](../apps/admin-web/src/app/api/pages/route.ts)
+  - [src/app/api/pages/[id]/route.ts](../apps/admin-web/src/app/api/pages/%5Bid%5D/route.ts)
+- Added dashboard entry point from home page:
+  - [src/app/page.tsx](../apps/admin-web/src/app/page.tsx)
+- Verified frontend checks after dashboard implementation:
+  - `npm run lint` → exit 0
+  - `npm run build` → exit 0
+- Implemented page detail view by page ID:
+  - [src/app/pages/[id]/page.tsx](../apps/admin-web/src/app/pages/%5Bid%5D/page.tsx)
+  - Full section rendering, profile/status summary, and review-oriented layout
+- Added publish proxy route for admin-web:
+  - [src/app/api/pages/[id]/publish/route.ts](../apps/admin-web/src/app/api/pages/%5Bid%5D/publish/route.ts)
+- Wired dashboard cards to the real page detail view and kept JSON as a debug link:
+  - [src/app/dashboard/page.tsx](../apps/admin-web/src/app/dashboard/page.tsx)
+- Verified frontend checks after page detail implementation:
+  - `npm run lint` → exit 0
+  - `npm run build` → exit 0
+- Fixed persisted section deserialization bug in backend repository:
+  - [LandingPageRepository.java](../apps/api/src/main/java/com/ai/therapists/api/page/LandingPageRepository.java)
+  - Replaced fragile handwritten JSON parsing with `ObjectMapper` for JSONB round-trip safety
+- Chose product direction: keep one shared page template and move AI output from free HTML to structured JSON per section
+- Added typed backend section models for the official 9-section structure:
+  - [StructuredSections.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/StructuredSections.java)
+  - [HeaderData.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/HeaderData.java)
+  - [HeroData.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/HeroData.java)
+  - [AreasOfSupportData.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/AreasOfSupportData.java)
+  - [HowIWorkData.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/HowIWorkData.java)
+  - [WhatYouCanExpectData.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/WhatYouCanExpectData.java)
+  - [SessionFormatsData.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/SessionFormatsData.java)
+  - [ContactData.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/ContactData.java)
+  - [DisclaimerData.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/DisclaimerData.java)
+  - [FooterData.java](../apps/api/src/main/java/com/ai/therapists/api/section_data/FooterData.java)
+- Updated OpenAI prompt and backend parsing for structured sections:
+  - [PromptAssemblyService.java](../apps/api/src/main/java/com/ai/therapists/api/generation/PromptAssemblyService.java)
+  - [AiGenerationService.java](../apps/api/src/main/java/com/ai/therapists/api/generation/AiGenerationService.java)
+- Added structured test fixtures and updated backend tests:
+  - [StructuredSectionsBuilder.java](../apps/api/src/test/java/com/ai/therapists/api/test/StructuredSectionsBuilder.java)
+  - `./mvnw test` → exit 0
+- Refactored admin-web to render template-based sections instead of raw HTML strings:
+  - [src/components/section-renderers.tsx](../apps/admin-web/src/components/section-renderers.tsx)
+  - [src/lib/api.ts](../apps/admin-web/src/lib/api.ts)
+  - [src/app/generate/page.tsx](../apps/admin-web/src/app/generate/page.tsx)
+  - [src/app/pages/[id]/page.tsx](../apps/admin-web/src/app/pages/%5Bid%5D/page.tsx)
+  - [src/app/dashboard/page.tsx](../apps/admin-web/src/app/dashboard/page.tsx)
+- Added transition compatibility for legacy drafts:
+  - Old HTML-based sections still render via parsing fallback in admin-web
+  - No Flyway schema migration required at this stage because `sections` remains JSONB
+- Verified frontend again after structured refactor:
+  - `npm run build` → exit 0
 
 ### Next 3 Tasks
 
-1. Add dashboard page listing generated pages by profile ID.
-2. Add single page detail view by page ID in admin app.
-3. Add publish action from admin page detail view.
+1. Add structured section editing flow from admin page detail view.
+2. Add section editing proxy routes for admin-web.
+3. Return structured section objects directly from backend responses to remove transitional string parsing.
 
 ### Current Blocker
 

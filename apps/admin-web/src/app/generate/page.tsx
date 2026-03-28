@@ -4,9 +4,20 @@ import { FormEvent, useMemo, useState } from "react";
 import {
   generateLandingPage,
   GeneratedPageResponse,
-  SectionType,
+  parseSections,
   TherapistInput,
 } from "@/lib/api";
+import {
+  AreasOfSupportSection,
+  ContactSection,
+  DisclaimerSection,
+  FooterSection,
+  HeaderSection,
+  HeroSection,
+  HowIWorkSection,
+  SessionFormatsSection,
+  WhatYouCanExpectSection,
+} from "@/components/section-renderers";
 
 type FormState = {
   fullName: string;
@@ -34,18 +45,6 @@ const initialState: FormState = {
   contactValue: "",
 };
 
-const sectionOrder: SectionType[] = [
-  "HEADER",
-  "HERO",
-  "AREAS_OF_SUPPORT",
-  "HOW_I_WORK",
-  "WHAT_YOU_CAN_EXPECT",
-  "SESSION_FORMATS",
-  "CONTACT",
-  "DISCLAIMER",
-  "FOOTER",
-];
-
 function toList(value: string): string[] {
   return value
     .split(",")
@@ -62,6 +61,14 @@ export default function GeneratePage() {
   const isSubmitDisabled = useMemo(() => {
     return isSubmitting || !form.fullName.trim() || !form.contactValue.trim();
   }, [form.contactValue, form.fullName, isSubmitting]);
+
+  const parsedResult = useMemo(() => {
+    if (!result) {
+      return null;
+    }
+
+    return parseSections(result.sections);
+  }, [result]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -310,19 +317,21 @@ export default function GeneratePage() {
                 </p>
               </div>
 
-              {sectionOrder.map((sectionKey) => (
-                <article
-                  key={sectionKey}
-                  className="rounded-xl border border-stone-700 bg-stone-900/65 p-4"
-                >
-                  <h3 className="text-xs font-bold tracking-[0.16em] text-emerald-300">
-                    {sectionKey}
-                  </h3>
-                  <p className="mt-2 whitespace-pre-line text-sm leading-6 text-stone-100">
-                    {result.sections[sectionKey] ?? "Missing"}
-                  </p>
-                </article>
-              ))}
+              {parsedResult ? (
+                <div className="overflow-hidden rounded-2xl border border-stone-700 bg-white text-stone-900">
+                  <HeaderSection data={parsedResult.HEADER} />
+                  <HeroSection data={parsedResult.HERO} />
+                  <AreasOfSupportSection data={parsedResult.AREAS_OF_SUPPORT} />
+                  <HowIWorkSection data={parsedResult.HOW_I_WORK} />
+                  <WhatYouCanExpectSection
+                    data={parsedResult.WHAT_YOU_CAN_EXPECT}
+                  />
+                  <SessionFormatsSection data={parsedResult.SESSION_FORMATS} />
+                  <ContactSection data={parsedResult.CONTACT} />
+                  <DisclaimerSection data={parsedResult.DISCLAIMER} />
+                  <FooterSection data={parsedResult.FOOTER} />
+                </div>
+              ) : null}
             </div>
           )}
         </section>

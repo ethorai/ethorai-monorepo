@@ -6,6 +6,7 @@ import com.ai.therapists.api.profile.ContactMethod;
 import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
+import com.ai.therapists.api.test.StructuredSectionsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
@@ -115,17 +116,8 @@ class GetPageIntegrationTest {
         @Primary
         AiGenerationService aiGenerationService() {
             AiGenerationService mock = Mockito.mock(AiGenerationService.class);
-            Mockito.when(mock.generate(any())).thenReturn(Map.of(
-                    SectionType.HEADER, "Dr Verify - PSYCHOLOGIST",
-                    SectionType.HERO, "Working with teenagers",
-                    SectionType.AREAS_OF_SUPPORT, "Anxiety, stress management",
-                    SectionType.HOW_I_WORK, "Cognitive Behavioral Therapy",
-                    SectionType.WHAT_YOU_CAN_EXPECT, "Confidential, supportive sessions",
-                    SectionType.SESSION_FORMATS, "HYBRID",
-                    SectionType.CONTACT, "EMAIL: verify@example.com",
-                    SectionType.DISCLAIMER, "These sessions are not a substitute for medical care.",
-                    SectionType.FOOTER, "Dr Verify - Lyon"
-            ));
+            StructuredSectionsBuilder builder = new StructuredSectionsBuilder();
+            Mockito.when(mock.generate(any())).thenReturn(builder.buildTestSections());
             return mock;
         }
     }

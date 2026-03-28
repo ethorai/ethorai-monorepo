@@ -15,12 +15,20 @@ export default function Home() {
           </p>
         </div>
 
-        <a
-          className="mt-10 inline-flex items-center rounded-xl bg-stone-900 px-6 py-3 text-sm font-semibold tracking-wide text-white transition hover:bg-stone-700"
-          href="/generate"
-        >
-          Open Generate Workspace
-        </a>
+        <div className="mt-10 flex flex-wrap gap-3">
+          <a
+            className="inline-flex items-center rounded-xl bg-stone-900 px-6 py-3 text-sm font-semibold tracking-wide text-white transition hover:bg-stone-700"
+            href="/generate"
+          >
+            Open Generate Workspace
+          </a>
+          <a
+            className="inline-flex items-center rounded-xl border border-stone-300 bg-white/70 px-6 py-3 text-sm font-semibold tracking-wide text-stone-800 transition hover:bg-white"
+            href="/dashboard"
+          >
+            Open Dashboard
+          </a>
+        </div>
       </div>
     </main>
   );

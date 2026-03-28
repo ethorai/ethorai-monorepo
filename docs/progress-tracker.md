@@ -20,9 +20,9 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 
 ### Now
 
-- [ ] Add dashboard page listing generated pages by profile ID
-- [ ] Add single page detail view by page ID in admin app
-- [ ] Add publish action from admin page detail view
+- [ ] Add structured section editing flow from admin page detail view
+- [ ] Add section editing proxy routes for admin-web
+- [ ] Return structured section objects directly from backend responses
 
 ### Next
 
@@ -57,6 +57,11 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 - [x] Maven helper workflow: local reset profile + shared run configurations (app, migrate, tests, reset)
 - [x] Minimal Next.js admin page: generate form + preview + backend proxy route
 - [x] Admin API contract defined and aligned in docs + frontend client
+- [x] Dashboard page listing generated pages by profile ID + Next.js page proxies
+- [x] Single page detail view by page ID with publish action
+- [x] Structured section generation format aligned to landing-page-structure.md
+- [x] Backend OpenAI prompt + parser refactored from HTML sections to typed structured JSON
+- [x] Admin-web rendering refactored to template-based section components with legacy HTML fallback
 
 ## Key Commands
 

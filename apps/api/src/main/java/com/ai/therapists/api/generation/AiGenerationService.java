@@ -2,6 +2,7 @@ package com.ai.therapists.api.generation;
 
 import com.ai.therapists.api.page.SectionType;
 import com.ai.therapists.api.profile.TherapistInput;
+import com.ai.therapists.api.section_data.StructuredSections;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -83,15 +84,22 @@ public class AiGenerationService {
         }
 
         try {
-            Map<String, String> raw = objectMapper.readValue(cleaned, new TypeReference<>() {});
+            // Parse the structured JSON response
+            StructuredSections structured = objectMapper.readValue(cleaned, StructuredSections.class);
+            
             Map<SectionType, String> sections = new EnumMap<>(SectionType.class);
-            for (var entry : raw.entrySet()) {
-                try {
-                    sections.put(SectionType.valueOf(entry.getKey()), entry.getValue());
-                } catch (IllegalArgumentException e) {
-                    log.warn("Unknown section key from AI: {}", entry.getKey());
-                }
-            }
+            
+            // Serialize each section data back to JSON string for storage
+            sections.put(SectionType.HEADER, objectMapper.writeValueAsString(structured.header()));
+            sections.put(SectionType.HERO, objectMapper.writeValueAsString(structured.hero()));
+            sections.put(SectionType.AREAS_OF_SUPPORT, objectMapper.writeValueAsString(structured.areasOfSupport()));
+            sections.put(SectionType.HOW_I_WORK, objectMapper.writeValueAsString(structured.howIWork()));
+            sections.put(SectionType.WHAT_YOU_CAN_EXPECT, objectMapper.writeValueAsString(structured.whatYouCanExpect()));
+            sections.put(SectionType.SESSION_FORMATS, objectMapper.writeValueAsString(structured.sessionFormats()));
+            sections.put(SectionType.CONTACT, objectMapper.writeValueAsString(structured.contact()));
+            sections.put(SectionType.DISCLAIMER, objectMapper.writeValueAsString(structured.disclaimer()));
+            sections.put(SectionType.FOOTER, objectMapper.writeValueAsString(structured.footer()));
+            
             return sections;
         } catch (Exception e) {
             throw new AiGenerationException("Failed to parse AI response: " + e.getMessage());
