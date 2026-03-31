@@ -33,12 +33,20 @@
 - Verified both apps after regeneration feature:
   - `./mvnw test` → exit 0
   - `npm run build` → exit 0
+- Implemented richer save UX on page detail view:
+  - Per-section inline feedback (success/error shown next to each section editor)
+  - Auto-dismiss success messages after 3 seconds
+  - Dirty state tracking with amber highlight and dot indicator on unsaved sections
+  - Browser `beforeunload` warning when navigating away with unsaved changes
+  - Removed global save/error banners in favor of per-section feedback
+- Verified frontend build after save UX changes:
+  - `npm run build` → exit 0
 
 ### Next 3 Tasks
 
-1. Improve save UX on page detail view.
-2. Add async generation + status polling.
-3. Auth + billing + custom domains.
+1. Add async generation + status polling.
+2. Auth + billing + custom domains.
+3. CI pipeline with automated integration test run.
 
 ### Current Blocker
 

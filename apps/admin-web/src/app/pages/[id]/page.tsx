@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   type GeneratedPageResponse,
   type GeneratedSections,
@@ -34,7 +34,6 @@ export default function PageDetail({ params }: DetailPageProps) {
     null,
   );
   const [error, setError] = useState("");
-  const [saveMessage, setSaveMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
   const [savingSection, setSavingSection] = useState<
@@ -43,6 +42,65 @@ export default function PageDetail({ params }: DetailPageProps) {
   const [regeneratingSection, setRegeneratingSection] = useState<
     keyof GeneratedSections | null
   >(null);
+  const [sectionFeedback, setSectionFeedback] = useState<
+    Record<string, { type: "success" | "error"; message: string }>
+  >({});
+  const feedbackTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {},
+  );
+
+  const showSectionFeedback = useCallback(
+    (
+      sectionKey: keyof GeneratedSections,
+      type: "success" | "error",
+      message: string,
+    ) => {
+      setSectionFeedback((prev) => ({
+        ...prev,
+        [sectionKey]: { type, message },
+      }));
+      if (feedbackTimers.current[sectionKey]) {
+        clearTimeout(feedbackTimers.current[sectionKey]);
+      }
+      if (type === "success") {
+        feedbackTimers.current[sectionKey] = setTimeout(() => {
+          setSectionFeedback((prev) => {
+            const next = { ...prev };
+            delete next[sectionKey];
+            return next;
+          });
+        }, 3000);
+      }
+    },
+    [],
+  );
+
+  const dirtySections = useMemo(() => {
+    if (!page || !draftSections) return new Set<keyof GeneratedSections>();
+    const dirty = new Set<keyof GeneratedSections>();
+    for (const key of Object.keys(page.sections) as Array<
+      keyof GeneratedSections
+    >) {
+      if (
+        JSON.stringify(page.sections[key]) !==
+        JSON.stringify(draftSections[key])
+      ) {
+        dirty.add(key);
+      }
+    }
+    return dirty;
+  }, [page, draftSections]);
+
+  const hasDirty = dirtySections.size > 0;
+
+  useEffect(() => {
+    if (!hasDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [hasDirty]);
 
   useEffect(() => {
     let active = true;
@@ -63,7 +121,6 @@ export default function PageDetail({ params }: DetailPageProps) {
         setPage(loadedPage);
         setDraftSections(loadedPage.sections);
         setError("");
-        setSaveMessage("");
       } catch (requestError) {
         if (!active) {
           return;
@@ -117,8 +174,6 @@ export default function PageDetail({ params }: DetailPageProps) {
     }
 
     setSavingSection(sectionKey);
-    setError("");
-    setSaveMessage("");
 
     try {
       await updatePageSection(
@@ -129,13 +184,13 @@ export default function PageDetail({ params }: DetailPageProps) {
       const refreshed = await getPage(page.pageId);
       setPage(refreshed);
       setDraftSections(refreshed.sections);
-      setSaveMessage(`${sectionKey} saved.`);
+      showSectionFeedback(sectionKey, "success", "Saved.");
     } catch (requestError) {
       const message =
         requestError instanceof Error
           ? requestError.message
           : "Unable to save section.";
-      setError(message);
+      showSectionFeedback(sectionKey, "error", message);
     } finally {
       setSavingSection(null);
     }
@@ -147,20 +202,18 @@ export default function PageDetail({ params }: DetailPageProps) {
     }
 
     setRegeneratingSection(sectionKey);
-    setError("");
-    setSaveMessage("");
 
     try {
       const refreshed = await regenerateSection(page.pageId, sectionKey);
       setPage(refreshed);
       setDraftSections(refreshed.sections);
-      setSaveMessage(`${sectionKey} regenerated.`);
+      showSectionFeedback(sectionKey, "success", "Regenerated.");
     } catch (requestError) {
       const message =
         requestError instanceof Error
           ? requestError.message
           : "Unable to regenerate section.";
-      setError(message);
+      showSectionFeedback(sectionKey, "error", message);
     } finally {
       setRegeneratingSection(null);
     }
@@ -250,12 +303,6 @@ export default function PageDetail({ params }: DetailPageProps) {
           {error ? (
             <p className="mt-4 rounded-lg border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">
               {error}
-            </p>
-          ) : null}
-
-          {saveMessage ? (
-            <p className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              {saveMessage}
             </p>
           ) : null}
         </section>
@@ -363,13 +410,23 @@ export default function PageDetail({ params }: DetailPageProps) {
                   ).map((sectionKey) => (
                     <article
                       key={sectionKey}
-                      className="rounded-2xl border border-stone-200 bg-stone-50/80 p-5"
+                      className={`rounded-2xl border p-5 ${
+                        dirtySections.has(sectionKey)
+                          ? "border-amber-300 bg-amber-50/60"
+                          : "border-stone-200 bg-stone-50/80"
+                      }`}
                     >
                       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div>
+                        <div className="flex items-center gap-2">
                           <h3 className="text-sm font-semibold tracking-[0.12em] text-stone-900">
                             {sectionKey}
                           </h3>
+                          {dirtySections.has(sectionKey) ? (
+                            <span
+                              className="inline-block h-2 w-2 rounded-full bg-amber-500"
+                              title="Unsaved changes"
+                            />
+                          ) : null}
                         </div>
                         <div className="flex gap-2">
                           <button
@@ -402,6 +459,18 @@ export default function PageDetail({ params }: DetailPageProps) {
                           </button>
                         </div>
                       </div>
+
+                      {sectionFeedback[sectionKey] ? (
+                        <p
+                          className={`mt-3 rounded-lg border px-3 py-2 text-xs ${
+                            sectionFeedback[sectionKey].type === "success"
+                              ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                              : "border-rose-300 bg-rose-50 text-rose-700"
+                          }`}
+                        >
+                          {sectionFeedback[sectionKey].message}
+                        </p>
+                      ) : null}
 
                       <div className="mt-5">
                         {renderSectionEditor(
