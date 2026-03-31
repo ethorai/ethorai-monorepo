@@ -25,14 +25,10 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 - [x] Return structured section objects directly from backend responses
 - [x] Section-level regeneration endpoint
 - [x] Richer save UX after section updates
+- [x] Async generation + status polling
 
 ### Next
 
-- [ ] Async generation + status polling
-
-### Later
-
-- [ ] Auth + billing + custom domains
 - [ ] Role-specific disclaimer templates and stricter semantic checks
 - [ ] Regeneration loop with max attempts and explainability details
 - [ ] CI pipeline with automated integration test run
@@ -67,6 +63,7 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 - [x] Backend API responses refactored to return structured section objects directly
 - [x] Section-level regeneration endpoint with per-section OpenAI prompt
 - [x] Richer save UX: per-section feedback, dirty tracking, auto-dismiss, beforeunload warning
+- [x] Async generation with job queue, status polling, and spinner UI
 
 ## Key Commands
 

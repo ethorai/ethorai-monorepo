@@ -10,6 +10,7 @@ import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
 import com.ai.therapists.api.section_data.HowIWorkData;
 import com.ai.therapists.api.test.StructuredSectionsBuilder;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,12 +26,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static com.ai.therapists.api.jooq.Tables.EVENT_LOG;
+import static com.ai.therapists.api.jooq.Tables.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,7 +66,7 @@ class GenerationErrorIntegrationTest {
     }
 
     @Test
-    void generate_returns422_whenGeneratedContentViolatesGuardrails() throws Exception {
+    void generate_jobFails_whenGeneratedContentViolatesGuardrails() throws Exception {
         int eventsBefore = dsl.fetchCount(EVENT_LOG);
 
         Map<SectionType, String> invalidSections = new StructuredSectionsBuilder().buildTestSections();
@@ -73,43 +77,46 @@ class GenerationErrorIntegrationTest {
         
         Mockito.when(aiGenerationService.generate(any())).thenReturn(invalidSections);
 
-        mockMvc.perform(post("/api/generate")
+        // Submit job → 202
+        MvcResult submitResult = mockMvc.perform(post("/api/generate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validPayload())))
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code", is("GENERATION_VALIDATION_FAILED")))
-                .andExpect(jsonPath("$.message", is("Forbidden term detected: heal")));
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.jobId", notNullValue()))
+                .andReturn();
 
-            org.junit.jupiter.api.Assertions.assertEquals(eventsBefore + 2, dsl.fetchCount(EVENT_LOG));
-            String lastEventType = dsl.select(EVENT_LOG.EVENT_TYPE)
-                .from(EVENT_LOG)
-                .orderBy(EVENT_LOG.ID.desc())
-                .limit(1)
-                .fetchOne(EVENT_LOG.EVENT_TYPE);
-            org.junit.jupiter.api.Assertions.assertEquals(EventType.GENERATION_FAILED.name(), lastEventType);
+        String jobId = objectMapper.readTree(submitResult.getResponse().getContentAsString())
+                .get("jobId").asText();
+
+        // Poll until FAILED
+        String error = pollUntilFailed(jobId);
+
+        org.junit.jupiter.api.Assertions.assertTrue(error.contains("Forbidden term detected: heal"));
+        // Events: PROFILE CREATED + GENERATION_FAILED
+        org.junit.jupiter.api.Assertions.assertEquals(eventsBefore + 2, dsl.fetchCount(EVENT_LOG));
     }
 
     @Test
-    void generate_returns502_whenAiServiceFails() throws Exception {
+    void generate_jobFails_whenAiServiceFails() throws Exception {
         int eventsBefore = dsl.fetchCount(EVENT_LOG);
 
         Mockito.when(aiGenerationService.generate(any()))
                 .thenThrow(new AiGenerationException("OpenAI upstream error"));
 
-        mockMvc.perform(post("/api/generate")
+        MvcResult submitResult = mockMvc.perform(post("/api/generate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validPayload())))
-                .andExpect(status().isBadGateway())
-                .andExpect(jsonPath("$.code", is("AI_GENERATION_FAILED")))
-                .andExpect(jsonPath("$.message", is("OpenAI upstream error")));
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.jobId", notNullValue()))
+                .andReturn();
 
-            org.junit.jupiter.api.Assertions.assertEquals(eventsBefore + 2, dsl.fetchCount(EVENT_LOG));
-            String lastEventType = dsl.select(EVENT_LOG.EVENT_TYPE)
-                .from(EVENT_LOG)
-                .orderBy(EVENT_LOG.ID.desc())
-                .limit(1)
-                .fetchOne(EVENT_LOG.EVENT_TYPE);
-            org.junit.jupiter.api.Assertions.assertEquals(EventType.GENERATION_FAILED.name(), lastEventType);
+        String jobId = objectMapper.readTree(submitResult.getResponse().getContentAsString())
+                .get("jobId").asText();
+
+        String error = pollUntilFailed(jobId);
+
+        org.junit.jupiter.api.Assertions.assertEquals("OpenAI upstream error", error);
+        org.junit.jupiter.api.Assertions.assertEquals(eventsBefore + 2, dsl.fetchCount(EVENT_LOG));
     }
 
     @Test
@@ -133,6 +140,27 @@ class GenerationErrorIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code", is("INVALID_INPUT")))
                 .andExpect(jsonPath("$.message", is("Request payload is invalid")));
+    }
+
+    private String pollUntilFailed(String jobId) throws Exception {
+        for (int i = 0; i < 20; i++) {
+            Thread.sleep(200);
+            MvcResult statusResult = mockMvc.perform(get("/api/generate/status/{jobId}", jobId))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            JsonNode statusNode = objectMapper.readTree(statusResult.getResponse().getContentAsString());
+            String status = statusNode.get("status").asText();
+
+            if ("FAILED".equals(status)) {
+                return statusNode.get("error").asText();
+            }
+            if ("COMPLETED".equals(status)) {
+                org.junit.jupiter.api.Assertions.fail("Expected job to fail but it completed");
+            }
+        }
+        org.junit.jupiter.api.Assertions.fail("Job did not fail in time");
+        return null;
     }
 
     private TherapistInput validPayload() {

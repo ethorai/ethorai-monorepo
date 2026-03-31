@@ -1,16 +1,13 @@
 package com.ai.therapists.api.generation;
 
-import com.ai.therapists.api.page.GeneratedPageResponse;
 import com.ai.therapists.api.profile.TherapistInput;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -20,11 +17,18 @@ public class GenerationController {
     private final GenerationOrchestrator orchestrator;
 
     @PostMapping("/generate")
-    public ResponseEntity<GeneratedPageResponse> generate(@Valid @RequestBody TherapistInput input) {
-        GeneratedPageResponse response = orchestrator.execute(input);
+    public ResponseEntity<GenerationJobResponse> generate(@Valid @RequestBody TherapistInput input) {
+        GenerationJobResponse job = orchestrator.submitAsync(input);
 
         return ResponseEntity
-                .created(URI.create("/api/pages/" + response.pageId()))
-                .body(response);
+                .accepted()
+                .location(URI.create("/api/generate/status/" + job.jobId()))
+                .body(job);
+    }
+
+    @GetMapping("/generate/status/{jobId}")
+    public ResponseEntity<GenerationJobResponse> getStatus(@PathVariable UUID jobId) {
+        GenerationJobResponse job = orchestrator.getJobStatus(jobId);
+        return ResponseEntity.ok(job);
     }
 }

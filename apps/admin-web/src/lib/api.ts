@@ -113,6 +113,22 @@ export type GeneratedPageResponse = {
   status: PageStatus;
 };
 
+export type GenerationJobStatus =
+  | "PENDING"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "FAILED";
+
+export type GenerationJobResponse = {
+  jobId: string;
+  profileId: string;
+  pageId: string | null;
+  status: GenerationJobStatus;
+  error: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 async function parseApiResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     let message = "Request failed";
@@ -134,7 +150,7 @@ async function parseApiResponse<T>(response: Response): Promise<T> {
 
 export async function generateLandingPage(
   payload: TherapistInput,
-): Promise<GeneratedPageResponse> {
+): Promise<GenerationJobResponse> {
   const response = await fetch("/api/generate", {
     method: "POST",
     headers: {
@@ -143,7 +159,18 @@ export async function generateLandingPage(
     body: JSON.stringify(payload),
   });
 
-  return parseApiResponse<GeneratedPageResponse>(response);
+  return parseApiResponse<GenerationJobResponse>(response);
+}
+
+export async function getGenerationStatus(
+  jobId: string,
+): Promise<GenerationJobResponse> {
+  const response = await fetch(`/api/generate/status/${jobId}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  return parseApiResponse<GenerationJobResponse>(response);
 }
 
 export async function getPage(pageId: string): Promise<GeneratedPageResponse> {

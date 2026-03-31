@@ -41,12 +41,29 @@
   - Removed global save/error banners in favor of per-section feedback
 - Verified frontend build after save UX changes:
   - `npm run build` → exit 0
+- Implemented async generation + status polling:
+  - Flyway V2 migration: `generation_job` table (id, profile_id, page_id, status, error, timestamps)
+  - `GenerationJobStatus` enum (PENDING, IN_PROGRESS, COMPLETED, FAILED)
+  - `GenerationJobRepository` with insert/findById/updateStatus/markCompleted/markFailed
+  - `GenerationJobResponse` record for API responses
+  - `GenerationOrchestrator.submitAsync()` — creates profile + job, launches `@Async processJobAsync()`
+  - `GenerationOrchestrator.getJobStatus()` — returns job state
+  - `@EnableAsync` on `ApiApplication`
+  - `GenerationController` refactored: `POST /api/generate` → 202 Accepted with job response, `GET /api/generate/status/{jobId}` → job status
+  - `IllegalArgumentException` handler in `GenerationExceptionHandler` for 404
+  - Frontend proxy route `GET /api/generate/status/[jobId]`
+  - `generateLandingPage()` now returns `GenerationJobResponse`, added `getGenerationStatus()` to API client
+  - Generate page updated: submit → poll every 2s → fetch page on completion, spinner + status indicator in preview
+  - All 4 test classes updated for async flow (POST → 202, poll until COMPLETED/FAILED)
+- Verified after async generation feature:
+  - `./mvnw test` → 12 tests passed, exit 0
+  - `npm run build` → exit 0
 
 ### Next 3 Tasks
 
-1. Add async generation + status polling.
-2. Auth + billing + custom domains.
-3. CI pipeline with automated integration test run.
+1. Auth + billing + custom domains.
+2. CI pipeline with automated integration test run.
+3. Role-specific disclaimer templates and stricter semantic checks.
 
 ### Current Blocker
 

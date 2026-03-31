@@ -7,6 +7,7 @@ import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
 import com.ai.therapists.api.test.StructuredSectionsBuilder;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// Contract test: POST /api/generate creates a page, then GET /api/pages/{id} verifies persistence
+// Contract test: POST /api/generate creates a job, poll until done, then GET /api/pages/{id} verifies persistence
 @SpringBootTest
 @AutoConfigureMockMvc
 class GetPageIntegrationTest {
@@ -75,22 +76,21 @@ class GetPageIntegrationTest {
                 email
         );
 
-        // Step 1: POST to generate (capture pageId from response)
-        MvcResult generateResult = mockMvc.perform(post("/api/generate")
+        // Step 1: POST to generate → 202 with job ID
+        MvcResult submitResult = mockMvc.perform(post("/api/generate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(payload)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.pageId", notNullValue()))
-                .andExpect(jsonPath("$.fullName", is(fullName)))
-                .andExpect(jsonPath("$.role", is(role)))
-                .andExpect(jsonPath("$.status", is("DRAFT")))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.jobId", notNullValue()))
                 .andReturn();
 
-        // Extract pageId from response
-        String generateResponse = generateResult.getResponse().getContentAsString();
-        String pageId = objectMapper.readTree(generateResponse).get("pageId").asText();
+        String jobId = objectMapper.readTree(submitResult.getResponse().getContentAsString())
+                .get("jobId").asText();
 
-        // Step 2: GET /api/pages/{id} to verify persistence
+        // Step 2: Poll until COMPLETED
+        String pageId = pollUntilCompleted(jobId);
+
+        // Step 3: GET /api/pages/{id} to verify persistence
         mockMvc.perform(get("/api/pages/{id}", pageId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.pageId", is(pageId)))
@@ -107,6 +107,34 @@ class GetPageIntegrationTest {
         UUID nonExistentId = UUID.randomUUID();
         mockMvc.perform(get("/api/pages/{id}", nonExistentId))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getJobStatus_notFound_returns404() throws Exception {
+        UUID nonExistentJobId = UUID.randomUUID();
+        mockMvc.perform(get("/api/generate/status/{jobId}", nonExistentJobId))
+                .andExpect(status().isNotFound());
+    }
+
+    private String pollUntilCompleted(String jobId) throws Exception {
+        for (int i = 0; i < 20; i++) {
+            Thread.sleep(200);
+            MvcResult statusResult = mockMvc.perform(get("/api/generate/status/{jobId}", jobId))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            JsonNode statusNode = objectMapper.readTree(statusResult.getResponse().getContentAsString());
+            String status = statusNode.get("status").asText();
+
+            if ("COMPLETED".equals(status)) {
+                return statusNode.get("pageId").asText();
+            }
+            if ("FAILED".equals(status)) {
+                org.junit.jupiter.api.Assertions.fail("Job failed: " + statusNode.get("error").asText());
+            }
+        }
+        org.junit.jupiter.api.Assertions.fail("Job did not complete in time");
+        return null;
     }
 
     @TestConfiguration

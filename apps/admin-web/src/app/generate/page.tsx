@@ -1,9 +1,19 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   generateLandingPage,
+  getGenerationStatus,
+  getPage,
   type GeneratedPageResponse,
+  type GenerationJobResponse,
   type TherapistInput,
 } from "@/lib/api";
 import {
@@ -56,10 +66,31 @@ export default function GeneratePage() {
   const [result, setResult] = useState<GeneratedPageResponse | null>(null);
   const [error, setError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [jobStatus, setJobStatus] = useState<GenerationJobResponse | null>(
+    null,
+  );
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stopPolling = useCallback(() => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => stopPolling();
+  }, [stopPolling]);
+
+  const isGenerating =
+    isSubmitting ||
+    (!!jobStatus &&
+      jobStatus.status !== "COMPLETED" &&
+      jobStatus.status !== "FAILED");
 
   const isSubmitDisabled = useMemo(() => {
-    return isSubmitting || !form.fullName.trim() || !form.contactValue.trim();
-  }, [form.contactValue, form.fullName, isSubmitting]);
+    return isGenerating || !form.fullName.trim() || !form.contactValue.trim();
+  }, [form.contactValue, form.fullName, isGenerating]);
 
   const parsedResult = useMemo(() => {
     if (!result) {
@@ -73,6 +104,7 @@ export default function GeneratePage() {
     event.preventDefault();
     setError("");
     setResult(null);
+    setJobStatus(null);
     setIsSubmitting(true);
 
     const payload: TherapistInput = {
@@ -89,15 +121,34 @@ export default function GeneratePage() {
     };
 
     try {
-      const generated = await generateLandingPage(payload);
-      setResult(generated);
+      const job = await generateLandingPage(payload);
+      setJobStatus(job);
+      setIsSubmitting(false);
+
+      pollingRef.current = setInterval(async () => {
+        try {
+          const updated = await getGenerationStatus(job.jobId);
+          setJobStatus(updated);
+
+          if (updated.status === "COMPLETED" && updated.pageId) {
+            stopPolling();
+            const page = await getPage(updated.pageId);
+            setResult(page);
+          } else if (updated.status === "FAILED") {
+            stopPolling();
+            setError(updated.error ?? "Generation failed.");
+          }
+        } catch {
+          stopPolling();
+          setError("Failed to check generation status.");
+        }
+      }, 2000);
     } catch (submitError) {
       const message =
         submitError instanceof Error
           ? submitError.message
           : "Generation failed.";
       setError(message);
-    } finally {
       setIsSubmitting(false);
     }
   }
@@ -278,7 +329,7 @@ export default function GeneratePage() {
               disabled={isSubmitDisabled}
               className="mt-2 rounded-xl bg-stone-900 px-5 py-3 text-sm font-semibold tracking-wide text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? "Generating..." : "Generate Draft"}
+              {isGenerating ? "Generating..." : "Generate Draft"}
             </button>
 
             {error ? (
@@ -295,7 +346,19 @@ export default function GeneratePage() {
             Generated content appears here after successful submission.
           </p>
 
-          {!result ? (
+          {isGenerating ? (
+            <div className="mt-8 rounded-xl border border-dashed border-stone-700 bg-stone-900/70 p-6 text-sm text-stone-400">
+              <div className="flex items-center gap-3">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-stone-600 border-t-emerald-400" />
+                <span>Generating your landing page&hellip;</span>
+              </div>
+              {jobStatus ? (
+                <p className="mt-2 text-xs text-stone-500">
+                  Status: {jobStatus.status}
+                </p>
+              ) : null}
+            </div>
+          ) : !result ? (
             <div className="mt-8 rounded-xl border border-dashed border-stone-700 bg-stone-900/70 p-6 text-sm text-stone-400">
               No draft yet. Submit the form to render sections.
             </div>

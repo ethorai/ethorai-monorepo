@@ -1,0 +1,35 @@
+import { NextRequest, NextResponse } from "next/server";
+
+const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8080";
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ jobId: string }> },
+) {
+  const { jobId } = await params;
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/generate/status/${jobId}`,
+      { method: "GET", cache: "no-store" },
+    );
+
+    const responseText = await response.text();
+
+    return new NextResponse(responseText, {
+      status: response.status,
+      headers: {
+        "Content-Type":
+          response.headers.get("Content-Type") ?? "application/json",
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      {
+        code: "ADMIN_PROXY_ERROR",
+        message: "Admin API could not reach the backend service.",
+      },
+      { status: 502 },
+    );
+  }
+}

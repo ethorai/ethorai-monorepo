@@ -28,4 +28,10 @@ public class GenerationExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new GenerationErrorResponse("INVALID_INPUT", "Request payload is invalid", Instant.now()));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<GenerationErrorResponse> handleNotFound(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new GenerationErrorResponse("NOT_FOUND", ex.getMessage(), Instant.now()));
+    }
 }
