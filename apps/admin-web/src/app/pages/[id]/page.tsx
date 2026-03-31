@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
-  GeneratedPageResponse,
+  type GeneratedPageResponse,
+  type GeneratedSections,
   getPage,
-  parseSections,
   publishPage,
+  updatePageSection,
 } from "@/lib/api";
 import {
   AreasOfSupportSection,
@@ -19,6 +20,7 @@ import {
   SessionFormatsSection,
   WhatYouCanExpectSection,
 } from "@/components/section-renderers";
+import { renderSectionEditor } from "@/components/section-editors";
 
 type DetailPageProps = {
   params: Promise<{ id: string }>;
@@ -27,9 +29,16 @@ type DetailPageProps = {
 export default function PageDetail({ params }: DetailPageProps) {
   const [pageId, setPageId] = useState("");
   const [page, setPage] = useState<GeneratedPageResponse | null>(null);
+  const [draftSections, setDraftSections] = useState<GeneratedSections | null>(
+    null,
+  );
   const [error, setError] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [savingSection, setSavingSection] = useState<
+    keyof GeneratedSections | null
+  >(null);
 
   useEffect(() => {
     let active = true;
@@ -48,7 +57,9 @@ export default function PageDetail({ params }: DetailPageProps) {
         }
 
         setPage(loadedPage);
+        setDraftSections(loadedPage.sections);
         setError("");
+        setSaveMessage("");
       } catch (requestError) {
         if (!active) {
           return;
@@ -77,16 +88,54 @@ export default function PageDetail({ params }: DetailPageProps) {
   }, [isPublishing, page]);
 
   const parsedSections = useMemo(() => {
-    if (!page) {
-      return null;
+    return draftSections ?? page?.sections ?? null;
+  }, [draftSections, page]);
+
+  function updateDraftSection<K extends keyof GeneratedSections>(
+    sectionKey: K,
+    nextValue: GeneratedSections[K],
+  ) {
+    setDraftSections((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        [sectionKey]: nextValue,
+      };
+    });
+  }
+
+  async function handleSaveSection(sectionKey: keyof GeneratedSections) {
+    if (!page || !draftSections) {
+      return;
     }
 
+    setSavingSection(sectionKey);
+    setError("");
+    setSaveMessage("");
+
     try {
-      return parseSections(page.sections);
-    } catch {
-      return null;
+      await updatePageSection(
+        page.pageId,
+        sectionKey,
+        draftSections[sectionKey],
+      );
+      const refreshed = await getPage(page.pageId);
+      setPage(refreshed);
+      setDraftSections(refreshed.sections);
+      setSaveMessage(`${sectionKey} saved.`);
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to save section.";
+      setError(message);
+    } finally {
+      setSavingSection(null);
     }
-  }, [page]);
+  }
 
   async function handlePublish() {
     if (!page) {
@@ -174,6 +223,12 @@ export default function PageDetail({ params }: DetailPageProps) {
               {error}
             </p>
           ) : null}
+
+          {saveMessage ? (
+            <p className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+              {saveMessage}
+            </p>
+          ) : null}
         </section>
 
         {isLoading ? (
@@ -253,6 +308,68 @@ export default function PageDetail({ params }: DetailPageProps) {
                 </div>
               )}
             </section>
+
+            {parsedSections ? (
+              <section className="rounded-3xl border border-stone-900/10 bg-white/90 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.06)] sm:p-8">
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">
+                      Structured Editing
+                    </p>
+                    <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+                      Edit Section Data
+                    </h2>
+                    <p className="mt-2 text-sm leading-6 text-stone-600">
+                      Update the structured fields for each section, then save
+                      one section at a time.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-5">
+                  {(
+                    Object.keys(parsedSections) as Array<
+                      keyof GeneratedSections
+                    >
+                  ).map((sectionKey) => (
+                    <article
+                      key={sectionKey}
+                      className="rounded-2xl border border-stone-200 bg-stone-50/80 p-5"
+                    >
+                      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <div>
+                          <h3 className="text-sm font-semibold tracking-[0.12em] text-stone-900">
+                            {sectionKey}
+                          </h3>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => void handleSaveSection(sectionKey)}
+                          disabled={savingSection === sectionKey}
+                          className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {savingSection === sectionKey
+                            ? "Saving..."
+                            : "Save Section"}
+                        </button>
+                      </div>
+
+                      <div className="mt-5">
+                        {renderSectionEditor(
+                          sectionKey,
+                          parsedSections[sectionKey],
+                          (next) =>
+                            updateDraftSection(
+                              sectionKey,
+                              next as GeneratedSections[typeof sectionKey],
+                            ),
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </>
         ) : null}
       </div>

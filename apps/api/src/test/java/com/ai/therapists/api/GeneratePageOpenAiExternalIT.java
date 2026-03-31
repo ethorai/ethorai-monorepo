@@ -74,14 +74,14 @@ class GeneratePageOpenAiExternalIT {
                 .andExpect(jsonPath("$.fullName", is(payload.fullName())))
                 .andExpect(jsonPath("$.role", is("PSYCHOLOGIST")))
                 .andExpect(jsonPath("$.status", is("DRAFT")))
-                .andExpect(jsonPath("$.sections.HEADER", not(blankOrNullString())))
-                .andExpect(jsonPath("$.sections.HERO", not(blankOrNullString())))
-                .andExpect(jsonPath("$.sections.AREAS_OF_SUPPORT", not(blankOrNullString())))
-                .andExpect(jsonPath("$.sections.HOW_I_WORK", not(blankOrNullString())))
-                .andExpect(jsonPath("$.sections.WHAT_YOU_CAN_EXPECT", not(blankOrNullString())))
-                .andExpect(jsonPath("$.sections.SESSION_FORMATS", not(blankOrNullString())))
-                .andExpect(jsonPath("$.sections.CONTACT", not(blankOrNullString())))
-                .andExpect(jsonPath("$.sections.DISCLAIMER", not(blankOrNullString())))
-                .andExpect(jsonPath("$.sections.FOOTER", not(blankOrNullString())));
+            .andExpect(jsonPath("$.sections.HEADER.name", not(blankOrNullString())))
+            .andExpect(jsonPath("$.sections.HERO.heading", not(blankOrNullString())))
+            .andExpect(jsonPath("$.sections.AREAS_OF_SUPPORT.items[0]", not(blankOrNullString())))
+            .andExpect(jsonPath("$.sections.HOW_I_WORK.description", not(blankOrNullString())))
+            .andExpect(jsonPath("$.sections.WHAT_YOU_CAN_EXPECT.statements[0]", not(blankOrNullString())))
+            .andExpect(jsonPath("$.sections.SESSION_FORMATS.formats[0].type", not(blankOrNullString())))
+            .andExpect(jsonPath("$.sections.CONTACT.cta_text", not(blankOrNullString())))
+            .andExpect(jsonPath("$.sections.DISCLAIMER.text", not(blankOrNullString())))
+            .andExpect(jsonPath("$.sections.FOOTER.name", not(blankOrNullString())));
     }
 }

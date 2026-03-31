@@ -1,5 +1,51 @@
 # Session Log
 
+## 2026-03-31
+
+### Done Today
+
+- Completed the response contract cleanup so backend page APIs now return typed structured sections directly instead of raw JSON strings:
+  - [GeneratedPageResponse.java](../apps/api/src/main/java/com/ai/therapists/api/page/GeneratedPageResponse.java)
+  - [PageController.java](../apps/api/src/main/java/com/ai/therapists/api/page/PageController.java)
+  - [GenerationOrchestrator.java](../apps/api/src/main/java/com/ai/therapists/api/generation/GenerationOrchestrator.java)
+- Added backend response mapping with legacy draft fallback so older stored HTML/string sections can still be read through the new structured contract:
+  - [StructuredSectionsMapper.java](../apps/api/src/main/java/com/ai/therapists/api/page/StructuredSectionsMapper.java)
+- Removed transitional client-side parsing from admin-web and aligned all main screens to consume structured sections directly:
+  - [src/lib/api.ts](../apps/admin-web/src/lib/api.ts)
+  - [src/app/generate/page.tsx](../apps/admin-web/src/app/generate/page.tsx)
+  - [src/app/dashboard/page.tsx](../apps/admin-web/src/app/dashboard/page.tsx)
+  - [src/app/pages/[id]/page.tsx](../apps/admin-web/src/app/pages/%5Bid%5D/page.tsx)
+- Centralized section save serialization in the frontend API client so page detail editors send structured JSON consistently:
+  - [src/lib/api.ts](../apps/admin-web/src/lib/api.ts)
+- Updated the optional real OpenAI integration test to assert nested structured fields instead of string section bodies:
+  - [GeneratePageOpenAiExternalIT.java](../apps/api/src/test/java/com/ai/therapists/api/GeneratePageOpenAiExternalIT.java)
+- Verified both apps after the contract migration:
+  - `./mvnw test` → exit 0
+  - `npm run build` → exit 0
+
+### Next 3 Tasks
+
+1. Add section-level regeneration endpoint.
+2. Improve save UX on page detail view.
+3. Add async generation + status polling.
+
+### Current Blocker
+
+No blocker.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From [apps/api](../apps/api):
+`./mvnw test`
+
+From [apps/admin-web](../apps/admin-web):
+`npm run dev`
+
+---
+
 ## 2026-03-28
 
 ### Done Today
@@ -68,12 +114,21 @@
   - No Flyway schema migration required at this stage because `sections` remains JSONB
 - Verified frontend again after structured refactor:
   - `npm run build` → exit 0
+- Added structured section update proxy route for admin-web:
+  - [src/app/api/pages/[id]/sections/[sectionType]/route.ts](../apps/admin-web/src/app/api/pages/%5Bid%5D/sections/%5BsectionType%5D/route.ts)
+- Implemented structured editing flow on page detail view:
+  - [src/app/pages/[id]/page.tsx](../apps/admin-web/src/app/pages/%5Bid%5D/page.tsx)
+  - Per-section editor state, per-section save action, and success/error feedback
+- Added reusable structured section editors:
+  - [src/components/section-editors.tsx](../apps/admin-web/src/components/section-editors.tsx)
+- Verified frontend after structured editing flow:
+  - `npm run build` → exit 0
 
 ### Next 3 Tasks
 
-1. Add structured section editing flow from admin page detail view.
-2. Add section editing proxy routes for admin-web.
-3. Return structured section objects directly from backend responses to remove transitional string parsing.
+1. Return structured section objects directly from backend responses to remove transitional string parsing.
+2. Add section-level regeneration endpoint.
+3. Add optimistic draft refresh and richer save UX after section updates.
 
 ### Current Blocker
 

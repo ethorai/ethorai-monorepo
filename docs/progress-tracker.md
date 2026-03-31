@@ -20,18 +20,19 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 
 ### Now
 
-- [ ] Add structured section editing flow from admin page detail view
-- [ ] Add section editing proxy routes for admin-web
-- [ ] Return structured section objects directly from backend responses
+- [x] Add structured section editing flow from admin page detail view
+- [x] Add section editing proxy routes for admin-web
+- [x] Return structured section objects directly from backend responses
 
 ### Next
 
 - [ ] Section-level regeneration endpoint
+- [ ] Richer save UX after section updates
 - [ ] Async generation + status polling
-- [ ] Auth + billing + custom domains
 
 ### Later
 
+- [ ] Auth + billing + custom domains
 - [ ] Role-specific disclaimer templates and stricter semantic checks
 - [ ] Regeneration loop with max attempts and explainability details
 - [ ] CI pipeline with automated integration test run
@@ -62,6 +63,8 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 - [x] Structured section generation format aligned to landing-page-structure.md
 - [x] Backend OpenAI prompt + parser refactored from HTML sections to typed structured JSON
 - [x] Admin-web rendering refactored to template-based section components with legacy HTML fallback
+- [x] Admin-web structured section editor with per-section save flow
+- [x] Backend API responses refactored to return structured section objects directly
 
 ## Key Commands
 

@@ -7,6 +7,7 @@ import com.ai.therapists.api.page.GeneratedPageResponse;
 import com.ai.therapists.api.page.LandingPageRepository;
 import com.ai.therapists.api.page.PageStatus;
 import com.ai.therapists.api.page.SectionType;
+import com.ai.therapists.api.page.StructuredSectionsMapper;
 import com.ai.therapists.api.profile.TherapistInput;
 import com.ai.therapists.api.profile.TherapistProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class GenerationOrchestrator {
     private final TherapistProfileRepository profileRepo;
     private final LandingPageRepository pageRepo;
     private final EventLogRepository eventLog;
+    private final StructuredSectionsMapper structuredSectionsMapper;
 
     public GeneratedPageResponse execute(TherapistInput rawInput) {
         // Step 1 — Normalize inputs
@@ -63,7 +65,7 @@ public class GenerationOrchestrator {
                     profileId,
                     input.fullName(),
                     input.role(),
-                    sections,
+                        structuredSectionsMapper.fromStorage(sections),
                     PageStatus.DRAFT
             );
         } catch (AiGenerationException | GenerationValidationException ex) {

@@ -2,28 +2,16 @@
 
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
-import {
-  getPagesByProfile,
-  GeneratedPageResponse,
-  parseSections,
-} from "@/lib/api";
+import { getPagesByProfile, type GeneratedPageResponse } from "@/lib/api";
 
 function firstNonEmptySection(page: GeneratedPageResponse): string {
-  try {
-    const parsed = parseSections(page.sections);
-    return (
-      parsed.HERO.heading ||
-      parsed.HERO.subheading ||
-      parsed.HOW_I_WORK.description ||
-      parsed.AREAS_OF_SUPPORT.items[0] ||
-      "No rendered content available yet."
-    );
-  } catch {
-    const entries = Object.values(page.sections).filter((value) =>
-      value?.trim(),
-    );
-    return entries[0] ?? "No rendered content available yet.";
-  }
+  return (
+    page.sections.HERO.heading ||
+    page.sections.HERO.subheading ||
+    page.sections.HOW_I_WORK.description ||
+    page.sections.AREAS_OF_SUPPORT.items[0] ||
+    "No rendered content available yet."
+  );
 }
 
 export default function DashboardPage() {

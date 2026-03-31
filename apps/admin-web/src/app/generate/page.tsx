@@ -3,9 +3,8 @@
 import { FormEvent, useMemo, useState } from "react";
 import {
   generateLandingPage,
-  GeneratedPageResponse,
-  parseSections,
-  TherapistInput,
+  type GeneratedPageResponse,
+  type TherapistInput,
 } from "@/lib/api";
 import {
   AreasOfSupportSection,
@@ -67,7 +66,7 @@ export default function GeneratePage() {
       return null;
     }
 
-    return parseSections(result.sections);
+    return result.sections;
   }, [result]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

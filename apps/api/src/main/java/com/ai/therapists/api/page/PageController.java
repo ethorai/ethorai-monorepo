@@ -21,6 +21,7 @@ public class PageController {
     private final LandingPageRepository pageRepo;
     private final TherapistProfileRepository profileRepo;
     private final EventLogRepository eventLog;
+    private final StructuredSectionsMapper structuredSectionsMapper;
 
     @GetMapping("/{id}")
     public ResponseEntity<GeneratedPageResponse> getPage(@PathVariable UUID id) {
@@ -75,7 +76,7 @@ public class PageController {
                 page.profileId(),
                 profile.fullName(),
                 profile.role(),
-                page.sections(),
+                structuredSectionsMapper.fromStorage(page.sections()),
                 page.status()
         );
     }

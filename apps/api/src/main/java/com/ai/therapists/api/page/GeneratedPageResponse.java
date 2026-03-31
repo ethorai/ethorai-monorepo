@@ -1,8 +1,8 @@
 package com.ai.therapists.api.page;
 
 import com.ai.therapists.api.profile.RoleType;
+import com.ai.therapists.api.section_data.StructuredSections;
 
-import java.util.Map;
 import java.util.UUID;
 
 public record GeneratedPageResponse(
@@ -10,6 +10,6 @@ public record GeneratedPageResponse(
         UUID profileId,
         String fullName,
         RoleType role,
-        Map<SectionType, String> sections,
+        StructuredSections sections,
         PageStatus status
 ) {}
