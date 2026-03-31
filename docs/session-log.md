@@ -22,12 +22,23 @@
 - Verified both apps after the contract migration:
   - `./mvnw test` → exit 0
   - `npm run build` → exit 0
+- Implemented section-level regeneration endpoint:
+  - Added focused regeneration prompt in [PromptAssemblyService.java](../apps/api/src/main/java/com/ai/therapists/api/generation/PromptAssemblyService.java)
+  - Added `regenerateSection()` in [AiGenerationService.java](../apps/api/src/main/java/com/ai/therapists/api/generation/AiGenerationService.java)
+  - Added `regenerateSection()` orchestration in [GenerationOrchestrator.java](../apps/api/src/main/java/com/ai/therapists/api/generation/GenerationOrchestrator.java)
+  - Added `POST /api/pages/{id}/sections/{sectionType}/regenerate` in [PageController.java](../apps/api/src/main/java/com/ai/therapists/api/page/PageController.java)
+  - Added proxy route [regenerate/route.ts](../apps/admin-web/src/app/api/pages/%5Bid%5D/sections/%5BsectionType%5D/regenerate/route.ts)
+  - Added `regenerateSection()` client function in [api.ts](../apps/admin-web/src/lib/api.ts)
+  - Wired "Regenerate" button per section in [pages/[id]/page.tsx](../apps/admin-web/src/app/pages/%5Bid%5D/page.tsx)
+- Verified both apps after regeneration feature:
+  - `./mvnw test` → exit 0
+  - `npm run build` → exit 0
 
 ### Next 3 Tasks
 
-1. Add section-level regeneration endpoint.
-2. Improve save UX on page detail view.
-3. Add async generation + status polling.
+1. Improve save UX on page detail view.
+2. Add async generation + status polling.
+3. Auth + billing + custom domains.
 
 ### Current Blocker
 

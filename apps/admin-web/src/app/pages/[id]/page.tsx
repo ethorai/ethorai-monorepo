@@ -7,6 +7,7 @@ import {
   type GeneratedSections,
   getPage,
   publishPage,
+  regenerateSection,
   updatePageSection,
 } from "@/lib/api";
 import {
@@ -37,6 +38,9 @@ export default function PageDetail({ params }: DetailPageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
   const [savingSection, setSavingSection] = useState<
+    keyof GeneratedSections | null
+  >(null);
+  const [regeneratingSection, setRegeneratingSection] = useState<
     keyof GeneratedSections | null
   >(null);
 
@@ -134,6 +138,31 @@ export default function PageDetail({ params }: DetailPageProps) {
       setError(message);
     } finally {
       setSavingSection(null);
+    }
+  }
+
+  async function handleRegenerateSection(sectionKey: keyof GeneratedSections) {
+    if (!page) {
+      return;
+    }
+
+    setRegeneratingSection(sectionKey);
+    setError("");
+    setSaveMessage("");
+
+    try {
+      const refreshed = await regenerateSection(page.pageId, sectionKey);
+      setPage(refreshed);
+      setDraftSections(refreshed.sections);
+      setSaveMessage(`${sectionKey} regenerated.`);
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to regenerate section.";
+      setError(message);
+    } finally {
+      setRegeneratingSection(null);
     }
   }
 
@@ -342,16 +371,36 @@ export default function PageDetail({ params }: DetailPageProps) {
                             {sectionKey}
                           </h3>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => void handleSaveSection(sectionKey)}
-                          disabled={savingSection === sectionKey}
-                          className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          {savingSection === sectionKey
-                            ? "Saving..."
-                            : "Save Section"}
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              void handleRegenerateSection(sectionKey)
+                            }
+                            disabled={
+                              regeneratingSection === sectionKey ||
+                              savingSection === sectionKey
+                            }
+                            className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {regeneratingSection === sectionKey
+                              ? "Regenerating..."
+                              : "Regenerate"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void handleSaveSection(sectionKey)}
+                            disabled={
+                              savingSection === sectionKey ||
+                              regeneratingSection === sectionKey
+                            }
+                            className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {savingSection === sectionKey
+                              ? "Saving..."
+                              : "Save Section"}
+                          </button>
+                        </div>
                       </div>
 
                       <div className="mt-5">

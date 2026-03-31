@@ -159,6 +159,74 @@ public class PromptAssemblyService {
                 .collect(Collectors.joining(", "));
     }
 
+    public String assembleSectionRegenerationPrompt(TherapistInput input, SectionType sectionType, String currentContent) {
+        String sectionSchema = sectionJsonSchema(sectionType);
+        return """
+                Regenerate ONLY the %s section of a therapist landing page.
+
+                ## Therapist Information
+                - Full Name: %s
+                - Role: %s
+                - Location: %s
+                - Target Audiences: %s
+                - Areas of Support: %s
+                - Approach: %s
+                - Session Format: %s
+                - What Clients Can Expect: %s
+                - Contact Method: %s
+                - Contact Value: %s
+
+                ## Current Content of This Section
+                %s
+
+                ## Expected JSON Structure (return ONLY this object, no markdown, no explanation):
+                %s
+
+                ## Rules
+                - All strings must be in French.
+                - Produce a meaningfully different variation, not a copy of the current content.
+                - Follow all tone, vocabulary, and structural rules from the system prompt.
+                - Return ONLY the JSON object for this single section.
+                """.formatted(
+                sectionType.name(),
+                input.fullName(),
+                input.role().name(),
+                input.location() != null ? input.location() : "Non spécifié",
+                String.join(", ", input.audiences()),
+                String.join(", ", input.areasOfSupport()),
+                input.approach() != null ? input.approach() : "Non spécifié",
+                input.sessionFormat().name(),
+                input.expectations() != null ? String.join(", ", input.expectations()) : "Non spécifié",
+                input.contactMethod().name(),
+                input.contactValue(),
+                currentContent,
+                sectionSchema
+        );
+    }
+
+    private String sectionJsonSchema(SectionType sectionType) {
+        return switch (sectionType) {
+            case HEADER -> """
+                    { "name": "...", "role": "...", "location": "...", "phone": "... or null", "email": "... or null" }""";
+            case HERO -> """
+                    { "heading": "headline (max 12 words)", "subheading": "..." }""";
+            case AREAS_OF_SUPPORT -> """
+                    { "title": "...", "items": ["topic1", "topic2", ...] }""";
+            case HOW_I_WORK -> """
+                    { "title": "...", "description": "..." }""";
+            case WHAT_YOU_CAN_EXPECT -> """
+                    { "title": "...", "statements": ["statement1", "statement2", ...] }""";
+            case SESSION_FORMATS -> """
+                    { "title": "...", "formats": [{"type": "ONLINE", "details": "..."}, ...] }""";
+            case CONTACT -> """
+                    { "title": "...", "description": "...", "cta_text": "3-4 words", "phone": "... or null", "email": "... or null" }""";
+            case DISCLAIMER -> """
+                    { "text": "ethical disclaimer" }""";
+            case FOOTER -> """
+                    { "name": "...", "role": "...", "location": "...", "phone": "... or null", "email": "... or null" }""";
+        };
+    }
+
     private String rolePolicy(TherapistInput input) {
         return switch (input.role()) {
             case PSYCHOLOGIST -> """

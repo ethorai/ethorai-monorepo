@@ -5,11 +5,13 @@ import com.ai.therapists.api.event.EventLogRepository;
 import com.ai.therapists.api.event.EventType;
 import com.ai.therapists.api.page.GeneratedPageResponse;
 import com.ai.therapists.api.page.LandingPageRepository;
+import com.ai.therapists.api.page.LandingPageRepository.LandingPageRow;
 import com.ai.therapists.api.page.PageStatus;
 import com.ai.therapists.api.page.SectionType;
 import com.ai.therapists.api.page.StructuredSectionsMapper;
 import com.ai.therapists.api.profile.TherapistInput;
 import com.ai.therapists.api.profile.TherapistProfileRepository;
+import com.ai.therapists.api.profile.TherapistProfileRepository.TherapistProfileRow;
 import lombok.RequiredArgsConstructor;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Service;
@@ -77,6 +79,62 @@ public class GenerationOrchestrator {
             );
             throw ex;
         }
+    }
+
+    public GeneratedPageResponse regenerateSection(UUID pageId, SectionType sectionType) {
+        LandingPageRow page = pageRepo.findById(pageId)
+                .orElseThrow(() -> new IllegalArgumentException("Page not found: " + pageId));
+
+        TherapistProfileRow profile = profileRepo.findById(page.profileId())
+                .orElseThrow(() -> new IllegalStateException("Profile not found for page: " + pageId));
+
+        TherapistInput input = toInput(profile);
+        String currentContent = page.sections().getOrDefault(sectionType, "");
+
+        try {
+            String regenerated = aiService.regenerateSection(input, sectionType, currentContent);
+
+            // Merge the regenerated section into the full map and validate
+            var updatedSections = new java.util.EnumMap<>(page.sections());
+            updatedSections.put(sectionType, regenerated);
+            outputValidationService.validateOrThrow(updatedSections);
+
+            // Persist the single section
+            pageRepo.updateSection(pageId, sectionType, regenerated);
+            eventLog.log(EntityType.PAGE, pageId, EventType.UPDATED);
+
+            return new GeneratedPageResponse(
+                    pageId,
+                    page.profileId(),
+                    profile.fullName(),
+                    profile.role(),
+                    structuredSectionsMapper.fromStorage(updatedSections),
+                    page.status()
+            );
+        } catch (AiGenerationException | GenerationValidationException ex) {
+            eventLog.log(
+                    EntityType.PROFILE,
+                    page.profileId(),
+                    EventType.GENERATION_FAILED,
+                    JSONB.jsonb(toFailurePayload(ex))
+            );
+            throw ex;
+        }
+    }
+
+    private TherapistInput toInput(TherapistProfileRow profile) {
+        return new TherapistInput(
+                profile.fullName(),
+                profile.role(),
+                profile.location(),
+                profile.audiences(),
+                profile.areasOfSupport(),
+                profile.approach(),
+                profile.sessionFormat(),
+                profile.expectations(),
+                profile.contactMethod(),
+                profile.contactValue()
+        );
     }
 
     private String toFailurePayload(Exception ex) {

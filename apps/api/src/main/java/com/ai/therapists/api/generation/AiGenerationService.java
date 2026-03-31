@@ -43,6 +43,14 @@ public class AiGenerationService {
         return parseResponse(json);
     }
 
+    public String regenerateSection(TherapistInput input, SectionType sectionType, String currentContent) {
+        String systemPrompt = promptService.assembleSystemPrompt(input);
+        String userPrompt = promptService.assembleSectionRegenerationPrompt(input, sectionType, currentContent);
+
+        String json = callOpenAi(systemPrompt, userPrompt);
+        return cleanJsonFences(json);
+    }
+
     private String callOpenAi(String systemPrompt, String userPrompt) {
         if (apiKey == null || apiKey.isBlank()) {
             throw new AiGenerationException("OPENAI_API_KEY is missing. Set it in your environment or IntelliJ Run Configuration.");
@@ -77,11 +85,7 @@ public class AiGenerationService {
     }
 
     private Map<SectionType, String> parseResponse(String json) {
-        // Strip markdown fences if AI wraps output in ```json ... ```
-        String cleaned = json.strip();
-        if (cleaned.startsWith("```")) {
-            cleaned = cleaned.replaceFirst("^```[a-z]*\\n?", "").replaceFirst("```$", "").strip();
-        }
+        String cleaned = cleanJsonFences(json);
 
         try {
             // Parse the structured JSON response
@@ -104,6 +108,16 @@ public class AiGenerationService {
         } catch (Exception e) {
             throw new AiGenerationException("Failed to parse AI response: " + e.getMessage());
         }
+    }
+
+    // --- helpers ---
+
+    private String cleanJsonFences(String json) {
+        String cleaned = json.strip();
+        if (cleaned.startsWith("```")) {
+            cleaned = cleaned.replaceFirst("^```[a-z]*\\n?", "").replaceFirst("```$", "").strip();
+        }
+        return cleaned;
     }
 
     // --- OpenAI response records ---

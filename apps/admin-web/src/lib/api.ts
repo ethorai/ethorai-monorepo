@@ -190,3 +190,15 @@ export async function publishPage(pageId: string): Promise<void> {
 
   return parseApiResponse<void>(response);
 }
+
+export async function regenerateSection(
+  pageId: string,
+  sectionType: SectionType,
+): Promise<GeneratedPageResponse> {
+  const response = await fetch(
+    `/api/pages/${pageId}/sections/${sectionType}/regenerate`,
+    { method: "POST" },
+  );
+
+  return parseApiResponse<GeneratedPageResponse>(response);
+}

@@ -23,10 +23,10 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 - [x] Add structured section editing flow from admin page detail view
 - [x] Add section editing proxy routes for admin-web
 - [x] Return structured section objects directly from backend responses
+- [x] Section-level regeneration endpoint
 
 ### Next
 
-- [ ] Section-level regeneration endpoint
 - [ ] Richer save UX after section updates
 - [ ] Async generation + status polling
 
@@ -65,6 +65,7 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 - [x] Admin-web rendering refactored to template-based section components with legacy HTML fallback
 - [x] Admin-web structured section editor with per-section save flow
 - [x] Backend API responses refactored to return structured section objects directly
+- [x] Section-level regeneration endpoint with per-section OpenAI prompt
 
 ## Key Commands
 

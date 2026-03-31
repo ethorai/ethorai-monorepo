@@ -3,6 +3,7 @@ package com.ai.therapists.api.page;
 import com.ai.therapists.api.event.EntityType;
 import com.ai.therapists.api.event.EventLogRepository;
 import com.ai.therapists.api.event.EventType;
+import com.ai.therapists.api.generation.GenerationOrchestrator;
 import com.ai.therapists.api.page.LandingPageRepository.LandingPageRow;
 import com.ai.therapists.api.profile.TherapistProfileRepository;
 import com.ai.therapists.api.profile.TherapistProfileRepository.TherapistProfileRow;
@@ -22,6 +23,7 @@ public class PageController {
     private final TherapistProfileRepository profileRepo;
     private final EventLogRepository eventLog;
     private final StructuredSectionsMapper structuredSectionsMapper;
+    private final GenerationOrchestrator generationOrchestrator;
 
     @GetMapping("/{id}")
     public ResponseEntity<GeneratedPageResponse> getPage(@PathVariable UUID id) {
@@ -68,6 +70,17 @@ public class PageController {
         pageRepo.updateStatus(id, PageStatus.PUBLISHED);
         eventLog.log(EntityType.PAGE, id, EventType.PUBLISHED);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/sections/{sectionType}/regenerate")
+    public ResponseEntity<GeneratedPageResponse> regenerateSection(@PathVariable UUID id,
+                                                                    @PathVariable SectionType sectionType) {
+        if (pageRepo.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        GeneratedPageResponse response = generationOrchestrator.regenerateSection(id, sectionType);
+        return ResponseEntity.ok(response);
     }
 
     private GeneratedPageResponse toResponse(LandingPageRow page, TherapistProfileRow profile) {
