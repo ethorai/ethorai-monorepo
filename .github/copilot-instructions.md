@@ -83,7 +83,7 @@ IntelliJ: Run `ApiApplication` as Application type. Set `OPENAI_API_KEY` in Envi
 
 ## Output Format
 
-Always update `docs/progress-tracker.md` and `docs/session-log.md` at the end of each working session. Before editing `docs/session-log.md`, verify the current system date and create or update the correct dated section for that session. Move completed items to the "Completed Milestones" section. Update "Now" with the next actionable items.
+Always update `docs/progress-tracker.md` and `docs/session-log.md` at the end of each working session. Move completed items to the "Completed Milestones" section. Update "Now" with the next actionable items.
 
 ## Verification that copilot instructions are loaded
 

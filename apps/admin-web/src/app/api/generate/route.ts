@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
     return new NextResponse(responseText, {
       status: response.status,
       headers: {
-        "Content-Type": response.headers.get("Content-Type") ?? "application/json",
+        "Content-Type":
+          response.headers.get("Content-Type") ?? "application/json",
       },
     });
   } catch {
