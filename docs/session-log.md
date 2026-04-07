@@ -1,5 +1,65 @@
 # Session Log
 
+## 2026-04-06
+
+### Done Today
+
+- Set up Prettier + ESLint VS Code workspace config:
+  - `.vscode/settings.json` with `eslint.useFlatConfig`, `changeProcessCWD`, `eslint.validate`
+  - `.vscode/extensions.json` recommending ESLint + Prettier extensions
+  - `apps/admin-web/.prettierrc` with standard settings
+  - Added `eslint-config-prettier` to prevent formatting rule conflicts
+- Implemented full auth layer — Spring Security (resource guard) + Auth.js v5 (identity layer):
+  - **Spring Security:**
+    - [SecurityConfig.java](../apps/api/src/main/java/com/ai/therapists/api/security/SecurityConfig.java) — stateless JWT filter chain, all routes authenticated
+    - [JwtAuthenticationFilter.java](../apps/api/src/main/java/com/ai/therapists/api/security/JwtAuthenticationFilter.java) — `OncePerRequestFilter`: extracts Bearer token, validates, sets userId
+    - [JwtService.java](../apps/api/src/main/java/com/ai/therapists/api/security/JwtService.java) — HS256 validation via JJWT, base64url secret
+    - Added `spring-boot-starter-security` + JJWT dependencies to pom.xml
+    - Added `spring-security-test` for `@WithMockUser` support
+  - **DB migrations:**
+    - [V3\_\_auth_schema.sql](../apps/api/src/main/resources/db/migration/V3__auth_schema.sql) — `app_user`, `oauth_account`, `verification_token` tables
+    - [V4\_\_landing_page_user.sql](../apps/api/src/main/resources/db/migration/V4__landing_page_user.sql) — `landing_page.user_id` FK (nullable)
+  - **Auth.js v5 (Next.js):**
+    - [auth.ts](../apps/admin-web/src/auth.ts) — NextAuth config with Google OAuth + Credentials providers, JWT session strategy
+    - [db-adapter.ts](../apps/admin-web/src/lib/db-adapter.ts) — custom DB adapter for `app_user` / `oauth_account`
+    - [spring-auth.ts](../apps/admin-web/src/lib/spring-auth.ts) — signs short-lived HS256 JWT via `jose` for Spring calls
+    - [spring-fetch.ts](../apps/admin-web/src/lib/spring-fetch.ts) — `withAuth()` helper: resolves session → returns auth headers
+    - [route.ts](../apps/admin-web/src/app/api/auth/%5B...nextauth%5D/route.ts) — Auth.js catch-all route handler
+    - [next-auth.d.ts](../apps/admin-web/src/types/next-auth.d.ts) — session type augmentation with `user.id`
+  - **Login page + route guard:**
+    - [login/page.tsx](../apps/admin-web/src/app/login/page.tsx) — Google button + email/password form, warm stone palette
+    - [middleware.ts](../apps/admin-web/middleware.ts) — redirects unauthenticated users to `/login`
+  - **JWT forwarding:** all 7 proxy routes updated to call `withAuth()` and pass `Authorization: Bearer` to Spring
+  - **Test fixes:** all 4 test classes updated with `@WithMockUser` + `MockMvcBuilders.webAppContextSetup().apply(springSecurity())`
+- Verified everything:
+  - `./mvnw test` → 12 tests passed, exit 0
+  - `npx tsc --noEmit` → exit 0
+  - `npx next build` → exit 0, all routes visible including `/login` and `/api/auth/[...nextauth]`
+  - `npx eslint` → clean on all new files
+
+### Next 3 Tasks
+
+1. Scope page endpoints by userId (landing_page.user_id enforcement in Spring)
+2. User registration flow (credentials sign-up page)
+3. Magic link provider via Resend
+
+### Current Blocker
+
+Google OAuth requires `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in `apps/admin-web/.env.local` — user needs to register an OAuth app at `console.cloud.google.com`.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From [apps/api](../apps/api):
+`./mvnw test`
+
+From [apps/admin-web](../apps/admin-web):
+`npm run dev`
+
+---
+
 ## 2026-03-31
 
 ### Done Today
