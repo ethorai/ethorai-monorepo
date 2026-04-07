@@ -96,7 +96,16 @@ IntelliJ: Run `ApiApplication` as Application type. Set `OPENAI_API_KEY` in Envi
 
 ## Output Format
 
-Always update `docs/progress-tracker.md` and `docs/session-log.md` at the end of each working session. Move completed items to the "Completed Milestones" section. Update "Now" with the next actionable items.
+**MANDATORY at the end of every working session — no exceptions:**
+
+1. Update `docs/progress-tracker.md`:
+   - Move completed items into "Completed Milestones"
+   - Set "Now" to the next actionable items
+2. Update `docs/session-log.md`:
+   - Add a new dated entry with: Done Today, Next 3 Tasks, Current Blocker, Exact Resume Command
+3. Commit both files together (`docs: update session log + progress tracker`)
+
+Skipping either file is a mistake. Do both, always, before ending a session.
 
 ## Verification that copilot instructions are loaded
 
