@@ -36,11 +36,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static com.ai.therapists.api.jooq.Tables.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 class GenerationErrorIntegrationTest {
 
     @DynamicPropertySource
@@ -49,6 +54,8 @@ class GenerationErrorIntegrationTest {
     }
 
     @Autowired
+    private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     @Autowired
@@ -61,8 +68,11 @@ class GenerationErrorIntegrationTest {
     private AiGenerationService aiGenerationService;
 
     @BeforeEach
-    void resetMocks() {
+    void setup() {
         Mockito.reset(aiGenerationService);
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test

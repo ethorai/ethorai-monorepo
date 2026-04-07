@@ -15,3 +15,6 @@ openai:
   api-key: ${OPENAI_API_KEY:}
   model: gpt-4o
   temperature: 0.4
+
+jwt:
+  secret: ${JWT_SECRET:}

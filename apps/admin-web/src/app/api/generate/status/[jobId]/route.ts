@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/lib/spring-fetch";
 
 const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8080";
 
@@ -6,12 +7,15 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ jobId: string }> },
 ) {
+  const authResult = await withAuth();
+  if ("response" in authResult) return authResult.response;
+
   const { jobId } = await params;
 
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/generate/status/${jobId}`,
-      { method: "GET", cache: "no-store" },
+      { method: "GET", cache: "no-store", headers: { ...authResult.headers } },
     );
 
     const responseText = await response.text();

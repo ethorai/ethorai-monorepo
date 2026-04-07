@@ -22,7 +22,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import java.util.Map;
 import java.util.UUID;
@@ -39,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // smoke test
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 class GeneratePageIntegrationTest {
 
     @DynamicPropertySource
@@ -47,10 +53,19 @@ class GeneratePageIntegrationTest {
     }
 
     @Autowired
+    private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     @Autowired
     private DSLContext dsl;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setupMockMvc() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
     @Autowired
     private ObjectMapper objectMapper;

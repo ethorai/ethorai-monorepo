@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/lib/spring-fetch";
 
 const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8080";
 
@@ -7,6 +8,9 @@ type Params = {
 };
 
 export async function PUT(request: NextRequest, { params }: Params) {
+  const authResult = await withAuth();
+  if ("response" in authResult) return authResult.response;
+
   const { id, sectionType } = await params;
 
   try {
@@ -17,6 +21,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
         method: "PUT",
         headers: {
           "Content-Type": "text/plain",
+          ...authResult.headers,
         },
         body,
       },

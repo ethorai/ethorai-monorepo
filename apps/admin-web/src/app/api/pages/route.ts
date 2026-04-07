@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/lib/spring-fetch";
 
 const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8080";
 
 export async function GET(request: NextRequest) {
+  const authResult = await withAuth();
+  if ("response" in authResult) return authResult.response;
+
   const profileId = request.nextUrl.searchParams.get("profileId");
 
   if (!profileId) {
@@ -21,6 +25,7 @@ export async function GET(request: NextRequest) {
       {
         method: "GET",
         cache: "no-store",
+        headers: { ...authResult.headers },
       },
     );
 

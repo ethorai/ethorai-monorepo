@@ -15,6 +15,7 @@ Integration tests expanded: GET /api/pages/{id} contract test verifies POST→GE
 Copilot workspace instructions auto-loaded from `.github/copilot-instructions.md`.
 Minimal Next.js admin app scaffolded at `apps/admin-web` with `/generate` form + preview and API proxy.
 Admin-web style intentionally follows a calm professional workspace direction (warm neutral palette, serif/sans pairing, split form/preview workflow).
+Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + credentials) with shared HS256 JWT secret pattern.
 
 ## Now / Next / Later
 
@@ -26,9 +27,17 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 - [x] Section-level regeneration endpoint
 - [x] Richer save UX after section updates
 - [x] Async generation + status polling
+- [x] Spring Security JWT filter chain (stateless, HS256)
+- [x] Auth.js v5 with Google OAuth + credentials providers
+- [x] Custom DB adapter for app_user / oauth_account tables
+- [x] Login page + Next.js middleware route guard
+- [x] JWT forwarded from all proxy routes to Spring API
 
 ### Next
 
+- [ ] Scope page endpoints by userId (landing_page.user_id enforcement)
+- [ ] User registration flow (credentials sign-up)
+- [ ] Magic link provider via Resend
 - [ ] Role-specific disclaimer templates and stricter semantic checks
 - [ ] Regeneration loop with max attempts and explainability details
 - [ ] CI pipeline with automated integration test run
@@ -64,6 +73,11 @@ Admin-web style intentionally follows a calm professional workspace direction (w
 - [x] Section-level regeneration endpoint with per-section OpenAI prompt
 - [x] Richer save UX: per-section feedback, dirty tracking, auto-dismiss, beforeunload warning
 - [x] Async generation with job queue, status polling, and spinner UI
+- [x] Prettier + ESLint VS Code workspace config
+- [x] Spring Security: JWT filter chain (SecurityConfig, JwtService, JwtAuthenticationFilter)
+- [x] Flyway V3 auth schema (app_user, oauth_account, verification_token) + V4 landing_page.user_id
+- [x] Auth.js v5: Google OAuth + Credentials providers, custom DB adapter, JWT session strategy
+- [x] Login page, middleware route guard, JWT forwarding to Spring from all proxy routes
 
 ## Key Commands
 

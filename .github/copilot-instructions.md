@@ -36,6 +36,18 @@ Future apps go under `apps/` (e.g. `apps/admin-web/` for Next.js).
 | `OutputValidationService`    | Guardrail enforcement: required sections, forbidden terms, disclaimer |
 | `GenerationOrchestrator`     | generate → validate → persist → log pipeline                          |
 | `GenerationExceptionHandler` | `@RestControllerAdvice`: 400/422/502 mapping                          |
+| `SecurityConfig`             | `SecurityFilterChain`: stateless, JWT-only, all routes authenticated  |
+| `JwtAuthenticationFilter`    | `OncePerRequestFilter`: extracts Bearer token, validates, sets userId |
+| `JwtService`                 | HS256 JWT validation via JJWT, base64url secret                       |
+
+## Auth Architecture
+
+- **Auth.js v5** (Next.js) — identity layer: Google OAuth + credentials login
+- **Spring Security** — resource guard: validates HS256 JWT from Next.js proxy
+- **Shared secret**: `JWT_SECRET` (base64url) used by both sides
+- Custom DB adapter maps to `app_user` / `oauth_account` tables
+- Next.js middleware redirects unauthenticated users to `/login`
+- All proxy routes sign a short-lived JWT via `jose` before calling Spring
 
 ## Conventions
 
@@ -44,6 +56,7 @@ Future apps go under `apps/` (e.g. `apps/admin-web/` for Next.js).
 **Testing:**
 
 - MockMvc only (not WebTestClient — that's WebFlux)
+- MockMvc built with `springSecurity()` configurer + `@WithMockUser` at class level
 - Mockito for `AiGenerationService` stubbing
 - `@DynamicPropertySource` for test env injection
 - `TestEnvSupport.java` reads `apps/api/.env` at test startup
