@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser
+@WithMockUser(username = "00000000-0000-0000-0000-000000000001")
 @Tag("external")
 @EnabledIfSystemProperty(named = "OPENAI_API_KEY", matches = ".+")
 class GeneratePageOpenAiExternalIT {

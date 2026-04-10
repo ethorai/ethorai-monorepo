@@ -24,9 +24,10 @@ public class LandingPageRepository {
     private final DSLContext dsl;
     private final ObjectMapper objectMapper;
 
-    public UUID insert(UUID profileId, Map<SectionType, String> sections, JSONB generationLog) {
+    public UUID insert(UUID profileId, UUID userId, Map<SectionType, String> sections, JSONB generationLog) {
         return dsl.insertInto(LANDING_PAGE)
                 .set(LANDING_PAGE.PROFILE_ID, profileId)
+                .set(LANDING_PAGE.USER_ID, userId)
                 .set(LANDING_PAGE.SECTIONS, JSONB.jsonb(sectionsToJson(sections)))
                 .set(LANDING_PAGE.STATUS, PageStatus.DRAFT.name())
                 .set(LANDING_PAGE.GENERATION_LOG, generationLog)
@@ -34,20 +35,22 @@ public class LandingPageRepository {
                 .fetchOne(LANDING_PAGE.ID);
     }
 
-    public Optional<LandingPageRow> findById(UUID id) {
+    public Optional<LandingPageRow> findById(UUID id, UUID userId) {
         return dsl.selectFrom(LANDING_PAGE)
                 .where(LANDING_PAGE.ID.eq(id))
+                .and(LANDING_PAGE.USER_ID.eq(userId))
                 .fetchOptional(this::toRow);
     }
 
-    public List<LandingPageRow> findByProfileId(UUID profileId) {
+    public List<LandingPageRow> findByProfileId(UUID profileId, UUID userId) {
         return dsl.selectFrom(LANDING_PAGE)
                 .where(LANDING_PAGE.PROFILE_ID.eq(profileId))
+                .and(LANDING_PAGE.USER_ID.eq(userId))
                 .orderBy(LANDING_PAGE.CREATED_AT.desc())
                 .fetch(this::toRow);
     }
 
-    public void updateSection(UUID pageId, SectionType sectionType, String content) {
+    public void updateSection(UUID pageId, UUID userId, SectionType sectionType, String content) {
         // Use PostgreSQL jsonb_set to update a single key
         dsl.update(LANDING_PAGE)
                 .set(LANDING_PAGE.SECTIONS,
@@ -59,14 +62,16 @@ public class LandingPageRepository {
                         ))
                 .set(LANDING_PAGE.UPDATED_AT, OffsetDateTime.now())
                 .where(LANDING_PAGE.ID.eq(pageId))
+                .and(LANDING_PAGE.USER_ID.eq(userId))
                 .execute();
     }
 
-    public void updateStatus(UUID pageId, PageStatus status) {
+    public void updateStatus(UUID pageId, UUID userId, PageStatus status) {
         dsl.update(LANDING_PAGE)
                 .set(LANDING_PAGE.STATUS, status.name())
                 .set(LANDING_PAGE.UPDATED_AT, OffsetDateTime.now())
                 .where(LANDING_PAGE.ID.eq(pageId))
+                .and(LANDING_PAGE.USER_ID.eq(userId))
                 .execute();
     }
 

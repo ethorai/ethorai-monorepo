@@ -7,7 +7,6 @@ import com.ai.therapists.api.generation.GenerationJobRepository.GenerationJobRow
 import com.ai.therapists.api.page.GeneratedPageResponse;
 import com.ai.therapists.api.page.LandingPageRepository;
 import com.ai.therapists.api.page.LandingPageRepository.LandingPageRow;
-import com.ai.therapists.api.page.PageStatus;
 import com.ai.therapists.api.page.SectionType;
 import com.ai.therapists.api.page.StructuredSectionsMapper;
 import com.ai.therapists.api.profile.TherapistInput;
@@ -42,7 +41,7 @@ public class GenerationOrchestrator {
      * Submit a generation job asynchronously. Returns the job ID immediately.
      * The actual generation runs in a background thread via processJob().
      */
-    public GenerationJobResponse submitAsync(TherapistInput rawInput) {
+    public GenerationJobResponse submitAsync(TherapistInput rawInput, UUID userId) {
         TherapistInput input = normalizationService.normalize(rawInput);
 
         UUID profileId = profileRepo.insert(
@@ -61,21 +60,21 @@ public class GenerationOrchestrator {
 
         UUID jobId = jobRepo.insert(profileId);
 
-        processJobAsync(jobId, profileId, input);
+        processJobAsync(jobId, profileId, userId, input);
 
         GenerationJobRow job = jobRepo.findById(jobId).orElseThrow();
         return toJobResponse(job);
     }
 
     @Async
-    public void processJobAsync(UUID jobId, UUID profileId, TherapistInput input) {
+    public void processJobAsync(UUID jobId, UUID profileId, UUID userId, TherapistInput input) {
         jobRepo.updateStatus(jobId, GenerationJobStatus.IN_PROGRESS);
 
         try {
             Map<SectionType, String> sections = aiService.generate(input);
             outputValidationService.validateOrThrow(sections);
 
-            UUID pageId = pageRepo.insert(profileId, sections, null);
+            UUID pageId = pageRepo.insert(profileId, userId, sections, null);
             eventLog.log(EntityType.PAGE, pageId, EventType.GENERATED);
 
             jobRepo.markCompleted(jobId, pageId);
@@ -97,58 +96,8 @@ public class GenerationOrchestrator {
         return toJobResponse(job);
     }
 
-    public GeneratedPageResponse execute(TherapistInput rawInput) {
-        // Step 1 — Normalize inputs
-        TherapistInput input = normalizationService.normalize(rawInput);
-
-        // Step 2 — Persist therapist profile
-        UUID profileId = profileRepo.insert(
-                input.fullName(),
-                input.role(),
-                input.location(),
-                input.audiences(),
-                input.areasOfSupport(),
-                input.approach(),
-                input.sessionFormat(),
-                input.expectations(),
-                input.contactMethod(),
-                input.contactValue()
-        );
-        eventLog.log(EntityType.PROFILE, profileId, EventType.CREATED);
-
-        try {
-            // Step 3 — Generate content via AI
-            Map<SectionType, String> sections = aiService.generate(input);
-
-            // Step 4 — Validate generated content against guardrails
-            outputValidationService.validateOrThrow(sections);
-
-            // Step 5 — Persist landing page
-            UUID pageId = pageRepo.insert(profileId, sections, null);
-            eventLog.log(EntityType.PAGE, pageId, EventType.GENERATED);
-
-            // Step 6 — Return response
-            return new GeneratedPageResponse(
-                    pageId,
-                    profileId,
-                    input.fullName(),
-                    input.role(),
-                        structuredSectionsMapper.fromStorage(sections),
-                    PageStatus.DRAFT
-            );
-        } catch (AiGenerationException | GenerationValidationException ex) {
-            eventLog.log(
-                    EntityType.PROFILE,
-                    profileId,
-                    EventType.GENERATION_FAILED,
-                    JSONB.jsonb(toFailurePayload(ex))
-            );
-            throw ex;
-        }
-    }
-
-    public GeneratedPageResponse regenerateSection(UUID pageId, SectionType sectionType) {
-        LandingPageRow page = pageRepo.findById(pageId)
+    public GeneratedPageResponse regenerateSection(UUID pageId, UUID userId, SectionType sectionType) {
+        LandingPageRow page = pageRepo.findById(pageId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Page not found: " + pageId));
 
         TherapistProfileRow profile = profileRepo.findById(page.profileId())
@@ -166,7 +115,7 @@ public class GenerationOrchestrator {
             outputValidationService.validateOrThrow(updatedSections);
 
             // Persist the single section
-            pageRepo.updateSection(pageId, sectionType, regenerated);
+            pageRepo.updateSection(pageId, userId, sectionType, regenerated);
             eventLog.log(EntityType.PAGE, pageId, EventType.UPDATED);
 
             return new GeneratedPageResponse(

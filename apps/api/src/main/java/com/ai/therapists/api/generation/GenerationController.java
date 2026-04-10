@@ -1,6 +1,7 @@
 package com.ai.therapists.api.generation;
 
 import com.ai.therapists.api.profile.TherapistInput;
+import com.ai.therapists.api.security.SecurityContextHelper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,8 @@ public class GenerationController {
 
     @PostMapping("/generate")
     public ResponseEntity<GenerationJobResponse> generate(@Valid @RequestBody TherapistInput input) {
-        GenerationJobResponse job = orchestrator.submitAsync(input);
+        UUID userId = SecurityContextHelper.currentUserId();
+        GenerationJobResponse job = orchestrator.submitAsync(input, userId);
 
         return ResponseEntity
                 .accepted()

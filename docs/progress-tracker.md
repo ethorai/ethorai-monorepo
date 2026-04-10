@@ -21,21 +21,6 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ### Now
 
-- [x] Add structured section editing flow from admin page detail view
-- [x] Add section editing proxy routes for admin-web
-- [x] Return structured section objects directly from backend responses
-- [x] Section-level regeneration endpoint
-- [x] Richer save UX after section updates
-- [x] Async generation + status polling
-- [x] Spring Security JWT filter chain (stateless, HS256)
-- [x] Auth.js v5 with Google OAuth + credentials providers
-- [x] Custom DB adapter for app_user / oauth_account tables
-- [x] Login page + Next.js middleware route guard
-- [x] JWT forwarded from all proxy routes to Spring API
-
-### Next
-
-- [ ] Scope page endpoints by userId (landing_page.user_id enforcement)
 - [ ] User registration flow (credentials sign-up)
 - [ ] Magic link provider via Resend
 - [ ] Role-specific disclaimer templates and stricter semantic checks
@@ -78,6 +63,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] Flyway V3 auth schema (app_user, oauth_account, verification_token) + V4 landing_page.user_id
 - [x] Auth.js v5: Google OAuth + Credentials providers, custom DB adapter, JWT session strategy
 - [x] Login page, middleware route guard, JWT forwarding to Spring from all proxy routes
+- [x] userId scoping: SecurityContextHelper, LandingPageRepository row-level userId filter, GenerationOrchestrator + controllers updated, test user fixture added (12/12 tests green)
 
 ## Key Commands
 

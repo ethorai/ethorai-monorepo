@@ -7,6 +7,7 @@ import com.ai.therapists.api.generation.GenerationOrchestrator;
 import com.ai.therapists.api.page.LandingPageRepository.LandingPageRow;
 import com.ai.therapists.api.profile.TherapistProfileRepository;
 import com.ai.therapists.api.profile.TherapistProfileRepository.TherapistProfileRow;
+import com.ai.therapists.api.security.SecurityContextHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,8 @@ public class PageController {
 
     @GetMapping("/{id}")
     public ResponseEntity<GeneratedPageResponse> getPage(@PathVariable UUID id) {
-        return pageRepo.findById(id)
+        UUID userId = SecurityContextHelper.currentUserId();
+        return pageRepo.findById(id, userId)
                 .flatMap(page -> profileRepo.findById(page.profileId())
                         .map(profile -> toResponse(page, profile)))
                 .map(ResponseEntity::ok)
@@ -36,12 +38,13 @@ public class PageController {
 
     @GetMapping
     public ResponseEntity<List<GeneratedPageResponse>> getPagesByProfile(@RequestParam UUID profileId) {
+        UUID userId = SecurityContextHelper.currentUserId();
         var profile = profileRepo.findById(profileId);
         if (profile.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        var pages = pageRepo.findByProfileId(profileId).stream()
+        var pages = pageRepo.findByProfileId(profileId, userId).stream()
                 .map(page -> toResponse(page, profile.get()))
                 .toList();
 
@@ -52,22 +55,24 @@ public class PageController {
     public ResponseEntity<Void> updateSection(@PathVariable UUID id,
                                               @PathVariable SectionType sectionType,
                                               @RequestBody String content) {
-        if (pageRepo.findById(id).isEmpty()) {
+        UUID userId = SecurityContextHelper.currentUserId();
+        if (pageRepo.findById(id, userId).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        pageRepo.updateSection(id, sectionType, content);
+        pageRepo.updateSection(id, userId, sectionType, content);
         eventLog.log(EntityType.PAGE, id, EventType.UPDATED);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/publish")
     public ResponseEntity<Void> publish(@PathVariable UUID id) {
-        if (pageRepo.findById(id).isEmpty()) {
+        UUID userId = SecurityContextHelper.currentUserId();
+        if (pageRepo.findById(id, userId).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        pageRepo.updateStatus(id, PageStatus.PUBLISHED);
+        pageRepo.updateStatus(id, userId, PageStatus.PUBLISHED);
         eventLog.log(EntityType.PAGE, id, EventType.PUBLISHED);
         return ResponseEntity.noContent().build();
     }
@@ -75,11 +80,12 @@ public class PageController {
     @PostMapping("/{id}/sections/{sectionType}/regenerate")
     public ResponseEntity<GeneratedPageResponse> regenerateSection(@PathVariable UUID id,
                                                                     @PathVariable SectionType sectionType) {
-        if (pageRepo.findById(id).isEmpty()) {
+        UUID userId = SecurityContextHelper.currentUserId();
+        if (pageRepo.findById(id, userId).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        GeneratedPageResponse response = generationOrchestrator.regenerateSection(id, sectionType);
+        GeneratedPageResponse response = generationOrchestrator.regenerateSection(id, userId, sectionType);
         return ResponseEntity.ok(response);
     }
 

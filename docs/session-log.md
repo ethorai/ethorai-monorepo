@@ -1,5 +1,41 @@
 # Session Log
 
+## 2026-04-10
+
+### Done Today
+
+- Completed userId scoping for page endpoints (row-level security enforcement):
+  - **SecurityContextHelper.java** — new helper, extracts UUID from Spring SecurityContext
+  - **LandingPageRepository.java** — all 5 methods (`insert`, `findById`, `findByProfileId`, `updateSection`, `updateStatus`) now take `UUID userId` with `WHERE user_id = :userId`
+  - **GenerationController.java** — calls `SecurityContextHelper.currentUserId()`, passes to `orchestrator.submitAsync(input, userId)`
+  - **PageController.java** — every endpoint extracts userId, passes to all repo calls and `orchestrator.regenerateSection(id, userId, sectionType)`
+  - **GenerationOrchestrator.java** — removed dead `execute()` method; `regenerateSection` now takes `UUID userId`, repo calls updated to pass userId
+  - **Tests** — `@WithMockUser(username = "00000000-0000-0000-0000-000000000001")` on all 4 test classes; `@BeforeEach` inserts test user via jOOQ upsert (`ON CONFLICT DO NOTHING`) in `GeneratePageIntegrationTest` and `GetPageIntegrationTest`
+- All 12 tests passing, BUILD SUCCESS
+
+### Next 3 Tasks
+
+1. User registration flow (credentials sign-up page in admin-web)
+2. Magic link provider via Resend
+3. Role-specific disclaimer templates and stricter semantic checks
+
+### Current Blocker
+
+Google OAuth requires `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in `apps/admin-web/.env.local` — user needs to register an OAuth app at `console.cloud.google.com`.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From [apps/api](../apps/api):
+`./mvnw test`
+
+From [apps/admin-web](../apps/admin-web):
+`npm run dev`
+
+---
+
 ## 2026-04-06
 
 ### Done Today

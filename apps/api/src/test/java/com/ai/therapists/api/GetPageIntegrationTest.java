@@ -32,6 +32,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import java.util.Map;
 import java.util.UUID;
 
+import static com.ai.therapists.api.jooq.Tables.APP_USER;
 import static com.ai.therapists.api.jooq.Tables.LANDING_PAGE;
 import static com.ai.therapists.api.jooq.Tables.THERAPIST_PROFILE;
 import static org.hamcrest.Matchers.is;
@@ -45,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // Contract test: POST /api/generate creates a job, poll until done, then GET /api/pages/{id} verifies persistence
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser
+@WithMockUser(username = "00000000-0000-0000-0000-000000000001")
 class GetPageIntegrationTest {
 
     @DynamicPropertySource
@@ -66,6 +67,11 @@ class GetPageIntegrationTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
+        dsl.insertInto(APP_USER)
+                .set(APP_USER.ID, UUID.fromString("00000000-0000-0000-0000-000000000001"))
+                .set(APP_USER.EMAIL, "test@example.com")
+                .onConflictDoNothing()
+                .execute();
     }
 
     @Autowired

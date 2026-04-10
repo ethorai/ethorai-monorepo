@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // smoke test
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser
+@WithMockUser(username = "00000000-0000-0000-0000-000000000001")
 class GeneratePageIntegrationTest {
 
     @DynamicPropertySource
@@ -65,6 +65,11 @@ class GeneratePageIntegrationTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
+        dsl.insertInto(APP_USER)
+                .set(APP_USER.ID, UUID.fromString("00000000-0000-0000-0000-000000000001"))
+                .set(APP_USER.EMAIL, "test@example.com")
+                .onConflictDoNothing()
+                .execute();
     }
 
     @Autowired
