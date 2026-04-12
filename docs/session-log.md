@@ -1,5 +1,37 @@
 # Session Log
 
+## 2026-04-12
+
+### Done Today
+
+- Credentials sign-up flow end-to-end:
+  - **Spring:** `AuthController` `POST /api/auth/register` (public — no JWT), `RegisterRequest` with `@NotBlank @Email @Size(min=8)` validation, `BCryptPasswordEncoder` hashing, 409 on duplicate email; `SecurityConfig` permits `/api/auth/register`
+  - **Next.js:** `/api/register` proxy route (201/409/400/502 mapping), `/register` page (name + email + password, auto sign-in on success), `/login` "Create account" link + `?registered=1` green banner, middleware excludes `/register` and `/api/register`
+- 12/12 Spring tests green, TypeScript clean
+
+### Next 3 Tasks
+
+1. README with architecture, tech decisions, local setup guide
+2. GitHub Actions CI pipeline (`./mvnw test`)
+3. Deploy (Vercel + Railway/Fly.io)
+
+### Current Blocker
+
+Google OAuth requires `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in `apps/admin-web/.env.local`.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From [apps/api](../apps/api):
+`./mvnw spring-boot:run`
+
+From [apps/admin-web](../apps/admin-web):
+`npm run dev`
+
+---
+
 ## 2026-04-10
 
 ### Done Today

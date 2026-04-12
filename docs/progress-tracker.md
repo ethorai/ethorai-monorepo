@@ -21,11 +21,11 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ### Now
 
-- [ ] User registration flow (credentials sign-up)
+- [ ] README with architecture section and local setup guide
+- [ ] GitHub Actions CI pipeline
 - [ ] Magic link provider via Resend
 - [ ] Role-specific disclaimer templates and stricter semantic checks
 - [ ] Regeneration loop with max attempts and explainability details
-- [ ] CI pipeline with automated integration test run
 
 ## Completed Milestones
 
@@ -64,6 +64,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] Auth.js v5: Google OAuth + Credentials providers, custom DB adapter, JWT session strategy
 - [x] Login page, middleware route guard, JWT forwarding to Spring from all proxy routes
 - [x] userId scoping: SecurityContextHelper, LandingPageRepository row-level userId filter, GenerationOrchestrator + controllers updated, test user fixture added (12/12 tests green)
+- [x] Credentials sign-up: AuthController POST /api/auth/register (public), BCrypt hashing, 409 on duplicate email; /register Next.js page with auto sign-in; middleware updated
 
 ## Key Commands
 
