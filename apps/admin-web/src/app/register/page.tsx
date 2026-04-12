@@ -1,23 +1,35 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const searchParams = useSearchParams();
-  const registered = searchParams.get("registered") === "1";
 
-  async function handleCredentials(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error ?? "Registration failed. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    // Auto sign-in after successful registration
     const result = await signIn("credentials", {
       email,
       password,
@@ -27,7 +39,8 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Invalid email or password");
+      // Registration worked but auto-login failed — redirect to login
+      window.location.href = "/login?registered=1";
     } else {
       window.location.href = "/dashboard";
     }
@@ -39,18 +52,12 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center">
           <h1 className="font-[family-name:var(--font-heading)] text-3xl font-semibold text-stone-800">
-            AI Therapists
+            Create your account
           </h1>
           <p className="mt-2 text-sm text-stone-500">
-            Sign in to manage your landing pages
+            Start generating compliant landing pages in minutes
           </p>
         </div>
-
-        {registered && (
-          <div className="rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">
-            Account created! Sign in to get started.
-          </div>
-        )}
 
         {/* Google */}
         <button
@@ -86,18 +93,36 @@ export default function LoginPage() {
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="bg-stone-50 px-2 text-stone-400">
-              or sign in with email
+              or register with email
             </span>
           </div>
         </div>
 
-        {/* Credentials form */}
-        <form onSubmit={handleCredentials} className="space-y-4">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
             </div>
           )}
+
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-stone-700"
+            >
+              Full name
+            </label>
+            <input
+              id="name"
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-stone-500 focus:ring-1 focus:ring-stone-500"
+              placeholder="Dr. Jane Smith"
+            />
+          </div>
 
           <div>
             <label
@@ -128,10 +153,11 @@ export default function LoginPage() {
               id="password"
               type="password"
               required
+              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-stone-500 focus:ring-1 focus:ring-stone-500"
-              placeholder="••••••••"
+              placeholder="At least 8 characters"
             />
           </div>
 
@@ -140,14 +166,14 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full rounded-lg bg-stone-800 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-stone-700 disabled:opacity-50"
           >
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? "Creating account…" : "Create account"}
           </button>
         </form>
 
         <p className="text-center text-sm text-stone-500">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="font-medium text-stone-800 hover:underline">
-            Create one
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium text-stone-800 hover:underline">
+            Sign in
           </Link>
         </p>
       </div>
