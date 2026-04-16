@@ -1,5 +1,40 @@
 # Session Log
 
+## 2026-04-16
+
+### Done Today
+
+- Fixed middleware auth guard (was silently skipped, dashboard accessible without login):
+  - Split `auth.ts` → edge-safe `auth.config.ts` (no bcrypt/pg imports) + full `auth.ts` spreads it
+  - Moved `middleware.ts` from project root into `src/` (Next.js `src/` directory convention)
+  - Middleware now uses explicit `req.auth` check with redirect to `/login`
+  - Added `session: { strategy: "jwt" }` to auth config for correct cookie parsing
+- Root `/` now redirects to `/dashboard` (removed marketing splash)
+- Formatter-applied style fixes to login + register pages
+
+### Next 3 Tasks
+
+1. README with architecture, tech decisions, local setup guide
+2. GitHub Actions CI pipeline
+3. Deploy (Vercel + Railway/Fly.io)
+
+### Current Blocker
+
+Google OAuth requires `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in `apps/admin-web/.env.local`.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From [apps/api](../apps/api):
+`./mvnw spring-boot:run`
+
+From [apps/admin-web](../apps/admin-web):
+`npm run dev`
+
+---
+
 ## 2026-04-12
 
 ### Done Today

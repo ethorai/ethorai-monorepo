@@ -65,6 +65,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] Login page, middleware route guard, JWT forwarding to Spring from all proxy routes
 - [x] userId scoping: SecurityContextHelper, LandingPageRepository row-level userId filter, GenerationOrchestrator + controllers updated, test user fixture added (12/12 tests green)
 - [x] Credentials sign-up: AuthController POST /api/auth/register (public), BCrypt hashing, 409 on duplicate email; /register Next.js page with auto sign-in; middleware updated
+- [x] Middleware auth guard fix: edge-safe auth.config.ts split, middleware moved to src/, root / redirects to /dashboard
 
 ## Key Commands
 

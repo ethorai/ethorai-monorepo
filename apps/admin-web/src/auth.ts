@@ -4,13 +4,14 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import pg from "pg";
 import { createDbAdapter } from "@/lib/db-adapter";
+import { authConfig } from "@/auth.config";
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: createDbAdapter(),
   session: { strategy: "jwt" },
-  pages: { signIn: "/login" },
   providers: [
     Google,
     Credentials({
