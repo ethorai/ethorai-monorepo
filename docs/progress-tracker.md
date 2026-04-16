@@ -23,9 +23,11 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 - [x] Rate limiting on POST /api/generate (per-user, prevents OpenAI cost abuse)
 - [x] Sanitize free-text inputs against prompt injection (approach field)
-- [ ] Verify contactValue is HTML-escaped on generated pages
-- [ ] GitHub Actions CI pipeline (`./mvnw test` + `npm run build`)
-- [ ] Deploy to Railway + Vercel
+- [ ] Verify contactValue is HTML-escaped on generated pages (XSS risk on public pages — check section-renderers.tsx in admin-web, ensure all user-provided values are escaped before rendering)
+- [ ] GitHub Actions CI pipeline (`./mvnw test` + `npm run build` on push to main)
+- [ ] Implement public page route: Next.js `/p/[slug]` catch-all reading from Spring API, ISR-cached (see architecture.md §Key Design Decisions #4 for rationale)
+- [ ] On publish: Spring calls Next.js On-Demand Revalidation API with a shared secret to refresh the cached page
+- [ ] Deploy to Railway (Spring API + PostgreSQL) + Vercel (admin-web + public pages)
 
 ## Completed Milestones
 
