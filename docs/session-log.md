@@ -1,5 +1,40 @@
 # Session Log
 
+## 2026-04-16 (session 2)
+
+### Done Today
+
+- Full project review: architecture, docs, security gaps, monetization, priorities
+- Fixed docs/persona.md: removed 170-line ChatGPT conversation transcript accidentally left in file
+- Fixed docs/architecture.md: replaced stale "no auth for MVP" decision, corrected static deploy to ISR model, promoted section-level regen from "future" to live endpoints, updated async generation flow
+- Fixed docs/data-model.md: replaced JPA `@Entity`/`@Enumerated`/`@ManyToOne` with jOOQ-correct Java records, replaced `Map<SectionType, String>` with `StructuredSections` throughout
+- Fixed docs/prompt-template.md: replaced text-based output format with actual JSON schema matching the parser
+- Created README.md: full portfolio-grade README with architecture, tech decisions, local setup, key commands, env vars reference
+- Created CLAUDE.md: project instructions for Claude Code with tech stack, key classes, auth architecture, testing conventions, env vars, end-of-session protocol
+
+### Next 3 Tasks
+
+1. Rate limiting on `POST /api/generate` (per-user, prevents OpenAI cost abuse)
+2. Sanitize free-text inputs against prompt injection (`approach` and other free-text fields)
+3. GitHub Actions CI pipeline (`./mvnw test` + `npm run build`)
+
+### Current Blocker
+
+None.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From `apps/api`:
+`./mvnw spring-boot:run`
+
+From `apps/admin-web`:
+`npm run dev`
+
+---
+
 ## 2026-04-16
 
 ### Done Today

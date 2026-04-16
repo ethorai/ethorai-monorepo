@@ -46,11 +46,11 @@ No CMS. Content changes go through the admin UI → API → re-generation.
    ├─ 6. Output validation (guardrails check)
    ├─ 7. If invalid → regenerate (max 3 attempts)
    ├─ 8. Store result in PostgreSQL
-   └─ 9. Generate static HTML/CSS → deploy to Vercel
+   └─ 9. On publish: trigger Next.js On-Demand Revalidation for /p/{slug}
         │
         ▼
-   Static Landing Page (Vercel)
-   https://therapists.app/page/{slug}
+   Public Landing Page (Vercel — ISR-cached)
+   https://therapists.app/p/{slug}
 ```
 
 ---
@@ -74,12 +74,17 @@ The Spring Boot API is consumed by the Next.js admin frontend.
 | PUT    | `/api/pages/{id}/sections/{type}` | Update a single section's content |
 | POST   | `/api/pages/{id}/publish`         | Generate static HTML + deploy     |
 
-### Internal (future)
+### Section regeneration
 
-| Method | Path                         | Description                          |
-| ------ | ---------------------------- | ------------------------------------ |
-| POST   | `/api/pages/{id}/regenerate` | Regenerate a specific section via AI |
-| GET    | `/api/pages/{id}/status`     | Generation status                    |
+| Method | Path                                           | Description                          |
+| ------ | ---------------------------------------------- | ------------------------------------ |
+| POST   | `/api/pages/{id}/sections/{sectionType}/regenerate` | Regenerate a single section via AI |
+
+### Async generation status
+
+| Method | Path                              | Description           |
+| ------ | --------------------------------- | --------------------- |
+| GET    | `/api/generate/status/{jobId}`    | Poll generation job   |
 
 ---
 
@@ -220,14 +225,14 @@ Three tables:
 
 ## Key Design Decisions
 
-1. **No auth for MVP** — Pages are accessed via unique UUID URLs. Auth comes in v2.
+1. **JWT-based auth** — Spring Security stateless JWT filter (resource guard) + Auth.js v5 (identity layer, Google OAuth + credentials). Pages are scoped by `user_id` at the repository level.
 2. **JSONB for sections** — Flexible storage for the 9-section structure without rigid column mapping.
 3. **jOOQ over JPA/Hibernate** — Type-safe SQL, explicit queries, no magic. Better for JSONB operations and optimized reads.
-4. **Static HTML for client pages** — No per-client runtime. Generated HTML/CSS is deployed as static files. Scales infinitely at near-zero cost.
+4. **Static-like client pages via Next.js ISR** — Generated sections are stored in PostgreSQL. On publish, the backend triggers Next.js On-Demand Revalidation. Pages are CDN-cached and served from a `/p/[slug]` catch-all route. No per-client runtime, no separate deployment per therapist.
 5. **No CMS** — Content modifications go through the admin UI → API → re-generation. A CMS would contradict the product's guided, constrained approach.
-6. **Synchronous generation** — The user waits for the result (~5-10s). Async + polling is a v2 optimization.
-7. **Single AI call** — One prompt generates all sections. Section-level regeneration comes in v2.
-8. **Two hosting platforms only** — Railway (API + DB) and Vercel (admin + static pages). Minimizes operational surface for a solo dev.
+6. **Async generation with job queue** — `POST /api/generate` returns `202 Accepted` with a job ID. The frontend polls `GET /api/generate/status/{jobId}` until completion. Avoids HTTP timeout issues for long-running AI calls.
+7. **Single AI call per full generation, section-level regeneration also supported** — The full page is generated in one prompt call. Individual sections can be independently regenerated via `POST /api/pages/{id}/sections/{sectionType}/regenerate`.
+8. **Two hosting platforms only** — Railway (API + DB) and Vercel (admin + public pages). Minimizes operational surface for a solo dev.
 
 ---
 
@@ -248,7 +253,6 @@ If a client needs truly custom features → that's consulting work, not SaaS.
 
 ## What Is Explicitly Out of Scope (v1)
 
-- User authentication / accounts
 - Custom domains for generated pages
 - Payment / billing
 - Analytics dashboard

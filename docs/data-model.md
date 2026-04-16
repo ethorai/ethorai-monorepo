@@ -66,43 +66,44 @@ public enum ContactMethod {
 
 ## 3. Domain Model — TherapistProfile
 
-Persisted entity representing the therapist's data after normalization.
+Persisted entity representing the therapist's data after normalization.  
+Stored and queried via **jOOQ** (no JPA/Hibernate).
 
 ```java
-@Entity
-public class TherapistProfile {
-    @Id UUID id;
-    String fullName;
-    @Enumerated RoleType role;
-    String location;
-    List<String> audiences;        // stored as JSON
-    List<String> areasOfSupport;   // stored as JSON
-    String approach;
-    @Enumerated SessionFormat sessionFormat;
-    List<String> expectations;     // stored as JSON
-    @Enumerated ContactMethod contactMethod;
-    String contactValue;
-    Instant createdAt;
-}
+public record TherapistProfile(
+    UUID id,
+    String fullName,
+    RoleType role,
+    String location,
+    List<String> audiences,        // stored as JSONB
+    List<String> areasOfSupport,   // stored as JSONB
+    String approach,
+    SessionFormat sessionFormat,
+    List<String> expectations,     // stored as JSONB
+    ContactMethod contactMethod,
+    String contactValue,
+    Instant createdAt
+) {}
 ```
 
 ---
 
 ## 4. Domain Model — LandingPage
 
-Persisted entity representing a generated landing page.
+Persisted entity representing a generated landing page.  
+Stored and queried via **jOOQ** (no JPA/Hibernate).
 
 ```java
-@Entity
-public class LandingPage {
-    @Id UUID id;
-    @ManyToOne TherapistProfile profile;
-    Map<SectionType, String> sections;  // stored as JSONB, each value is a serialized structured section object
-    @Enumerated PageStatus status;
-    GenerationLog generationLog;        // stored as JSONB
-    Instant createdAt;
-    Instant updatedAt;
-}
+public record LandingPage(
+    UUID id,
+    UUID profileId,
+    UUID userId,
+    StructuredSections sections,  // stored as JSONB, deserialized to typed section objects
+    PageStatus status,
+    GenerationLog generationLog,  // stored as JSONB
+    Instant createdAt,
+    Instant updatedAt
+) {}
 ```
 
 ### SectionType
@@ -123,11 +124,9 @@ public enum SectionType {
 
 Maps 1:1 to the landing page structure (see landing-page-structure.md).
 
-Current storage convention:
-
-- The map key is the section identifier (`HEADER`, `HERO`, etc.)
-- The map value is a JSON string representing the structured payload of that section
-- Example: `sections.get(SectionType.HERO)` stores something like `{ "heading": "...", "subheading": "..." }`
+Each section has a dedicated typed Java record (e.g. `HeroData`, `HeaderData`).  
+The full page is represented by `StructuredSections`, a record aggregating all 9 typed section objects.  
+Stored as a single JSONB column in PostgreSQL; deserialized via `ObjectMapper` on read.
 
 ### PageStatus
 
@@ -204,17 +203,13 @@ public record GeneratedPageResponse(
     UUID profileId,
     String fullName,
     RoleType role,
-    Map<SectionType, String> sections,
+    StructuredSections sections,
     PageStatus status
 )
 ```
 
-Notes:
-
-- The AI now generates structured section objects, not raw HTML fragments.
-- The current API response still exposes `sections` as `Map<SectionType, String>` for transition compatibility.
-- Each string value is serialized JSON for the corresponding structured section.
-- A later cleanup can expose fully typed section objects directly in the API.
+The API returns fully typed structured section objects directly.  
+Each section field in `StructuredSections` corresponds to a dedicated typed record (e.g. `HeroData`, `ContactData`).
 
 ---
 
@@ -222,8 +217,8 @@ Notes:
 
 ```
 TherapistProfile 1 ──── * LandingPage
-                           └── sections (Map<SectionType, String serialized JSON>)
-                           └── generationLog (GenerationLog)
+                           └── sections (StructuredSections — typed, stored as JSONB)
+                           └── generationLog (GenerationLog — stored as JSONB)
 
 EventLog (append-only, references any entity by type + id)
 ```

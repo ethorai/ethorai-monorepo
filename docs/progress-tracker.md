@@ -21,13 +21,21 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ### Now
 
-- [ ] README with architecture section and local setup guide
-- [ ] GitHub Actions CI pipeline
-- [ ] Magic link provider via Resend
-- [ ] Role-specific disclaimer templates and stricter semantic checks
-- [ ] Regeneration loop with max attempts and explainability details
+- [ ] Rate limiting on POST /api/generate (per-user, prevents OpenAI cost abuse)
+- [ ] Sanitize free-text inputs against prompt injection (approach field)
+- [ ] Verify contactValue is HTML-escaped on generated pages
+- [ ] GitHub Actions CI pipeline (`./mvnw test` + `npm run build`)
+- [ ] Deploy to Railway + Vercel
 
 ## Completed Milestones
+
+- [x] Full project review (architecture, docs, security gaps, monetization options)
+- [x] docs/persona.md — removed ChatGPT transcript contamination
+- [x] docs/architecture.md — corrected stale decisions (auth, async gen, ISR deploy, section regen)
+- [x] docs/data-model.md — replaced JPA @Entity annotations with jOOQ records, updated StructuredSections
+- [x] docs/prompt-template.md — replaced text-based output format with actual JSON schema
+- [x] README.md — created with architecture, tech decisions, local setup, env vars reference
+- [x] CLAUDE.md — created with project context, conventions, and session protocol for Claude Code
 
 - [x] Architecture and data model docs clarified
 - [x] Flyway migration V1 (therapist_profile, landing_page, event_log)

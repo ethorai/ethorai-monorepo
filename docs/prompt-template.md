@@ -86,47 +86,55 @@ Do not invent, infer, or enhance information.
 
 ## Output Format
 
-Return the result as structured content with the following format:
+Return the result as a single valid JSON object with the following structure.  
+Do not include any text outside the JSON object.
 
-SECTION: Header / Identity
-CONTENT:
-<text>
-
-SECTION: Hero
-CONTENT:
-<text>
-
-SECTION: Areas of Support
-CONTENT:
-
-- <bullet>
-- <bullet>
-
-SECTION: How I Work
-CONTENT:
-<text>
-
-SECTION: What You Can Expect
-CONTENT:
-
-- <statement>
-- <statement>
-
-SECTION: Session Formats
-CONTENT:
-<text>
-
-SECTION: Contact / Booking
-CONTENT:
-<text>
-
-SECTION: Ethical Disclaimer
-CONTENT:
-<text>
-
-SECTION: Footer
-CONTENT:
-<text>
+```json
+{
+  "HEADER": {
+    "name": "<string>",
+    "role": "<string>",
+    "location": "<string | null>"
+  },
+  "HERO": {
+    "heading": "<string — max 12 words>",
+    "subheading": "<string>"
+  },
+  "AREAS_OF_SUPPORT": {
+    "title": "<string>",
+    "items": ["<string>", "..."]
+  },
+  "HOW_I_WORK": {
+    "title": "<string>",
+    "description": "<string>"
+  },
+  "WHAT_YOU_CAN_EXPECT": {
+    "title": "<string>",
+    "statements": ["<string>", "..."]
+  },
+  "SESSION_FORMATS": {
+    "title": "<string>",
+    "formats": [{ "type": "<ONLINE|IN_PERSON|BOTH>", "details": "<string>" }]
+  },
+  "CONTACT": {
+    "title": "<string>",
+    "description": "<string>",
+    "cta_text": "<string — 3 to 4 words>",
+    "email": "<string | null>",
+    "phone": "<string | null>"
+  },
+  "DISCLAIMER": {
+    "text": "<string>"
+  },
+  "FOOTER": {
+    "name": "<string>",
+    "role": "<string>",
+    "location": "<string | null>",
+    "email": "<string | null>",
+    "phone": "<string | null>"
+  }
+}
+```
 
 ---
 
