@@ -22,7 +22,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 ### Now
 
 - [x] Rate limiting on POST /api/generate (per-user, prevents OpenAI cost abuse)
-- [ ] Sanitize free-text inputs against prompt injection (approach field)
+- [x] Sanitize free-text inputs against prompt injection (approach field)
 - [ ] Verify contactValue is HTML-escaped on generated pages
 - [ ] GitHub Actions CI pipeline (`./mvnw test` + `npm run build`)
 - [ ] Deploy to Railway + Vercel

@@ -1,5 +1,41 @@
 # Session Log
 
+## 2026-04-16 (session 4)
+
+### Done Today
+
+- Added prompt injection sanitization to `InputNormalizationService`:
+  - Strips `IGNORE previous instructions`, `DISREGARD all`, `OVERRIDE the system` patterns
+  - Strips prompt role markers (`SYSTEM:`, `USER:`, `ASSISTANT:` at line start)
+  - Strips separator injection lines (`---`, `===`, `***` on own lines)
+  - Collapses multiple newlines/whitespace to single space
+  - Adds length limits: `approach` max 500 chars, other text fields max 150 chars
+- `InputNormalizationServiceTest`: 7 unit tests covering injection patterns and length limits
+- 24/24 tests passing (up from 17)
+
+### Next 3 Tasks
+
+1. Verify `contactValue` is HTML-escaped on generated pages
+2. GitHub Actions CI pipeline
+3. Deploy to Railway + Vercel
+
+### Current Blocker
+
+None.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From `apps/api`:
+`./mvnw spring-boot:run`
+
+From `apps/admin-web`:
+`npm run dev`
+
+---
+
 ## 2026-04-16 (session 3)
 
 ### Done Today
