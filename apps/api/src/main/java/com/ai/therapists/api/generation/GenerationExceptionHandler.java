@@ -34,4 +34,10 @@ public class GenerationExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new GenerationErrorResponse("NOT_FOUND", ex.getMessage(), Instant.now()));
     }
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<GenerationErrorResponse> handleRateLimit(RateLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(new GenerationErrorResponse("RATE_LIMIT_EXCEEDED", ex.getMessage(), Instant.now()));
+    }
 }

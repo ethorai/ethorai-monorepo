@@ -1,5 +1,39 @@
 # Session Log
 
+## 2026-04-16 (session 3)
+
+### Done Today
+
+- Added per-user rate limiting on `POST /api/generate` using Bucket4j (5 requests/user/hour)
+- `GenerationRateLimiter` — `@Component`, `ConcurrentHashMap<UUID, Bucket>`, 5 tokens/hour refill
+- `RateLimitExceededException` + 429 handler in `GenerationExceptionHandler`
+- Wired `rateLimiter.consume(userId)` in `GenerationController` before `submitAsync`
+- Tests: `GenerationRateLimiterTest` (3 unit tests) + `RateLimitIntegrationTest` (2 integration tests)
+- 17/17 tests passing (up from 12)
+
+### Next 3 Tasks
+
+1. Sanitize free-text inputs against prompt injection (`approach` and other free-text fields)
+2. Verify `contactValue` is HTML-escaped on generated pages
+3. GitHub Actions CI pipeline
+
+### Current Blocker
+
+None.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From `apps/api`:
+`./mvnw spring-boot:run`
+
+From `apps/admin-web`:
+`npm run dev`
+
+---
+
 ## 2026-04-16 (session 2)
 
 ### Done Today

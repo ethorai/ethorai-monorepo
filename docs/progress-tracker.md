@@ -21,7 +21,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ### Now
 
-- [ ] Rate limiting on POST /api/generate (per-user, prevents OpenAI cost abuse)
+- [x] Rate limiting on POST /api/generate (per-user, prevents OpenAI cost abuse)
 - [ ] Sanitize free-text inputs against prompt injection (approach field)
 - [ ] Verify contactValue is HTML-escaped on generated pages
 - [ ] GitHub Actions CI pipeline (`./mvnw test` + `npm run build`)
@@ -74,6 +74,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] userId scoping: SecurityContextHelper, LandingPageRepository row-level userId filter, GenerationOrchestrator + controllers updated, test user fixture added (12/12 tests green)
 - [x] Credentials sign-up: AuthController POST /api/auth/register (public), BCrypt hashing, 409 on duplicate email; /register Next.js page with auto sign-in; middleware updated
 - [x] Middleware auth guard fix: edge-safe auth.config.ts split, middleware moved to src/, root / redirects to /dashboard
+- [x] Per-user rate limiting on POST /api/generate (Bucket4j, 5 req/hour, returns 429) + unit + integration tests
 
 ## Key Commands
 

@@ -16,10 +16,12 @@ import java.util.UUID;
 public class GenerationController {
 
     private final GenerationOrchestrator orchestrator;
+    private final GenerationRateLimiter rateLimiter;
 
     @PostMapping("/generate")
     public ResponseEntity<GenerationJobResponse> generate(@Valid @RequestBody TherapistInput input) {
         UUID userId = SecurityContextHelper.currentUserId();
+        rateLimiter.consume(userId);
         GenerationJobResponse job = orchestrator.submitAsync(input, userId);
 
         return ResponseEntity
