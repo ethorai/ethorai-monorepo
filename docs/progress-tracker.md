@@ -25,9 +25,11 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] Sanitize free-text inputs against prompt injection (approach field)
 - [x] XSS audit on section-renderers.tsx — all fields use JSX interpolation, no dangerouslySetInnerHTML, confirmed safe
 - [x] GitHub Actions CI pipeline (`./mvnw test` + `npm run build` on push to main)
-- [ ] Implement public page route: Next.js `/p/[slug]` catch-all reading from Spring API, ISR-cached (see architecture.md §Key Design Decisions #4 for rationale)
-- [ ] On publish: Spring calls Next.js On-Demand Revalidation API with a shared secret to refresh the cached page
-- [ ] Deploy to Railway (Spring API + PostgreSQL) + Vercel (admin-web + public pages)
+- [x] Public page route: `/p/[id]` ISR Server Component fetching from `GET /api/public/pages/{id}` (no auth, PUBLISHED only), `revalidate=3600`
+- [x] On publish: `revalidatePath('/p/{id}')` called in Next.js publish proxy route after Spring 204
+- [ ] Dockerfile for Spring Boot API + `.dockerignore` (reusable for Railway, ECS, any container host)
+- [ ] Deploy to Railway (Spring API + PostgreSQL managed) + Vercel (admin-web + public pages)
+- [ ] Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
 
 ## Completed Milestones
 
@@ -80,6 +82,10 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] Prompt injection sanitization on InputNormalizationService (IGNORE/DISREGARD/OVERRIDE patterns + role markers + length limits) + 7 unit tests
 - [x] XSS audit: section-renderers.tsx uses pure JSX interpolation, no dangerouslySetInnerHTML — no fix needed
 - [x] GitHub Actions CI: `.github/workflows/ci.yml` — Spring tests (PostgreSQL 17 service) + Next.js lint + build, runs on push/PR to main
+- [x] Public page: `PublicPageController` + `findByIdPublic()` (no userId, PUBLISHED only) + `/api/public/**` permitted in SecurityConfig
+- [x] Next.js `/p/[id]` ISR page with `generateMetadata`, `revalidate=3600`, renders all 9 section components
+- [x] On-demand revalidation: publish proxy calls `revalidatePath('/p/{id}')` after successful Spring publish
+- [x] Fixed login page `useSearchParams` Suspense boundary (Next.js 16 build requirement)
 
 ## Key Commands
 

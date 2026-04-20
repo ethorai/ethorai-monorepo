@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { withAuth } from "@/lib/spring-fetch";
 
 const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8080";
@@ -20,6 +21,10 @@ export async function POST(_request: NextRequest, { params }: Params) {
     });
 
     const responseText = await response.text();
+
+    if (response.ok) {
+      revalidatePath(`/p/${id}`);
+    }
 
     return new NextResponse(responseText, {
       status: response.status,

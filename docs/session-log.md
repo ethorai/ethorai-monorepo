@@ -4,16 +4,22 @@
 
 ### Done Today
 
-- XSS audit on `section-renderers.tsx`: confirmed all 9 section renderers use JSX interpolation only — no `dangerouslySetInnerHTML` anywhere in admin-web. No fix needed; noted that the future `/p/[slug]` public page must maintain the same pattern.
+- XSS audit on `section-renderers.tsx`: confirmed all 9 section renderers use JSX interpolation only — no `dangerouslySetInnerHTML` anywhere in admin-web. No fix needed.
 - GitHub Actions CI pipeline: `.github/workflows/ci.yml`
-  - `api` job: PostgreSQL 17 service container on port 5433, Java 21 (temurin), `./mvnw test` (jOOQ codegen runs automatically via generate-sources phase), `JWT_SECRET` set to dummy base64url value
-  - `admin-web` job: Node 20, `npm ci` + `npm run lint` + `npm run build`, placeholder env vars for Auth.js providers
+  - `api` job: PostgreSQL 17 service container on port 5433, Java 21 (temurin), `./mvnw test`
+  - `admin-web` job: Node 20, `npm ci` + `npm run lint` + `npm run build`
+- Public page route end-to-end:
+  - Spring: `LandingPageRepository.findByIdPublic()` (no userId, PUBLISHED-only filter), `PublicPageController` at `/api/public/pages/{id}`, `SecurityConfig` permits `/api/public/**`
+  - Next.js: `/p/[id]/page.tsx` ISR Server Component — fetches from public Spring endpoint, renders all 9 section components, `revalidate=3600`, `generateMetadata` for SEO
+  - Publish proxy: calls `revalidatePath('/p/{id}')` after Spring returns 204
+- Fixed pre-existing build failure: login page `useSearchParams` extracted into `<RegisteredBanner>` component wrapped in `<Suspense>` (Next.js 16 requirement)
+- 24/24 Spring tests passing, Next.js build clean
 
 ### Next 3 Tasks
 
-1. Implement public page route: Next.js `/p/[slug]` catch-all reading from Spring API, ISR-cached
-2. On publish: Spring calls Next.js On-Demand Revalidation API with a shared secret
-3. Deploy to Railway (Spring API + PostgreSQL) + Vercel (admin-web + public pages)
+1. Dockerfile for Spring Boot API + `.dockerignore` (reusable for Railway, ECS, or any container host)
+2. Deploy to Railway (Spring API + PostgreSQL managed) + Vercel (admin-web)
+3. Wire "View public page" link on admin page detail view pointing to `/p/{id}`
 
 ### Current Blocker
 

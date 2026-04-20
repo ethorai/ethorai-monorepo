@@ -1,17 +1,25 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+
+function RegisteredBanner() {
+  const searchParams = useSearchParams();
+  if (searchParams.get("registered") !== "1") return null;
+  return (
+    <div className="rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">
+      Account created! Sign in to get started.
+    </div>
+  );
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const searchParams = useSearchParams();
-  const registered = searchParams.get("registered") === "1";
 
   async function handleCredentials(e: React.FormEvent) {
     e.preventDefault();
@@ -46,11 +54,9 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {registered && (
-          <div className="rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">
-            Account created! Sign in to get started.
-          </div>
-        )}
+        <Suspense>
+          <RegisteredBanner />
+        </Suspense>
 
         {/* Google */}
         <button
