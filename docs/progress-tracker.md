@@ -23,8 +23,8 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 - [x] Rate limiting on POST /api/generate (per-user, prevents OpenAI cost abuse)
 - [x] Sanitize free-text inputs against prompt injection (approach field)
-- [ ] Verify contactValue is HTML-escaped on generated pages (XSS risk on public pages — check section-renderers.tsx in admin-web, ensure all user-provided values are escaped before rendering)
-- [ ] GitHub Actions CI pipeline (`./mvnw test` + `npm run build` on push to main)
+- [x] XSS audit on section-renderers.tsx — all fields use JSX interpolation, no dangerouslySetInnerHTML, confirmed safe
+- [x] GitHub Actions CI pipeline (`./mvnw test` + `npm run build` on push to main)
 - [ ] Implement public page route: Next.js `/p/[slug]` catch-all reading from Spring API, ISR-cached (see architecture.md §Key Design Decisions #4 for rationale)
 - [ ] On publish: Spring calls Next.js On-Demand Revalidation API with a shared secret to refresh the cached page
 - [ ] Deploy to Railway (Spring API + PostgreSQL) + Vercel (admin-web + public pages)
@@ -77,6 +77,9 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] Credentials sign-up: AuthController POST /api/auth/register (public), BCrypt hashing, 409 on duplicate email; /register Next.js page with auto sign-in; middleware updated
 - [x] Middleware auth guard fix: edge-safe auth.config.ts split, middleware moved to src/, root / redirects to /dashboard
 - [x] Per-user rate limiting on POST /api/generate (Bucket4j, 5 req/hour, returns 429) + unit + integration tests
+- [x] Prompt injection sanitization on InputNormalizationService (IGNORE/DISREGARD/OVERRIDE patterns + role markers + length limits) + 7 unit tests
+- [x] XSS audit: section-renderers.tsx uses pure JSX interpolation, no dangerouslySetInnerHTML — no fix needed
+- [x] GitHub Actions CI: `.github/workflows/ci.yml` — Spring tests (PostgreSQL 17 service) + Next.js lint + build, runs on push/PR to main
 
 ## Key Commands
 

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  api:
+    name: Spring Boot tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: ai_therapists
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: temurin
+          cache: maven
+
+      - name: Run tests
+        working-directory: apps/api
+        env:
+          JWT_SECRET: dGVzdC1zZWNyZXQtZm9yLWNpLW9ubHktbm90LXVzZWQtaW4tcHJvZHVjdGlvbg==
+          OPENAI_API_KEY: ""
+        run: ./mvnw test
+
+  admin-web:
+    name: Next.js build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/admin-web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/admin-web
+        run: npm ci
+
+      - name: Lint
+        working-directory: apps/admin-web
+        run: npm run lint
+
+      - name: Build
+        working-directory: apps/admin-web
+        env:
+          API_BASE_URL: http://localhost:8080
+          AUTH_SECRET: ci-secret-not-used-in-production
+          JWT_SECRET: dGVzdC1zZWNyZXQtZm9yLWNpLW9ubHktbm90LXVzZWQtaW4tcHJvZHVjdGlvbg==
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5433/ai_therapists
+          GOOGLE_CLIENT_ID: ci-placeholder
+          GOOGLE_CLIENT_SECRET: ci-placeholder
+        run: npm run build

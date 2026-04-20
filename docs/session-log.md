@@ -1,5 +1,37 @@
 # Session Log
 
+## 2026-04-20
+
+### Done Today
+
+- XSS audit on `section-renderers.tsx`: confirmed all 9 section renderers use JSX interpolation only — no `dangerouslySetInnerHTML` anywhere in admin-web. No fix needed; noted that the future `/p/[slug]` public page must maintain the same pattern.
+- GitHub Actions CI pipeline: `.github/workflows/ci.yml`
+  - `api` job: PostgreSQL 17 service container on port 5433, Java 21 (temurin), `./mvnw test` (jOOQ codegen runs automatically via generate-sources phase), `JWT_SECRET` set to dummy base64url value
+  - `admin-web` job: Node 20, `npm ci` + `npm run lint` + `npm run build`, placeholder env vars for Auth.js providers
+
+### Next 3 Tasks
+
+1. Implement public page route: Next.js `/p/[slug]` catch-all reading from Spring API, ISR-cached
+2. On publish: Spring calls Next.js On-Demand Revalidation API with a shared secret
+3. Deploy to Railway (Spring API + PostgreSQL) + Vercel (admin-web + public pages)
+
+### Current Blocker
+
+None.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From `apps/api`:
+`./mvnw spring-boot:run`
+
+From `apps/admin-web`:
+`npm run dev`
+
+---
+
 ## 2026-04-16 (session 4)
 
 ### Done Today
