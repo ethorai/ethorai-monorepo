@@ -13,13 +13,16 @@
   - Next.js: `/p/[id]/page.tsx` ISR Server Component — fetches from public Spring endpoint, renders all 9 section components, `revalidate=3600`, `generateMetadata` for SEO
   - Publish proxy: calls `revalidatePath('/p/{id}')` after Spring returns 204
 - Fixed pre-existing build failure: login page `useSearchParams` extracted into `<RegisteredBanner>` component wrapped in `<Suspense>` (Next.js 16 requirement)
-- 24/24 Spring tests passing, Next.js build clean
+- Dockerfile (multi-stage, eclipse-temurin:21-jdk builder + 21-jre runtime) + `.dockerignore` — Docker build verified locally
+- jOOQ generated sources moved to `src/main/generated/jooq` and committed — `build-helper-maven-plugin` registers them as compile source root; `jooq.codegen.skip` property added for Docker and CI
+- CI updated: `./mvnw test -Djooq.codegen.skip=true` (DB still used by tests; codegen skipped since sources are committed)
+- 24/24 Spring tests passing, Next.js build clean, Docker image builds successfully
 
 ### Next 3 Tasks
 
-1. Dockerfile for Spring Boot API + `.dockerignore` (reusable for Railway, ECS, or any container host)
-2. Deploy to Railway (Spring API + PostgreSQL managed) + Vercel (admin-web)
-3. Wire "View public page" link on admin page detail view pointing to `/p/{id}`
+1. Deploy to Railway (Spring API + PostgreSQL managed) + Vercel (admin-web + public pages)
+2. Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
+3. (Later) Port infra to AWS ECS + RDS as a portfolio infrastructure exercise
 
 ### Current Blocker
 

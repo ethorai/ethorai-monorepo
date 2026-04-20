@@ -32,6 +32,7 @@
 		<db.username>postgres</db.username>
 		<db.password>postgres</db.password>
 		<flyway.cleanDisabled>true</flyway.cleanDisabled>
+		<jooq.codegen.skip>false</jooq.codegen.skip>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -182,6 +183,7 @@
 					</execution>
 				</executions>
 				<configuration>
+					<skip>${jooq.codegen.skip}</skip>
 					<jdbc>
 						<driver>org.postgresql.Driver</driver>
 						<url>${db.url}</url>
@@ -202,7 +204,7 @@
 						</generate>
 						<target>
 							<packageName>com.ai.therapists.api.jooq</packageName>
-							<directory>target/generated-sources/jooq</directory>
+							<directory>src/main/generated/jooq</directory>
 						</target>
 					</generator>
 				</configuration>
@@ -213,6 +215,27 @@
 						<version>${postgresql.version}</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+
+			<!-- 3. Register committed jOOQ sources as a compile source root -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.6.0</version>
+				<executions>
+					<execution>
+						<id>add-jooq-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/main/generated/jooq</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>

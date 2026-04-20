@@ -27,7 +27,8 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] GitHub Actions CI pipeline (`./mvnw test` + `npm run build` on push to main)
 - [x] Public page route: `/p/[id]` ISR Server Component fetching from `GET /api/public/pages/{id}` (no auth, PUBLISHED only), `revalidate=3600`
 - [x] On publish: `revalidatePath('/p/{id}')` called in Next.js publish proxy route after Spring 204
-- [ ] Dockerfile for Spring Boot API + `.dockerignore` (reusable for Railway, ECS, any container host)
+- [x] Dockerfile (multi-stage, eclipse-temurin:21-jdk builder + 21-jre runtime) + `.dockerignore` — Docker build verified locally
+- [x] jOOQ generated sources committed to `src/main/generated/jooq` — builds without a DB (`-Djooq.codegen.skip=true`)
 - [ ] Deploy to Railway (Spring API + PostgreSQL managed) + Vercel (admin-web + public pages)
 - [ ] Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
 
@@ -81,7 +82,8 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] Per-user rate limiting on POST /api/generate (Bucket4j, 5 req/hour, returns 429) + unit + integration tests
 - [x] Prompt injection sanitization on InputNormalizationService (IGNORE/DISREGARD/OVERRIDE patterns + role markers + length limits) + 7 unit tests
 - [x] XSS audit: section-renderers.tsx uses pure JSX interpolation, no dangerouslySetInnerHTML — no fix needed
-- [x] GitHub Actions CI: `.github/workflows/ci.yml` — Spring tests (PostgreSQL 17 service) + Next.js lint + build, runs on push/PR to main
+- [x] GitHub Actions CI: `.github/workflows/ci.yml` — Spring tests (PostgreSQL 17 service) + Next.js lint + build, runs on push/PR to main; updated to skip jOOQ codegen (-Djooq.codegen.skip=true)
+- [x] Dockerfile multi-stage build (eclipse-temurin:21-jdk → 21-jre); committed jOOQ sources to src/main/generated/jooq; pom.xml: skip flag + build-helper-maven-plugin for source registration
 - [x] Public page: `PublicPageController` + `findByIdPublic()` (no userId, PUBLISHED only) + `/api/public/**` permitted in SecurityConfig
 - [x] Next.js `/p/[id]` ISR page with `generateMetadata`, `revalidate=3600`, renders all 9 section components
 - [x] On-demand revalidation: publish proxy calls `revalidatePath('/p/{id}')` after successful Spring publish

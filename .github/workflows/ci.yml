@@ -41,7 +41,7 @@ jobs:
         env:
           JWT_SECRET: dGVzdC1zZWNyZXQtZm9yLWNpLW9ubHktbm90LXVzZWQtaW4tcHJvZHVjdGlvbg==
           OPENAI_API_KEY: ""
-        run: ./mvnw test
+        run: ./mvnw test -Djooq.codegen.skip=true
 
   admin-web:
     name: Next.js build
