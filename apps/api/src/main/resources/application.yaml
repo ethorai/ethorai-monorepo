@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/ai_therapists}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5433}/${PGDATABASE:ai_therapists}
+    username: ${PGUSER:postgres}
+    password: ${PGPASSWORD:postgres}
   flyway:
     enabled: true
     locations: classpath:db/migration
