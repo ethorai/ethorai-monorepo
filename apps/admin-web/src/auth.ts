@@ -1,17 +1,52 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import pg from "pg";
-import { createDbAdapter } from "@/lib/db-adapter";
 import { authConfig } from "@/auth.config";
 
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8080";
+const INTERNAL_SECRET = process.env.INTERNAL_SECRET ?? "";
+
+async function springLogin(
+  email: string,
+  password: string,
+): Promise<{ token: string; userId: string } | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) return null;
+    return res.json() as Promise<{ token: string; userId: string }>;
+  } catch {
+    return null;
+  }
+}
+
+async function springOAuth(
+  email: string,
+  name: string,
+  provider: string,
+  providerAccountId: string,
+): Promise<{ token: string; userId: string } | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/oauth`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Internal-Secret": INTERNAL_SECRET,
+      },
+      body: JSON.stringify({ email, name, provider, providerAccountId }),
+    });
+    if (!res.ok) return null;
+    return res.json() as Promise<{ token: string; userId: string }>;
+  } catch {
+    return null;
+  }
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  adapter: createDbAdapter(),
-  session: { strategy: "jwt" },
   providers: [
     Google,
     Credentials({
@@ -21,39 +56,42 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-
-        const { rows } = await pool.query(
-          "SELECT id, email, name, password_hash FROM app_user WHERE email = $1",
-          [credentials.email],
-        );
-        const user = rows[0];
-        if (!user || !user.password_hash) return null;
-
-        const valid = await bcrypt.compare(
+        const result = await springLogin(
+          String(credentials.email),
           String(credentials.password),
-          user.password_hash,
         );
-        if (!valid) return null;
-
+        if (!result) return null;
         return {
-          id: String(user.id),
-          email: user.email,
-          name: user.name,
+          id: result.userId,
+          email: String(credentials.email),
+          springToken: result.token,
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.sub = user.id;
+    async jwt({ token, user, account, profile }) {
+      if (user?.springToken) {
+        token.sub = user.id ?? token.sub;
+        token.springToken = user.springToken;
+      }
+      if (account?.provider === "google" && profile?.email) {
+        const result = await springOAuth(
+          profile.email,
+          (profile.name ?? profile.email) as string,
+          "google",
+          account.providerAccountId,
+        );
+        if (result) {
+          token.sub = result.userId;
+          token.springToken = result.token;
+        }
       }
       return token;
     },
     async session({ session, token }) {
-      if (token.sub) {
-        session.user.id = token.sub;
-      }
+      session.user.id = token.sub ?? "";
+      session.user.springToken = token.springToken ?? "";
       return session;
     },
   },

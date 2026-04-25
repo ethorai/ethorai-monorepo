@@ -1,4 +1,5 @@
 import "next-auth";
+import "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session {
@@ -7,6 +8,17 @@ declare module "next-auth" {
       email: string;
       name?: string | null;
       image?: string | null;
+      springToken: string;
     };
+  }
+
+  interface User {
+    springToken?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    springToken?: string;
   }
 }

@@ -84,6 +84,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] XSS audit: section-renderers.tsx uses pure JSX interpolation, no dangerouslySetInnerHTML — no fix needed
 - [x] GitHub Actions CI: `.github/workflows/ci.yml` — Spring tests (PostgreSQL 17 service) + Next.js lint + build, runs on push/PR to main; updated to skip jOOQ codegen (-Djooq.codegen.skip=true)
 - [x] Dockerfile multi-stage build (eclipse-temurin:21-jdk → 21-jre); committed jOOQ sources to src/main/generated/jooq; pom.xml: skip flag + build-helper-maven-plugin for source registration
+- [x] Auth refactor: Spring owns all user management — POST /api/auth/login (issues JWT) + POST /api/auth/oauth (upserts Google user, issues JWT, protected by INTERNAL_SECRET); Next.js calls Spring for both flows; no direct DB access from Next.js; DATABASE_URL removed from Vercel requirements
 - [x] Public page: `PublicPageController` + `findByIdPublic()` (no userId, PUBLISHED only) + `/api/public/**` permitted in SecurityConfig
 - [x] Next.js `/p/[id]` ISR page with `generateMetadata`, `revalidate=3600`, renders all 9 section components
 - [x] On-demand revalidation: publish proxy calls `revalidatePath('/p/{id}')` after successful Spring publish

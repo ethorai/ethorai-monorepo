@@ -16,11 +16,19 @@
 - Dockerfile (multi-stage, eclipse-temurin:21-jdk builder + 21-jre runtime) + `.dockerignore` — Docker build verified locally
 - jOOQ generated sources moved to `src/main/generated/jooq` and committed — `build-helper-maven-plugin` registers them as compile source root; `jooq.codegen.skip` property added for Docker and CI
 - CI updated: `./mvnw test -Djooq.codegen.skip=true` (DB still used by tests; codegen skipped since sources are committed)
-- 24/24 Spring tests passing, Next.js build clean, Docker image builds successfully
+- Auth refactor — Spring is now the single auth authority:
+  - `JwtService.generateToken(UUID)` added — 7-day HS256 JWT
+  - `POST /api/auth/login` — validates credentials, issues JWT
+  - `POST /api/auth/oauth` — upserts Google user + oauth_account, issues JWT, protected by `X-Internal-Secret` header
+  - `auth.ts` rewritten — calls Spring for both credential and Google flows, no pg/bcrypt imports, no DB access
+  - `spring-fetch.ts` simplified — reads `session.user.springToken` directly, no JWT generation in Next.js
+  - `DATABASE_URL` no longer needed on Vercel
+  - Fixed `NEXT_PUBLIC_API_URL` → `API_BASE_URL` in register proxy
+- 24/24 Spring tests passing, Next.js build clean
 
 ### Next 3 Tasks
 
-1. Deploy to Railway (Spring API + PostgreSQL managed) + Vercel (admin-web + public pages)
+1. Deploy to Railway + Vercel (add INTERNAL_SECRET env var to both)
 2. Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
 3. (Later) Port infra to AWS ECS + RDS as a portfolio infrastructure exercise
 
