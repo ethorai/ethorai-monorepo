@@ -4,6 +4,38 @@
 
 ### Done Today
 
+- **Public page redesign (Phase 3)** — rewrote `section-renderers.tsx` (9 components) to match Ethorai brand:
+  - Palette: warm cream + stone neutrals, no more blue/gray Bootstrap clichés
+  - Typography: Fraunces serif on headings (auto via h-tags) + Space Grotesk body; added `--font-serif` Tailwind theme var for inline serif on non-headings (used in HEADER name + FOOTER name)
+  - Hero: radial gradient `#fbe3d3 → #f7f5ee → #f4efe4`, `text-6xl font-medium` (vs `font-bold`), `py-32`
+  - Section rhythm: alternate `bg-white` ↔ `bg-stone-50/60`; CONTACT uses warm linear gradient anchor; FOOTER soft `bg-stone-100`
+  - DISCLAIMER softened from amber-warning to italic stone-500 aside
+  - Functional CTA: `<a>` with `mailto:` / `tel:` fallback (gap noted: BOOKING_LINK URL not exposed in `ContactData`, deferred to Phase 4)
+- **Workspace + cleanup (Phase 1+2)** — collapsed multi-page admin to singleton:
+  - Backend: `LandingPageRepository.findLatestByUserId(UUID)` + `MeController` with `GET /api/me/page` and `GET /api/me/profile` (204 No Content when empty); `MeControllerIntegrationTest` (4 tests, total suite now 28/28)
+  - Frontend proxies: `/api/me/page`, `/api/me/profile`
+  - Frontend client: `getMyPage()`, `getMyProfile()` (return `null` on 204)
+  - New `/page` route: server component fetches via JWT direct to Spring, redirects to `/onboarding` if 204
+  - New `Workspace` client component: sticky top bar (Ethorai brand + status pill DRAFT/PUBLISHED + actions); section editors hidden but code preserved; spinner overlay during regenerate
+  - Actions: **Modifier mes réponses** (loads profile into localStorage as OnboardingState step=1, pushes /onboarding) · **Régénérer** (POST /api/generate with current profile + poll + router.refresh) · **Publier ma page** (POST /api/pages/{id}/publish + auto-copy public URL + toast) · **Voir comme un visiteur** (opens /p/{id}) · **Copier le lien** · **Se déconnecter** (signOut from next-auth/react)
+  - Deleted: `app/dashboard/`, `app/generate/`, `app/pages/[id]/`, `app/api/pages/route.ts` (LIST endpoint by profileId)
+  - Updated redirects: `/` → `/page`, login + register success → `/` (which routes intelligently)
+  - Onboarding flow's post-generation push changed from `/pages/{id}` → `/page`
+  - Test isolation gotcha fixed: `MeController` test cleanup deletes from `generation_job` first (FK), then `landing_page`
+- **Conversational onboarding flow** at `/onboarding` (Typeform-style, one question per screen):
+  - 10 screens: welcome + 8 input questions + summary, all in French, vouvoyé tone
+  - Maps 1:1 to existing `TherapistInput` (fullName, location, role, audiences, areasOfSupport, approach, sessionFormat, expectations, contactMethod, contactValue) — no backend changes
+  - localStorage persistence (`ethorai:onboarding` key) — auto-save on every change, restore on mount, cleared after successful generation
+  - Two-stage component (`OnboardingFlow` → `FlowInner`) to keep state hydration isolated and avoid SSR mismatches
+  - Reusable primitives: `Chip`, `RadioCard`, `PrimaryButton`, `BackArrow`, `ArrowRight` (all Tailwind, no UI lib)
+  - Progress bar in shell, back button conditional, Enter-key submission on text inputs
+  - Submits via existing `generateLandingPage()` → polls `getGenerationStatus()` → routes to `/pages/[id]` on completion
+  - Error states + per-row "Modifier" links from summary back to specific steps
+- Root `/` redirects to `/onboarding` instead of `/dashboard` (new entry point post-login)
+- Files: `lib/onboarding-storage.ts`, `components/onboarding/{flow,shell,primitives,screens}.tsx`, `app/onboarding/page.tsx`, modified `app/page.tsx`
+- Verified: `npm run lint` clean, `npm run build` green
+- Product consulting: validated the decision NOT to redo the 9-section page structure now — too early without therapist feedback. Onboarding refonte stays scope-limited to UI; backend untouched
+---
 - Named project **Ethorai** — created GitHub org `ethorai`, pushed monorepo as `ethorai/ethorai-monorepo`
 - Deployed Spring API to **Railway** (Spring + managed PostgreSQL 17):
   - Fixed `server.port` silently ignored (was nested under `spring:` in application.yaml — moved to root)
@@ -27,13 +59,13 @@
 
 ### Next 3 Tasks
 
-1. Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
-2. End-to-end smoke test on production: register → generate → publish → verify `/p/{id}`
-3. (Later) AWS ECS + RDS as portfolio infrastructure exercise
+1. Browser test the full flow: register → onboarding → /page workspace → publish → /p/[id] · Modifier mes réponses · Régénérer · Se déconnecter
+2. Phase 4 — close BOOKING_LINK gap: either add `bookingUrl` to `ContactData` or update prompt to put URL in `cta_text`/`description` for users who chose BOOKING_LINK contact method
+3. 5 user interviews with target therapists to validate the generated page output (per product consulting)
 
 ### Current Blocker
 
-None. Spring local restart required to pick up `DotEnvEnvironmentPostProcessor` (first run after today's commit).
+None. Onboarding requires browser test before commit — automated tests don't cover the UI flow.
 
 ### Exact Resume Command
 

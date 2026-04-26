@@ -57,6 +57,14 @@ public class LandingPageRepository {
                 .fetch(this::toRow);
     }
 
+    public Optional<LandingPageRow> findLatestByUserId(UUID userId) {
+        return dsl.selectFrom(LANDING_PAGE)
+                .where(LANDING_PAGE.USER_ID.eq(userId))
+                .orderBy(LANDING_PAGE.CREATED_AT.desc())
+                .limit(1)
+                .fetchOptional(this::toRow);
+    }
+
     public void updateSection(UUID pageId, UUID userId, SectionType sectionType, String content) {
         // Use PostgreSQL jsonb_set to update a single key
         dsl.update(LANDING_PAGE)

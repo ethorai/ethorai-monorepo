@@ -37,7 +37,7 @@ export default function LoginPage() {
     if (result?.error) {
       setError("Invalid email or password");
     } else {
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     }
   }
 
@@ -46,7 +46,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="font-[family-name:var(--font-heading)] text-3xl font-semibold text-stone-800">
+          <h1 className="font-(family-name:--font-heading) text-3xl font-semibold text-stone-800">
             AI Therapists
           </h1>
           <p className="mt-2 text-sm text-stone-500">
@@ -61,7 +61,7 @@ export default function LoginPage() {
         {/* Google */}
         <button
           type="button"
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          onClick={() => signIn("google", { callbackUrl: "/" })}
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-stone-300 bg-white px-4 py-3 text-sm font-medium text-stone-700 shadow-sm transition hover:bg-stone-50"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">

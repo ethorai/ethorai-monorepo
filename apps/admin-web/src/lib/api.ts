@@ -182,16 +182,22 @@ export async function getPage(pageId: string): Promise<GeneratedPageResponse> {
   return parseApiResponse<GeneratedPageResponse>(response);
 }
 
-export async function getPagesByProfile(
-  profileId: string,
-): Promise<GeneratedPageResponse[]> {
-  const params = new URLSearchParams({ profileId });
-  const response = await fetch(`/api/pages?${params.toString()}`, {
+export async function getMyPage(): Promise<GeneratedPageResponse | null> {
+  const response = await fetch(`/api/me/page`, {
     method: "GET",
     cache: "no-store",
   });
+  if (response.status === 204) return null;
+  return parseApiResponse<GeneratedPageResponse>(response);
+}
 
-  return parseApiResponse<GeneratedPageResponse[]>(response);
+export async function getMyProfile(): Promise<TherapistInput | null> {
+  const response = await fetch(`/api/me/profile`, {
+    method: "GET",
+    cache: "no-store",
+  });
+  if (response.status === 204) return null;
+  return parseApiResponse<TherapistInput>(response);
 }
 
 export async function updatePageSection(

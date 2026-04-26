@@ -21,11 +21,15 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ### Now
 
+- [ ] 5 user interviews with target therapists (validate generated page output before further product changes)
 - [ ] Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
 - [ ] End-to-end smoke test on production: register → generate → publish → verify public page at `/p/{id}`
 
 ## Completed Milestones
 
+- [x] Public page redesign (Phase 3) — rewrote all 9 section components to match Ethorai brand (warm cream + Fraunces serif + stone palette); replaced blue/gray Bootstrap-era styling; functional CTA with mailto/tel fallback; added `--font-serif` Tailwind theme variable
+- [x] Workspace + cleanup (Phase 1+2) — singleton `/page` workspace replaces `/pages/[id]` (no ID in URL); deleted `/dashboard`, `/generate`, `/pages/[id]`, `/api/pages?profileId=`; new backend `MeController` with `GET /api/me/page` and `GET /api/me/profile` (204 when empty); root `/` redirects to `/page`; "Modifier mes réponses" pre-fills onboarding from profile; "Régénérer" / "Publier" / "Voir public" / "Copier le lien" / "Se déconnecter" actions in sticky top bar; toast on publish-with-clipboard-copy
+- [x] Conversational onboarding flow at `/onboarding` — 10 screens (welcome + 8 questions + summary), Typeform-style one-question-per-screen, localStorage persistence, French copy, Tailwind only; root `/` now redirects to `/onboarding` instead of `/dashboard`
 - [x] Rate limiting on POST /api/generate (per-user, prevents OpenAI cost abuse)
 - [x] Sanitize free-text inputs against prompt injection (approach field)
 - [x] XSS audit on section-renderers.tsx — all fields use JSX interpolation, no dangerouslySetInnerHTML, confirmed safe
