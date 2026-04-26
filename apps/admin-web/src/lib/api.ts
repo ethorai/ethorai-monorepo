@@ -27,9 +27,14 @@ export type HeroData = {
   subheading: string;
 };
 
+export type AreaOfSupportItem = {
+  title: string;
+  description: string;
+};
+
 export type AreasOfSupportData = {
   title: string;
-  items: string[];
+  items: AreaOfSupportItem[];
 };
 
 export type HowIWorkData = {
@@ -37,9 +42,14 @@ export type HowIWorkData = {
   description: string;
 };
 
+export type ExpectationStatement = {
+  title: string;
+  description: string;
+};
+
 export type WhatYouCanExpectData = {
   title: string;
-  statements: string[];
+  statements: ExpectationStatement[];
 };
 
 export type SessionFormatItem = {

@@ -6,7 +6,15 @@ import java.util.List;
 public record WhatYouCanExpectData(
     @JsonProperty("title")
     String title,
-    
+
     @JsonProperty("statements")
-    List<String> statements
-) {}
+    List<Statement> statements
+) {
+    public record Statement(
+        @JsonProperty("title")
+        String title,
+
+        @JsonProperty("description")
+        String description
+    ) {}
+}

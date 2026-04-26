@@ -20,7 +20,7 @@ import {
 
 export function HeaderSection({ data }: { data: HeaderData }) {
   return (
-    <header className="border-b border-stone-200 bg-white/70 backdrop-blur-sm">
+    <header className="sticky top-0 z-10 border-b border-stone-200 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-5xl items-baseline justify-between gap-6 px-6 py-6 sm:px-10">
         <div className="flex items-baseline gap-3">
           <span className="font-serif text-xl font-medium text-stone-900">
@@ -65,13 +65,20 @@ export function AreasOfSupportSection({
         <h2 className="text-3xl font-medium tracking-tight text-stone-900 sm:text-4xl">
           {data.title}
         </h2>
-        <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <ul className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2">
           {data.items.map((item, i) => (
             <li
               key={i}
-              className="rounded-2xl border border-stone-200 bg-stone-50/70 px-5 py-4 text-base leading-relaxed text-stone-700"
+              className="rounded-2xl border border-stone-200 bg-stone-50/70 px-6 py-6"
             >
-              {item}
+              <h3 className="text-lg font-medium text-stone-900">
+                {item.title}
+              </h3>
+              {item.description ? (
+                <p className="mt-2 text-base leading-relaxed text-stone-600">
+                  {item.description}
+                </p>
+              ) : null}
             </li>
           ))}
         </ul>
@@ -106,13 +113,20 @@ export function WhatYouCanExpectSection({
         <h2 className="text-3xl font-medium tracking-tight text-stone-900 sm:text-4xl">
           {data.title}
         </h2>
-        <ul className="mt-10 space-y-4">
+        <ul className="mt-10 space-y-5">
           {data.statements.map((statement, i) => (
             <li
               key={i}
-              className="rounded-2xl border border-stone-200 bg-stone-50/70 px-6 py-5 text-base leading-relaxed text-stone-700 sm:text-lg"
+              className="rounded-2xl border border-stone-200 bg-stone-50/70 px-6 py-6"
             >
-              {statement}
+              <h3 className="text-lg font-medium text-stone-900">
+                {statement.title}
+              </h3>
+              {statement.description ? (
+                <p className="mt-2 text-base leading-relaxed text-stone-600">
+                  {statement.description}
+                </p>
+              ) : null}
             </li>
           ))}
         </ul>

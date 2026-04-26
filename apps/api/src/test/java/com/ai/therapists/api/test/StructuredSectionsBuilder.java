@@ -17,7 +17,20 @@ public class StructuredSectionsBuilder {
             new HeroData("Je travaille avec adultes", "Accompagnement en psychologie"),
             new AreasOfSupportData(
                 "Domaines d'accompagnement",
-                List.of("Stress", "Transitions de vie", "Anxiété")
+                List.of(
+                    new AreasOfSupportData.Item(
+                        "Stress et tensions du quotidien",
+                        "Pressions professionnelles, transitions ou tensions accumulées qui finissent par créer un sentiment de surcharge."
+                    ),
+                    new AreasOfSupportData.Item(
+                        "Transitions de vie",
+                        "Changements personnels ou professionnels que l'on souhaite traverser à son rythme."
+                    ),
+                    new AreasOfSupportData.Item(
+                        "Anxiété et inquiétudes",
+                        "Pensées qui tournent en boucle, anticipations, fatigue mentale persistante."
+                    )
+                )
             ),
             new HowIWorkData(
                 "Ma pratique",
@@ -26,9 +39,18 @@ public class StructuredSectionsBuilder {
             new WhatYouCanExpectData(
                 "Ce que vous pouvez attendre",
                 List.of(
-                    "Un espace confidentiel et sécurisé",
-                    "De l'écoute et du respect",
-                    "Une collaboration adaptée à votre rythme"
+                    new WhatYouCanExpectData.Statement(
+                        "Un espace confidentiel",
+                        "Tout ce que vous partagez reste entre nous, dans le respect strict du secret professionnel."
+                    ),
+                    new WhatYouCanExpectData.Statement(
+                        "Une écoute respectueuse",
+                        "Aucun jugement, juste une présence attentive à ce que vous traversez."
+                    ),
+                    new WhatYouCanExpectData.Statement(
+                        "Un travail à votre rythme",
+                        "Le cadre s'adapte à vos besoins, pas l'inverse."
+                    )
                 )
             ),
             new SessionFormatsData(

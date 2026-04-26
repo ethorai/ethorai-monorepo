@@ -66,35 +66,69 @@ function TextArea({
   );
 }
 
-function StringListEditor({
+type RichItem = { title: string; description: string };
+
+function RichItemListEditor({
   label,
   values,
   onChange,
 }: {
   label: string;
-  values: string[];
-  onChange: (next: string[]) => void;
+  values: RichItem[];
+  onChange: (next: RichItem[]) => void;
 }) {
+  function update(index: number, patch: Partial<RichItem>) {
+    onChange(values.map((it, i) => (i === index ? { ...it, ...patch } : it)));
+  }
+  function remove(index: number) {
+    onChange(values.filter((_, i) => i !== index));
+  }
+  function add() {
+    onChange([...values, { title: "", description: "" }]);
+  }
+
   return (
-    <label className="grid gap-2">
+    <div className="grid gap-3">
       <span className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
         {label}
       </span>
-      <textarea
-        className="rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm leading-6 text-stone-800 outline-none ring-emerald-300 transition focus:ring"
-        value={values.join("\n")}
-        onChange={(event) =>
-          onChange(
-            event.target.value
-              .split("\n")
-              .map((item) => item.trim())
-              .filter(Boolean),
-          )
-        }
-        rows={Math.max(4, values.length || 1)}
-      />
-      <span className="text-xs text-stone-500">Une ligne par élément.</span>
-    </label>
+      <div className="grid gap-3">
+        {values.map((item, i) => (
+          <div
+            key={i}
+            className="grid gap-2 rounded-xl border border-stone-200 bg-stone-50/60 p-3"
+          >
+            <input
+              className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm font-medium text-stone-800 outline-none focus:border-stone-500"
+              placeholder="Titre court"
+              value={item.title}
+              onChange={(e) => update(i, { title: e.target.value })}
+            />
+            <textarea
+              className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm leading-6 text-stone-700 outline-none focus:border-stone-500"
+              rows={2}
+              placeholder="Description (1-2 phrases)"
+              value={item.description}
+              onChange={(e) => update(i, { description: e.target.value })}
+            />
+            <button
+              type="button"
+              onClick={() => remove(i)}
+              className="self-start text-xs text-stone-500 hover:text-rose-600"
+            >
+              Supprimer
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={add}
+        className="self-start rounded-lg border border-dashed border-stone-400 px-3 py-1.5 text-xs text-stone-600 hover:border-stone-600 hover:bg-white"
+      >
+        + Ajouter un élément
+      </button>
+    </div>
   );
 }
 
@@ -159,7 +193,7 @@ export function AreasOfSupportEditor({
         value={value.title}
         onChange={(title) => onChange({ ...value, title })}
       />
-      <StringListEditor
+      <RichItemListEditor
         label="Items"
         values={value.items}
         onChange={(items) => onChange({ ...value, items })}
@@ -197,7 +231,7 @@ export function WhatYouCanExpectEditor({
         value={value.title}
         onChange={(title) => onChange({ ...value, title })}
       />
-      <StringListEditor
+      <RichItemListEditor
         label="Statements"
         values={value.statements}
         onChange={(statements) => onChange({ ...value, statements })}

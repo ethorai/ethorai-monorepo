@@ -10,10 +10,12 @@ import com.ai.therapists.api.section_data.HowIWorkData;
 import com.ai.therapists.api.section_data.SessionFormatsData;
 import com.ai.therapists.api.section_data.StructuredSections;
 import com.ai.therapists.api.section_data.WhatYouCanExpectData;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +51,34 @@ public class StructuredSectionsMapper {
 
     private AreasOfSupportData parseAreasOfSupport(String value) {
         AreasOfSupportData parsed = readValue(value, AreasOfSupportData.class);
-        return parsed != null ? parsed : new AreasOfSupportData("Areas of support", splitItems(value));
+        if (parsed != null) return parsed;
+
+        // Backward compat: items used to be List<String>. Lift each string into an Item with empty description.
+        try {
+            JsonNode node = objectMapper.readTree(value);
+            if (node != null && node.has("items") && node.get("items").isArray()) {
+                String title = node.has("title") ? node.get("title").asText("Domaines d'accompagnement")
+                                                 : "Domaines d'accompagnement";
+                List<AreasOfSupportData.Item> items = new ArrayList<>();
+                for (JsonNode item : node.get("items")) {
+                    if (item.isTextual()) {
+                        items.add(new AreasOfSupportData.Item(item.asText(), ""));
+                    } else if (item.isObject()) {
+                        String t = item.has("title") ? item.get("title").asText("") : "";
+                        String d = item.has("description") ? item.get("description").asText("") : "";
+                        items.add(new AreasOfSupportData.Item(t, d));
+                    }
+                }
+                return new AreasOfSupportData(title, items);
+            }
+        } catch (Exception ignored) {
+            // fall through to text fallback
+        }
+
+        return new AreasOfSupportData("Domaines d'accompagnement",
+                splitItems(value).stream()
+                        .map(s -> new AreasOfSupportData.Item(s, ""))
+                        .toList());
     }
 
     private HowIWorkData parseHowIWork(String value) {
@@ -59,7 +88,34 @@ public class StructuredSectionsMapper {
 
     private WhatYouCanExpectData parseWhatYouCanExpect(String value) {
         WhatYouCanExpectData parsed = readValue(value, WhatYouCanExpectData.class);
-        return parsed != null ? parsed : new WhatYouCanExpectData("What you can expect", splitItems(value));
+        if (parsed != null) return parsed;
+
+        // Backward compat: statements used to be List<String>.
+        try {
+            JsonNode node = objectMapper.readTree(value);
+            if (node != null && node.has("statements") && node.get("statements").isArray()) {
+                String title = node.has("title") ? node.get("title").asText("Ce que vous pouvez attendre")
+                                                 : "Ce que vous pouvez attendre";
+                List<WhatYouCanExpectData.Statement> statements = new ArrayList<>();
+                for (JsonNode item : node.get("statements")) {
+                    if (item.isTextual()) {
+                        statements.add(new WhatYouCanExpectData.Statement(item.asText(), ""));
+                    } else if (item.isObject()) {
+                        String t = item.has("title") ? item.get("title").asText("") : "";
+                        String d = item.has("description") ? item.get("description").asText("") : "";
+                        statements.add(new WhatYouCanExpectData.Statement(t, d));
+                    }
+                }
+                return new WhatYouCanExpectData(title, statements);
+            }
+        } catch (Exception ignored) {
+            // fall through
+        }
+
+        return new WhatYouCanExpectData("Ce que vous pouvez attendre",
+                splitItems(value).stream()
+                        .map(s -> new WhatYouCanExpectData.Statement(s, ""))
+                        .toList());
     }
 
     private SessionFormatsData parseSessionFormats(String value) {

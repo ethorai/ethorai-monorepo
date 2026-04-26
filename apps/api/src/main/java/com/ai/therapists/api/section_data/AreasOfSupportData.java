@@ -6,7 +6,15 @@ import java.util.List;
 public record AreasOfSupportData(
     @JsonProperty("title")
     String title,
-    
+
     @JsonProperty("items")
-    List<String> items
-) {}
+    List<Item> items
+) {
+    public record Item(
+        @JsonProperty("title")
+        String title,
+
+        @JsonProperty("description")
+        String description
+    ) {}
+}

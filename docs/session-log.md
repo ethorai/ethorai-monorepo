@@ -4,6 +4,15 @@
 
 ### Done Today
 
+- **Sticky public header + enriched section content** — addressed user feedback that AREAS_OF_SUPPORT cards looked like "a list of user choices in rectangles" (just "Stress" inside a box):
+  - `HeaderSection` now `sticky top-0 z-10` with `backdrop-blur-md` (workspace bar at z-20 takes precedence on `/page`)
+  - Backend data shape: `AreasOfSupportData.items: List<String>` → `List<Item>` with nested `Item(title, description)` record; same for `WhatYouCanExpectData.statements` → `List<Statement>`
+  - Prompt: AI now instructed to generate `{title: "topic (3-6 words)", description: "1-2 sentences professional, neutral"}` per item, both in main prompt and per-section regeneration schema
+  - Mapper: backward-compat parser handles both old shape (List<String>) and new shape (List<Item>) — existing dev DB pages won't 502, they'll just have empty descriptions until regenerated
+  - Test fixture (`StructuredSectionsBuilder`): updated with realistic title+description pairs in French
+  - External OpenAI test (`GeneratePageOpenAiExternalIT`): assertions updated from `items[0]` (string) to `items[0].title` + `items[0].description`
+  - Frontend: new `AreaOfSupportItem` and `ExpectationStatement` types; rich card rendering (h3 title + body description); `RichItemListEditor` replaces `StringListEditor` in section-editors (still hidden in v1, but compiles & functions)
+  - 28/28 tests; lint + build green
 - **Public page redesign (Phase 3)** — rewrote `section-renderers.tsx` (9 components) to match Ethorai brand:
   - Palette: warm cream + stone neutrals, no more blue/gray Bootstrap clichés
   - Typography: Fraunces serif on headings (auto via h-tags) + Space Grotesk body; added `--font-serif` Tailwind theme var for inline serif on non-headings (used in HEADER name + FOOTER name)

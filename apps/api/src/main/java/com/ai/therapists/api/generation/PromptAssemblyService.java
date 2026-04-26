@@ -91,7 +91,10 @@ public class PromptAssemblyService {
                   },
                   "AREAS_OF_SUPPORT": {
                     "title": "section title",
-                    "items": ["topic1", "topic2", "topic3", ...]
+                    "items": [
+                      {"title": "concise topic title (3-6 words)", "description": "1-2 sentences of professional, neutral description; topic-focused, no outcome promises"},
+                      ...
+                    ]
                   },
                   "HOW_I_WORK": {
                     "title": "section title",
@@ -99,7 +102,10 @@ public class PromptAssemblyService {
                   },
                   "WHAT_YOU_CAN_EXPECT": {
                     "title": "section title",
-                    "statements": ["statement1", "statement2", "statement3", ...]
+                    "statements": [
+                      {"title": "short value or principle (3-6 words)", "description": "1-2 sentences elaborating on this principle; calm professional tone, environment-focused"},
+                      ...
+                    ]
                   },
                   "SESSION_FORMATS": {
                     "title": "section title",
@@ -131,9 +137,9 @@ public class PromptAssemblyService {
                 - All strings must be in French
                 - All null values should be JSON null (not empty strings)
                 - HERO heading: maximum 12 words
-                - AREAS_OF_SUPPORT items: 3-7 topics, neutral & descriptive
+                - AREAS_OF_SUPPORT items: 3-7 entries, each with title (3-6 words) + description (1-2 sentences); neutral & descriptive, topic-focused, never frame items as problems to be solved
                 - HOW_I_WORK description: 1-2 sentences, process-oriented
-                - WHAT_YOU_CAN_EXPECT statements: 3-5 short statements about the environment
+                - WHAT_YOU_CAN_EXPECT statements: 3-5 entries, each with title (3-6 words) + description (1-2 sentences); about the therapeutic environment & values, not outcomes
                 - SESSION_FORMATS formats: list the applicable formats
                 - CONTACT cta_text: 3-4 words, neutral CTA like "Book a session"
                 - DISCLAIMER text: mandatory, calm tone, no legal advice
@@ -211,11 +217,11 @@ public class PromptAssemblyService {
             case HERO -> """
                     { "heading": "headline (max 12 words)", "subheading": "..." }""";
             case AREAS_OF_SUPPORT -> """
-                    { "title": "...", "items": ["topic1", "topic2", ...] }""";
+                    { "title": "...", "items": [{"title": "topic (3-6 words)", "description": "1-2 sentences"}, ...] }""";
             case HOW_I_WORK -> """
                     { "title": "...", "description": "..." }""";
             case WHAT_YOU_CAN_EXPECT -> """
-                    { "title": "...", "statements": ["statement1", "statement2", ...] }""";
+                    { "title": "...", "statements": [{"title": "principle (3-6 words)", "description": "1-2 sentences"}, ...] }""";
             case SESSION_FORMATS -> """
                     { "title": "...", "formats": [{"type": "ONLINE", "details": "..."}, ...] }""";
             case CONTACT -> """
