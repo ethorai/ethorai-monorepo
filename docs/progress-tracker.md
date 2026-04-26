@@ -21,6 +21,11 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ### Now
 
+- [ ] Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
+- [ ] End-to-end smoke test on production: register → generate → publish → verify public page at `/p/{id}`
+
+## Completed Milestones
+
 - [x] Rate limiting on POST /api/generate (per-user, prevents OpenAI cost abuse)
 - [x] Sanitize free-text inputs against prompt injection (approach field)
 - [x] XSS audit on section-renderers.tsx — all fields use JSX interpolation, no dangerouslySetInnerHTML, confirmed safe
@@ -29,10 +34,10 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] On publish: `revalidatePath('/p/{id}')` called in Next.js publish proxy route after Spring 204
 - [x] Dockerfile (multi-stage, eclipse-temurin:21-jdk builder + 21-jre runtime) + `.dockerignore` — Docker build verified locally
 - [x] jOOQ generated sources committed to `src/main/generated/jooq` — builds without a DB (`-Djooq.codegen.skip=true`)
-- [ ] Deploy to Railway (Spring API + PostgreSQL managed) + Vercel (admin-web + public pages)
-- [ ] Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
-
-## Completed Milestones
+- [x] Project named **Ethorai** — GitHub org `ethorai` created, monorepo pushed to `ethorai/ethorai-monorepo`
+- [x] Railway deployment: Spring API + PostgreSQL 17 managed instance; fixed `server.port` root placement + PG individual vars (`PGHOST/PGPORT/PGDATABASE/PGUSER/PGPASSWORD`)
+- [x] Vercel deployment: Next.js admin + public pages; fixed `middleware.ts` → `proxy.ts` (Next.js 16), `AUTH_SECRET`, Google OAuth `client_id=undefined` (explicit credentials in `Google({clientId, clientSecret})`), missing redirect URI in Google Cloud Console
+- [x] `DotEnvEnvironmentPostProcessor` — loads `apps/api/.env` at Spring startup via SPI; fixes 401 on Google login caused by `INTERNAL_SECRET` missing from local environment
 
 - [x] Full project review (architecture, docs, security gaps, monetization options)
 - [x] docs/persona.md — removed ChatGPT transcript contamination

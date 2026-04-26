@@ -1,5 +1,51 @@
 # Session Log
 
+## 2026-04-26
+
+### Done Today
+
+- Named project **Ethorai** — created GitHub org `ethorai`, pushed monorepo as `ethorai/ethorai-monorepo`
+- Deployed Spring API to **Railway** (Spring + managed PostgreSQL 17):
+  - Fixed `server.port` silently ignored (was nested under `spring:` in application.yaml — moved to root)
+  - Fixed `DATABASE_URL` missing `jdbc:` prefix — switched to Railway individual vars (`PGHOST/PGPORT/PGDATABASE/PGUSER/PGPASSWORD`) in datasource URL
+  - Added `${PORT:${SERVER_PORT:8080}}` so Railway's injected `PORT` var takes effect
+- Deployed Next.js admin to **Vercel**:
+  - Fixed `middleware.ts` silently ignored by Next.js 16 — renamed to `proxy.ts` (new convention); dashboard was publicly accessible on Vercel
+  - Fixed `MissingSecret` Auth.js error — `AUTH_SECRET` was not set in Vercel env vars
+  - Fixed `client_id=undefined` in Google OAuth URL — Auth.js v5 reads `AUTH_GOOGLE_ID` by default but we pass credentials explicitly via `Google({clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET})`
+  - Fixed Google OAuth 401 `invalid_client` — added `https://ethorai.vercel.app/api/auth/callback/google` as authorized redirect URI in Google Cloud Console
+  - Fixed `NEXT_PUBLIC_API_URL` → `API_BASE_URL` in register proxy route
+- Fixed 401 on `POST /api/generate` after Google login:
+  - Root cause: `INTERNAL_SECRET` missing from local Spring environment — `internalSecret.isBlank()` returned true → `POST /api/auth/oauth` rejected → `springToken` never stored in session
+  - Created `DotEnvEnvironmentPostProcessor` (registered via `META-INF/spring/org.springframework.boot.env.EnvironmentPostProcessor.imports`) — loads `apps/api/.env` before context startup; OS env vars take precedence so Railway is unaffected
+  - Added `INTERNAL_SECRET` to `apps/api/.env`
+- Added IntelliJ `API - jOOQ Regenerate` run config for `jooq-codegen:generate`
+- Fixed duplicate jOOQ class compile error with `./mvnw clean`
+- 24/24 tests passing throughout
+
+### Next 3 Tasks
+
+1. Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
+2. End-to-end smoke test on production: register → generate → publish → verify `/p/{id}`
+3. (Later) AWS ECS + RDS as portfolio infrastructure exercise
+
+### Current Blocker
+
+None. Spring local restart required to pick up `DotEnvEnvironmentPostProcessor` (first run after today's commit).
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From `apps/api`:
+`./mvnw spring-boot:run`
+
+From `apps/admin-web`:
+`npm run dev`
+
+---
+
 ## 2026-04-20
 
 ### Done Today
