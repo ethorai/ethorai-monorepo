@@ -96,16 +96,16 @@ IntelliJ: Run `ApiApplication` as Application type. Set `OPENAI_API_KEY` in Envi
 
 ## Output Format
 
-**MANDATORY at the end of every working session — no exceptions:**
+**MANDATORY before every `git commit` — no exceptions:**
 
 1. Update `docs/progress-tracker.md`:
    - Move completed items into "Completed Milestones"
-   - Set "Now" to the next actionable items
+   - Update "Now" to reflect what's next
 2. Update `docs/session-log.md`:
-   - Add a new dated entry with: Done Today, Next 3 Tasks, Current Blocker, Exact Resume Command
-3. Commit both files together (`docs: update session log + progress tracker`)
+   - Append to today's entry (or create one): Done Today, Next 3 Tasks, Current Blocker, Exact Resume Command
+3. Include both files in the same commit as the code change — no separate `docs:` commit needed
 
-Skipping either file is a mistake. Do both, always, before ending a session.
+This applies to every commit — mid-session, end-of-session, bug fix, or refactor. No exceptions.
 
 ## Verification that copilot instructions are loaded
 

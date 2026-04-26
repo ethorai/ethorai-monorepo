@@ -22,7 +22,7 @@
 - Added IntelliJ `API - jOOQ Regenerate` run config for `jooq-codegen:generate`
 - Fixed duplicate jOOQ class compile error with `./mvnw clean`
 - Fixed `Forbidden term detected: résultats` surfacing as 422 to user — added `generateWithRetry()` in `GenerationOrchestrator`: retries AI generation up to 3 times on `GenerationValidationException` (GPT-4o forbidden term slippage); only fails if all 3 attempts fail validation
-- Updated CLAUDE.md: commit protocol now requires updating both tracking files in every commit, not just end-of-session
+- Updated CLAUDE.md + `.github/copilot-instructions.md`: commit protocol now requires updating both tracking files in every commit, not just end-of-session
 - 24/24 tests passing throughout
 
 ### Next 3 Tasks
