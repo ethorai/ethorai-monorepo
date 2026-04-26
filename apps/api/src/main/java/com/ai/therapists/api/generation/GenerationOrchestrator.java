@@ -27,6 +27,7 @@ import java.util.UUID;
 public class GenerationOrchestrator {
 
     private static final Logger log = LoggerFactory.getLogger(GenerationOrchestrator.class);
+    private static final int MAX_GENERATION_ATTEMPTS = 3;
 
     private final InputNormalizationService normalizationService;
     private final AiGenerationService aiService;
@@ -71,8 +72,7 @@ public class GenerationOrchestrator {
         jobRepo.updateStatus(jobId, GenerationJobStatus.IN_PROGRESS);
 
         try {
-            Map<SectionType, String> sections = aiService.generate(input);
-            outputValidationService.validateOrThrow(sections);
+            Map<SectionType, String> sections = generateWithRetry(input);
 
             UUID pageId = pageRepo.insert(profileId, userId, sections, null);
             eventLog.log(EntityType.PAGE, pageId, EventType.GENERATED);
@@ -135,6 +135,21 @@ public class GenerationOrchestrator {
             );
             throw ex;
         }
+    }
+
+    private Map<SectionType, String> generateWithRetry(TherapistInput input) {
+        GenerationValidationException lastFailure = null;
+        for (int attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt++) {
+            try {
+                Map<SectionType, String> sections = aiService.generate(input);
+                outputValidationService.validateOrThrow(sections);
+                return sections;
+            } catch (GenerationValidationException ex) {
+                lastFailure = ex;
+                log.warn("Generation attempt {}/{} failed validation: {}", attempt, MAX_GENERATION_ATTEMPTS, ex.getMessage());
+            }
+        }
+        throw lastFailure;
     }
 
     private TherapistInput toInput(TherapistProfileRow profile) {
