@@ -38,6 +38,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 - [x] Railway deployment: Spring API + PostgreSQL 17 managed instance; fixed `server.port` root placement + PG individual vars (`PGHOST/PGPORT/PGDATABASE/PGUSER/PGPASSWORD`)
 - [x] Vercel deployment: Next.js admin + public pages; fixed `middleware.ts` → `proxy.ts` (Next.js 16), `AUTH_SECRET`, Google OAuth `client_id=undefined` (explicit credentials in `Google({clientId, clientSecret})`), missing redirect URI in Google Cloud Console
 - [x] `DotEnvEnvironmentPostProcessor` — loads `apps/api/.env` at Spring startup via SPI; fixes 401 on Google login caused by `INTERNAL_SECRET` missing from local environment
+- [x] Generation retry logic — `generateWithRetry()` in orchestrator retries up to 3 times on `GenerationValidationException` (GPT-4o forbidden term slippage); surface error only if all 3 attempts fail
 
 - [x] Full project review (architecture, docs, security gaps, monetization options)
 - [x] docs/persona.md — removed ChatGPT transcript contamination

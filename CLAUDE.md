@@ -147,20 +147,21 @@ npm run build  # production build check
 
 ---
 
-## End-of-Session Protocol — Mandatory
+## Commit Protocol — Mandatory
 
-At the end of every working session, before stopping:
+**Before every `git commit` without exception**, update both tracking files first:
 
 1. **Update `docs/progress-tracker.md`**:
-   - Move completed items to "Completed Milestones"
-   - Set "Now" to the next actionable items
+   - Move any newly completed items to "Completed Milestones"
+   - Update "Now" to reflect what's next
 
 2. **Update `docs/session-log.md`**:
-   - Add a new dated entry with: Done Today, Next 3 Tasks, Current Blocker, Exact Resume Command
+   - Append to the current dated entry (or create one if none exists for today): what was done, next 3 tasks, current blocker, exact resume command
 
-3. **Commit both files together**:
+3. **Include both files in the same commit** as the code change:
    ```
-   docs: update session log + progress tracker
+   feat(scope): description
    ```
+   No separate `docs:` commit needed — fold them into the same commit.
 
-Skipping either file is a mistake. Both files, always, before ending a session.
+This applies to every commit — mid-session, end-of-session, bug fix, or refactor. No exceptions.
