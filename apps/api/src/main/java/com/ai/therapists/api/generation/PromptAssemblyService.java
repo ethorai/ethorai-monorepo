@@ -110,8 +110,7 @@ public class PromptAssemblyService {
                   "SESSION_FORMATS": {
                     "title": "section title",
                     "formats": [
-                      {"type": "ONLINE", "details": "details about online sessions"},
-                      {"type": "IN_PERSON", "details": "details about in-person sessions"}
+                      {"type": "human-friendly label like 'En cabinet' or 'En visio'", "details": "1-2 sentences with practical info: location for in-person, platform for online, duration if relevant"}
                     ]
                   },
                   "CONTACT": {
@@ -140,7 +139,7 @@ public class PromptAssemblyService {
                 - AREAS_OF_SUPPORT items: 3-7 entries, each with title (3-6 words) + description (1-2 sentences); neutral & descriptive, topic-focused, never frame items as problems to be solved
                 - HOW_I_WORK description: 1-2 sentences, process-oriented
                 - WHAT_YOU_CAN_EXPECT statements: 3-5 entries, each with title (3-6 words) + description (1-2 sentences); about the therapeutic environment & values, not outcomes
-                - SESSION_FORMATS formats: list the applicable formats
+                - SESSION_FORMATS formats: 1-2 entries; type MUST be a human-friendly French label (e.g., "En cabinet", "En visio", "Les deux") — never the raw enum (ONLINE/IN_PERSON/BOTH); details: 1-2 sentences with practical info
                 - CONTACT cta_text: 3-4 words, neutral CTA like "Book a session"
                 - DISCLAIMER text: mandatory, calm tone, no legal advice
 
@@ -223,7 +222,7 @@ public class PromptAssemblyService {
             case WHAT_YOU_CAN_EXPECT -> """
                     { "title": "...", "statements": [{"title": "principle (3-6 words)", "description": "1-2 sentences"}, ...] }""";
             case SESSION_FORMATS -> """
-                    { "title": "...", "formats": [{"type": "ONLINE", "details": "..."}, ...] }""";
+                    { "title": "...", "formats": [{"type": "human label e.g. 'En cabinet' or 'En visio'", "details": "1-2 sentences"}, ...] }""";
             case CONTACT -> """
                     { "title": "...", "description": "...", "cta_text": "3-4 words", "phone": "... or null", "email": "... or null" }""";
             case DISCLAIMER -> """

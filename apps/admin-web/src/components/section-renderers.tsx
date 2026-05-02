@@ -135,6 +135,15 @@ export function WhatYouCanExpectSection({
   );
 }
 
+function humanizeFormatType(type: string): string {
+  const upper = type.trim().toUpperCase();
+  if (upper === "ONLINE" || upper === "VISIO") return "En visio";
+  if (upper === "IN_PERSON" || upper === "IN-PERSON" || upper === "INPERSON")
+    return "En cabinet";
+  if (upper === "BOTH") return "En cabinet et en visio";
+  return type;
+}
+
 export function SessionFormatsSection({ data }: { data: SessionFormatsData }) {
   return (
     <section className="bg-stone-50/60">
@@ -142,16 +151,16 @@ export function SessionFormatsSection({ data }: { data: SessionFormatsData }) {
         <h2 className="text-3xl font-medium tracking-tight text-stone-900 sm:text-4xl">
           {data.title}
         </h2>
-        <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
           {data.formats.map((format, i) => (
             <div
               key={i}
-              className="rounded-3xl border border-stone-200 bg-white p-7 shadow-[0_4px_24px_rgba(0,0,0,0.03)]"
+              className="rounded-3xl border border-stone-200 bg-white p-7 shadow-[0_4px_24px_rgba(0,0,0,0.03)] sm:p-8"
             >
-              <h3 className="text-xl font-medium text-stone-900">
-                {format.type}
+              <h3 className="text-2xl font-medium tracking-tight text-stone-900">
+                {humanizeFormatType(format.type)}
               </h3>
-              <p className="mt-3 leading-relaxed text-stone-700">
+              <p className="mt-4 leading-relaxed text-stone-700">
                 {format.details}
               </p>
             </div>

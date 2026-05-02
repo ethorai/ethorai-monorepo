@@ -56,8 +56,8 @@ public class StructuredSectionsBuilder {
             new SessionFormatsData(
                 "Formats de séances",
                 List.of(
-                    new SessionFormatsData.FormatItem("ONLINE", "Séances en ligne via vidéoconférence"),
-                    new SessionFormatsData.FormatItem("IN_PERSON", "Séances en cabinet à Paris")
+                    new SessionFormatsData.FormatItem("En visio", "Séances en ligne via vidéoconférence sécurisée."),
+                    new SessionFormatsData.FormatItem("En cabinet", "Séances en présentiel dans mon cabinet à Paris.")
                 )
             ),
             new ContactData(

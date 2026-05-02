@@ -74,7 +74,37 @@
 
 ### Current Blocker
 
-None. Onboarding requires browser test before commit — automated tests don't cover the UI flow.
+None.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From `apps/api`:
+`./mvnw spring-boot:run`
+
+From `apps/admin-web`:
+`npm run dev`
+
+---
+
+## 2026-05-02
+
+### Done Today
+
+- **SESSION_FORMATS polish**: removed redundant "Format" eyebrow label from inside each session format card in `SessionFormatsSection` — it duplicated the section title "Formats des sessions"; also cleaned up `mt-2` on h3 (now top-flush since no eyebrow above it)
+- **SESSION_FORMATS humanize**: added `humanizeFormatType()` helper mapping raw enum values (ONLINE/IN_PERSON/BOTH) to human-friendly French labels; updated prompt in `PromptAssemblyService` to demand human-friendly French labels and never raw enums; updated test fixture in `StructuredSectionsBuilder`
+
+### Next 3 Tasks
+
+1. Browser test the full flow: register → onboarding → /page workspace → publish → /p/[id] · Modifier mes réponses · Régénérer · Se déconnecter
+2. Phase 4 — close BOOKING_LINK gap: either add `bookingUrl` to `ContactData` or update prompt to put URL in `cta_text`/`description` for users who chose BOOKING_LINK contact method
+3. 5 user interviews with target therapists to validate the generated page output (per product consulting)
+
+### Current Blocker
+
+None.
 
 ### Exact Resume Command
 
