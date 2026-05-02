@@ -24,8 +24,9 @@ public class TherapistProfileRepository {
                        String approach,
                        SessionFormat sessionFormat,
                        List<String> expectations,
-                       ContactMethod contactMethod,
-                       String contactValue) {
+                       String phone,
+                       String email,
+                       String bookingLink) {
 
         return dsl.insertInto(THERAPIST_PROFILE)
                 .set(THERAPIST_PROFILE.FULL_NAME, fullName)
@@ -36,8 +37,9 @@ public class TherapistProfileRepository {
                 .set(THERAPIST_PROFILE.APPROACH, approach)
                 .set(THERAPIST_PROFILE.SESSION_FORMAT, sessionFormat.name())
                 .set(THERAPIST_PROFILE.EXPECTATIONS, JSONB.jsonb(toJson(expectations)))
-                .set(THERAPIST_PROFILE.CONTACT_METHOD, contactMethod.name())
-                .set(THERAPIST_PROFILE.CONTACT_VALUE, contactValue)
+                .set(THERAPIST_PROFILE.PHONE, phone)
+                .set(THERAPIST_PROFILE.EMAIL, email)
+                .set(THERAPIST_PROFILE.BOOKING_LINK, bookingLink)
                 .returning(THERAPIST_PROFILE.ID)
                 .fetchOne(THERAPIST_PROFILE.ID);
     }
@@ -58,8 +60,9 @@ public class TherapistProfileRepository {
             String approach,
             SessionFormat sessionFormat,
             List<String> expectations,
-            ContactMethod contactMethod,
-            String contactValue
+            String phone,
+            String email,
+            String bookingLink
     ) {}
 
     private TherapistProfileRow toRow(org.jooq.Record record) {
@@ -73,8 +76,9 @@ public class TherapistProfileRepository {
                 record.get(THERAPIST_PROFILE.APPROACH),
                 SessionFormat.valueOf(record.get(THERAPIST_PROFILE.SESSION_FORMAT)),
                 fromJson(record.get(THERAPIST_PROFILE.EXPECTATIONS)),
-                ContactMethod.valueOf(record.get(THERAPIST_PROFILE.CONTACT_METHOD)),
-                record.get(THERAPIST_PROFILE.CONTACT_VALUE)
+                record.get(THERAPIST_PROFILE.PHONE),
+                record.get(THERAPIST_PROFILE.EMAIL),
+                record.get(THERAPIST_PROFILE.BOOKING_LINK)
         );
     }
 

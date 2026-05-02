@@ -70,8 +70,9 @@ export function Workspace({ initialPage }: WorkspaceProps) {
         approach: profile.approach ?? "",
         sessionFormat: profile.sessionFormat,
         expectations: profile.expectations,
-        contactMethod: profile.contactMethod,
-        contactValue: profile.contactValue,
+        contactPhone: profile.phone ?? "",
+        contactEmail: profile.email ?? "",
+        contactBookingLink: profile.bookingLink ?? "",
       };
       saveOnboarding({ state: seeded, step: 1 });
       router.push("/onboarding");

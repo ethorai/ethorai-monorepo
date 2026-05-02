@@ -4,7 +4,6 @@ import com.ai.therapists.api.generation.AiGenerationException;
 import com.ai.therapists.api.generation.AiGenerationService;
 import com.ai.therapists.api.event.EventType;
 import com.ai.therapists.api.page.SectionType;
-import com.ai.therapists.api.profile.ContactMethod;
 import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
@@ -140,8 +139,9 @@ class GenerationErrorIntegrationTest {
                 "Integrative",
                 SessionFormat.ONLINE,
                 java.util.List.of("Confidentiality"),
-                ContactMethod.EMAIL,
-                ""
+                null,
+                "hello@example.com",
+                null
         );
 
         mockMvc.perform(post("/api/generate")
@@ -183,8 +183,9 @@ class GenerationErrorIntegrationTest {
                 "Integrative",
                 SessionFormat.ONLINE,
                 java.util.List.of("Confidentiality", "Respect"),
-                ContactMethod.EMAIL,
-                "hello@example.com"
+                null,
+                "hello@example.com",
+                null
         );
     }
 

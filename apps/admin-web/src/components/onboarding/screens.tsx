@@ -6,7 +6,7 @@ import {
   type KeyboardEvent,
   useState,
 } from "react";
-import type { ContactMethod, RoleType, SessionFormat } from "@/lib/api";
+import type { RoleType, SessionFormat } from "@/lib/api";
 import type { OnboardingState } from "@/lib/onboarding-storage";
 import {
   ArrowRight,
@@ -109,27 +109,10 @@ const EXPECTATION_OPTIONS = [
   "Écoute attentive",
 ];
 
-const CONTACT_OPTIONS: {
-  value: ContactMethod;
-  label: string;
-  description: string;
-}[] = [
-  {
-    value: "EMAIL",
-    label: "Par email",
-    description: "Une adresse mail vers laquelle vos visiteurs vous écrivent.",
-  },
-  {
-    value: "PHONE",
-    label: "Par téléphone",
-    description: "Un numéro affiché en clair sur votre page.",
-  },
-  {
-    value: "BOOKING_LINK",
-    label: "Lien de prise de rendez-vous",
-    description: "Un lien Calendly, Doctolib ou équivalent.",
-  },
-];
+function formatFrenchPhone(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 10);
+  return digits.replace(/(\d{2})(?=\d)/g, "$1 ").trim();
+}
 
 function toggleInList(list: string[], item: string): string[] {
   return list.includes(item) ? list.filter((i) => i !== item) : [...list, item];
@@ -496,27 +479,42 @@ export function ExpectationsScreen({ state, update, onNext }: ScreenProps) {
 
 // ─── 8. Contact ─────────────────────────────────────────────────
 
-export function ContactScreen({ state, update, onNext }: ScreenProps) {
-  const placeholder =
-    state.contactMethod === "EMAIL"
-      ? "marie.dupont@exemple.fr"
-      : state.contactMethod === "PHONE"
-        ? "06 12 34 56 78"
-        : "https://calendly.com/votre-cabinet";
-  const inputType =
-    state.contactMethod === "EMAIL"
-      ? "email"
-      : state.contactMethod === "PHONE"
-        ? "tel"
-        : "url";
+type ContactKey = "phone" | "email" | "booking";
 
-  const canContinue =
-    !!state.contactMethod && state.contactValue.trim().length > 3;
+export function ContactScreen({ state, update, onNext }: ScreenProps) {
+  const [open, setOpen] = useState<Set<ContactKey>>(() => {
+    const s = new Set<ContactKey>();
+    if (state.contactPhone) s.add("phone");
+    if (state.contactEmail) s.add("email");
+    if (state.contactBookingLink) s.add("booking");
+    return s;
+  });
+
+  function toggle(key: ContactKey) {
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+        if (key === "phone") update({ contactPhone: "" });
+        if (key === "email") update({ contactEmail: "" });
+        if (key === "booking") update({ contactBookingLink: "" });
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }
+
+  const canContinue = !!(
+    state.contactPhone.trim() ||
+    state.contactEmail.trim() ||
+    state.contactBookingLink.trim()
+  );
 
   return (
     <Question
       title="Comment souhaitez-vous que les visiteurs vous contactent ?"
-      subtitle="Une seule méthode pour ne pas disperser l'attention de vos visiteurs."
+      subtitle="Sélectionnez une ou plusieurs méthodes de contact."
       footer={
         <PrimaryButton disabled={!canContinue} onClick={onNext}>
           Continuer
@@ -524,36 +522,111 @@ export function ContactScreen({ state, update, onNext }: ScreenProps) {
         </PrimaryButton>
       }
     >
-      <div className="space-y-4">
-        <div className="space-y-3">
-          {CONTACT_OPTIONS.map((option) => (
-            <RadioCard
-              key={option.value}
-              selected={state.contactMethod === option.value}
-              onSelect={() =>
-                update({ contactMethod: option.value, contactValue: "" })
-              }
-              title={option.label}
-              description={option.description}
-            />
-          ))}
+      <div className="space-y-3">
+        {/* Email */}
+        <div className="rounded-2xl border border-stone-200 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggle("email")}
+            className={`w-full flex items-center justify-between px-5 py-4 text-left transition ${
+              open.has("email") ? "bg-stone-900 text-white" : "bg-white hover:bg-stone-50"
+            }`}
+          >
+            <div>
+              <p className={`font-medium ${open.has("email") ? "text-white" : "text-stone-900"}`}>Par email</p>
+              <p className={`text-sm mt-0.5 ${open.has("email") ? "text-stone-300" : "text-stone-500"}`}>
+                Une adresse mail vers laquelle vos visiteurs vous écrivent.
+              </p>
+            </div>
+            <span className={`ml-4 shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+              open.has("email") ? "border-white" : "border-stone-300"
+            }`}>
+              {open.has("email") && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
+            </span>
+          </button>
+          {open.has("email") && (
+            <div className="px-5 pb-4 bg-stone-50 border-t border-stone-200">
+              <input
+                autoFocus
+                type="email"
+                className={INPUT_CLASSES + " mt-3"}
+                placeholder="marie.dupont@exemple.fr"
+                value={state.contactEmail}
+                onChange={(e) => update({ contactEmail: e.target.value })}
+                onKeyDown={submitOnEnter(() => { if (canContinue) onNext(); })}
+              />
+            </div>
+          )}
         </div>
 
-        <div
-          className={`overflow-hidden transition-all duration-500 ${
-            state.contactMethod ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <input
-            type={inputType}
-            className={INPUT_CLASSES}
-            placeholder={placeholder}
-            value={state.contactValue}
-            onChange={(e) => update({ contactValue: e.target.value })}
-            onKeyDown={submitOnEnter(() => {
-              if (canContinue) onNext();
-            })}
-          />
+        {/* Phone */}
+        <div className="rounded-2xl border border-stone-200 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggle("phone")}
+            className={`w-full flex items-center justify-between px-5 py-4 text-left transition ${
+              open.has("phone") ? "bg-stone-900 text-white" : "bg-white hover:bg-stone-50"
+            }`}
+          >
+            <div>
+              <p className={`font-medium ${open.has("phone") ? "text-white" : "text-stone-900"}`}>Par téléphone</p>
+              <p className={`text-sm mt-0.5 ${open.has("phone") ? "text-stone-300" : "text-stone-500"}`}>
+                Un numéro affiché en clair sur votre page.
+              </p>
+            </div>
+            <span className={`ml-4 shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+              open.has("phone") ? "border-white" : "border-stone-300"
+            }`}>
+              {open.has("phone") && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
+            </span>
+          </button>
+          {open.has("phone") && (
+            <div className="px-5 pb-4 bg-stone-50 border-t border-stone-200">
+              <input
+                type="tel"
+                className={INPUT_CLASSES + " mt-3"}
+                placeholder="06 12 34 56 78"
+                value={state.contactPhone}
+                onChange={(e) => update({ contactPhone: formatFrenchPhone(e.target.value) })}
+                onKeyDown={submitOnEnter(() => { if (canContinue) onNext(); })}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Booking link */}
+        <div className="rounded-2xl border border-stone-200 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggle("booking")}
+            className={`w-full flex items-center justify-between px-5 py-4 text-left transition ${
+              open.has("booking") ? "bg-stone-900 text-white" : "bg-white hover:bg-stone-50"
+            }`}
+          >
+            <div>
+              <p className={`font-medium ${open.has("booking") ? "text-white" : "text-stone-900"}`}>Lien de prise de rendez-vous</p>
+              <p className={`text-sm mt-0.5 ${open.has("booking") ? "text-stone-300" : "text-stone-500"}`}>
+                Un lien Calendly, Doctolib ou équivalent.
+              </p>
+            </div>
+            <span className={`ml-4 shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+              open.has("booking") ? "border-white" : "border-stone-300"
+            }`}>
+              {open.has("booking") && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
+            </span>
+          </button>
+          {open.has("booking") && (
+            <div className="px-5 pb-4 bg-stone-50 border-t border-stone-200">
+              <input
+                type="url"
+                className={INPUT_CLASSES + " mt-3"}
+                placeholder="https://calendly.com/votre-cabinet"
+                value={state.contactBookingLink}
+                onChange={(e) => update({ contactBookingLink: e.target.value })}
+                onKeyDown={submitOnEnter(() => { if (canContinue) onNext(); })}
+              />
+            </div>
+          )}
         </div>
       </div>
     </Question>
@@ -628,16 +701,13 @@ const SUMMARY_ROWS: {
   {
     label: "Contact",
     step: 8,
-    pick: (s) =>
-      s.contactMethod && s.contactValue
-        ? `${
-            s.contactMethod === "EMAIL"
-              ? "Email"
-              : s.contactMethod === "PHONE"
-                ? "Téléphone"
-                : "Lien"
-          } — ${s.contactValue}`
-        : "—",
+    pick: (s) => {
+      const parts: string[] = [];
+      if (s.contactEmail) parts.push(s.contactEmail);
+      if (s.contactPhone) parts.push(s.contactPhone);
+      if (s.contactBookingLink) parts.push(s.contactBookingLink);
+      return parts.join(" · ") || "—";
+    },
   },
 ];
 

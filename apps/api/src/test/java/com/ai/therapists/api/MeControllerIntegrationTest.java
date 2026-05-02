@@ -1,7 +1,6 @@
 package com.ai.therapists.api;
 
 import com.ai.therapists.api.generation.AiGenerationService;
-import com.ai.therapists.api.profile.ContactMethod;
 import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
@@ -131,7 +130,7 @@ class MeControllerIntegrationTest {
                 .andExpect(jsonPath("$.role", is("PSYCHOLOGIST")))
                 .andExpect(jsonPath("$.location", is("Lyon")))
                 .andExpect(jsonPath("$.audiences[0]", is("Adultes")))
-                .andExpect(jsonPath("$.contactMethod", is("EMAIL")));
+                .andExpect(jsonPath("$.email", notNullValue()));
     }
 
     private TherapistInput sampleInput(String fullName) {
@@ -144,8 +143,9 @@ class MeControllerIntegrationTest {
                 "CBT",
                 SessionFormat.BOTH,
                 List.of("Privacy"),
-                ContactMethod.EMAIL,
-                "me+" + UUID.randomUUID().toString().substring(0, 8) + "@example.com"
+                null,
+                "me+" + UUID.randomUUID().toString().substring(0, 8) + "@example.com",
+                null
         );
     }
 

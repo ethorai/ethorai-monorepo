@@ -85,8 +85,9 @@ class InputNormalizationServiceTest {
                 approach,
                 SessionFormat.ONLINE,
                 List.of("Confidentiality"),
-                ContactMethod.EMAIL,
-                "test@example.com"
+                null,
+                "test@example.com",
+                null
         );
     }
 
@@ -100,8 +101,9 @@ class InputNormalizationServiceTest {
                 null,
                 SessionFormat.ONLINE,
                 List.of(),
-                ContactMethod.EMAIL,
-                "test@example.com"
+                null,
+                "test@example.com",
+                null
         );
     }
 }

@@ -66,8 +66,9 @@ public class MeController {
                 profile.approach(),
                 profile.sessionFormat(),
                 profile.expectations(),
-                profile.contactMethod(),
-                profile.contactValue()
+                profile.phone(),
+                profile.email(),
+                profile.bookingLink()
         );
     }
 }

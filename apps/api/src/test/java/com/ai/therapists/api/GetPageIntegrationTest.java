@@ -2,7 +2,6 @@ package com.ai.therapists.api;
 
 import com.ai.therapists.api.generation.AiGenerationService;
 import com.ai.therapists.api.page.SectionType;
-import com.ai.therapists.api.profile.ContactMethod;
 import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
@@ -93,8 +92,9 @@ class GetPageIntegrationTest {
                 "CBT",
                 SessionFormat.BOTH,
                 java.util.List.of("Privacy"),
-                ContactMethod.EMAIL,
-                email
+                null,
+                email,
+                null
         );
 
         // Step 1: POST to generate → 202 with job ID

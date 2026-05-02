@@ -93,14 +93,20 @@ From `apps/admin-web`:
 
 ### Done Today
 
-- **SESSION_FORMATS polish**: removed redundant "Format" eyebrow label from inside each session format card in `SessionFormatsSection` — it duplicated the section title "Formats des sessions"; also cleaned up `mt-2` on h3 (now top-flush since no eyebrow above it)
-- **SESSION_FORMATS humanize**: added `humanizeFormatType()` helper mapping raw enum values (ONLINE/IN_PERSON/BOTH) to human-friendly French labels; updated prompt in `PromptAssemblyService` to demand human-friendly French labels and never raw enums; updated test fixture in `StructuredSectionsBuilder`
+- **SESSION_FORMATS polish**: removed redundant "Format" eyebrow label from inside each session format card in `SessionFormatsSection` — it duplicated the section title "Formats des sessions"
+- **SESSION_FORMATS humanize**: added `humanizeFormatType()` helper mapping raw enum values (ONLINE/IN_PERSON/BOTH) to human-friendly French labels; updated prompt in `PromptAssemblyService`
+- **Multi-contact + phone formatting** — full-stack change replacing single `contactMethod`/`contactValue` with three independent contact channels:
+  - DB: V5 migration adds `phone`, `email`, `booking_link` nullable columns; migrates existing data; drops old `contact_method`/`contact_value`
+  - Backend: `TherapistInput` (phone/email/bookingLink + `@AssertTrue` validation), `ContactData` (added `booking_link`), `TherapistProfileRepository`, `InputNormalizationService`, `GenerationOrchestrator`, `MeController`, `PromptAssemblyService` (both prompts + section schema), `StructuredSectionsMapper` (fallback); jOOQ generated files updated manually
+  - Frontend: `OnboardingState` (contactPhone/contactEmail/contactBookingLink), `TherapistInput` API type, `ContactData` API type, `workspace.tsx` "Modifier" pre-fill; `ContactSection` renderer (booking link CTA with `target=_blank`, secondary contact row)
+  - Onboarding `ContactScreen`: 3 toggle cards (multi-select); toggle expands input inline; phone auto-formats as XX XX XX XX XX on keypress; canContinue requires at least one non-empty value; summary row shows all contacts separated by ·
+  - 28/28 tests green; `npm run build` green
 
 ### Next 3 Tasks
 
 1. Browser test the full flow: register → onboarding → /page workspace → publish → /p/[id] · Modifier mes réponses · Régénérer · Se déconnecter
-2. Phase 4 — close BOOKING_LINK gap: either add `bookingUrl` to `ContactData` or update prompt to put URL in `cta_text`/`description` for users who chose BOOKING_LINK contact method
-3. 5 user interviews with target therapists to validate the generated page output (per product consulting)
+2. 5 user interviews with target therapists to validate the generated page output (per product consulting)
+3. Calendly/Doctolib booking link: verify AI properly passes it through to `booking_link` in generated CONTACT section
 
 ### Current Blocker
 

@@ -106,8 +106,12 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
   }
 
   async function generate() {
-    if (!state.role || !state.sessionFormat || !state.contactMethod) {
+    if (!state.role || !state.sessionFormat) {
       setError("Certaines réponses sont manquantes.");
+      return;
+    }
+    if (!state.contactPhone && !state.contactEmail && !state.contactBookingLink) {
+      setError("Veuillez renseigner au moins un moyen de contact.");
       return;
     }
 
@@ -123,8 +127,9 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
       approach: state.approach.trim(),
       sessionFormat: state.sessionFormat,
       expectations: state.expectations,
-      contactMethod: state.contactMethod,
-      contactValue: state.contactValue.trim(),
+      phone: state.contactPhone.trim() || null,
+      email: state.contactEmail.trim() || null,
+      bookingLink: state.contactBookingLink.trim() || null,
     };
 
     try {

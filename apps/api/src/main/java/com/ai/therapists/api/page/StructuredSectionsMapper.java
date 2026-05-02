@@ -135,7 +135,7 @@ public class StructuredSectionsMapper {
         String cleaned = cleanText(value);
         String email = cleaned.contains("@") ? cleaned : null;
         String phone = cleaned.contains("@") ? null : cleaned;
-        return new ContactData("Contact", cleaned, "Contact me", phone, email);
+        return new ContactData("Contact", cleaned, "Contact me", phone, email, null);
     }
 
     private DisclaimerData parseDisclaimer(String value) {

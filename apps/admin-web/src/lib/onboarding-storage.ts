@@ -1,4 +1,4 @@
-import type { ContactMethod, RoleType, SessionFormat } from "@/lib/api";
+import type { RoleType, SessionFormat } from "@/lib/api";
 
 export type OnboardingState = {
   fullName: string;
@@ -9,8 +9,9 @@ export type OnboardingState = {
   approach: string;
   sessionFormat: SessionFormat | null;
   expectations: string[];
-  contactMethod: ContactMethod | null;
-  contactValue: string;
+  contactPhone: string;
+  contactEmail: string;
+  contactBookingLink: string;
 };
 
 export const INITIAL_ONBOARDING_STATE: OnboardingState = {
@@ -22,8 +23,9 @@ export const INITIAL_ONBOARDING_STATE: OnboardingState = {
   approach: "",
   sessionFormat: null,
   expectations: [],
-  contactMethod: null,
-  contactValue: "",
+  contactPhone: "",
+  contactEmail: "",
+  contactBookingLink: "",
 };
 
 export type OnboardingSnapshot = {

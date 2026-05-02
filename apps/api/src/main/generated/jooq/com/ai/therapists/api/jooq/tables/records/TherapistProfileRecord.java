@@ -149,45 +149,59 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
     }
 
     /**
-     * Setter for <code>public.therapist_profile.contact_method</code>.
-     */
-    public void setContactMethod(String value) {
-        set(9, value);
-    }
-
-    /**
-     * Getter for <code>public.therapist_profile.contact_method</code>.
-     */
-    public String getContactMethod() {
-        return (String) get(9);
-    }
-
-    /**
-     * Setter for <code>public.therapist_profile.contact_value</code>.
-     */
-    public void setContactValue(String value) {
-        set(10, value);
-    }
-
-    /**
-     * Getter for <code>public.therapist_profile.contact_value</code>.
-     */
-    public String getContactValue() {
-        return (String) get(10);
-    }
-
-    /**
      * Setter for <code>public.therapist_profile.created_at</code>.
      */
     public void setCreatedAt(OffsetDateTime value) {
-        set(11, value);
+        set(9, value);
     }
 
     /**
      * Getter for <code>public.therapist_profile.created_at</code>.
      */
     public OffsetDateTime getCreatedAt() {
-        return (OffsetDateTime) get(11);
+        return (OffsetDateTime) get(9);
+    }
+
+    /**
+     * Setter for <code>public.therapist_profile.phone</code>.
+     */
+    public void setPhone(String value) {
+        set(10, value);
+    }
+
+    /**
+     * Getter for <code>public.therapist_profile.phone</code>.
+     */
+    public String getPhone() {
+        return (String) get(10);
+    }
+
+    /**
+     * Setter for <code>public.therapist_profile.email</code>.
+     */
+    public void setEmail(String value) {
+        set(11, value);
+    }
+
+    /**
+     * Getter for <code>public.therapist_profile.email</code>.
+     */
+    public String getEmail() {
+        return (String) get(11);
+    }
+
+    /**
+     * Setter for <code>public.therapist_profile.booking_link</code>.
+     */
+    public void setBookingLink(String value) {
+        set(12, value);
+    }
+
+    /**
+     * Getter for <code>public.therapist_profile.booking_link</code>.
+     */
+    public String getBookingLink() {
+        return (String) get(12);
     }
 
     // -------------------------------------------------------------------------
@@ -213,7 +227,7 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
     /**
      * Create a detached, initialised TherapistProfileRecord
      */
-    public TherapistProfileRecord(UUID id, String fullName, String role, String location, JSONB audiences, JSONB areasOfSupport, String approach, String sessionFormat, JSONB expectations, String contactMethod, String contactValue, OffsetDateTime createdAt) {
+    public TherapistProfileRecord(UUID id, String fullName, String role, String location, JSONB audiences, JSONB areasOfSupport, String approach, String sessionFormat, JSONB expectations, OffsetDateTime createdAt, String phone, String email, String bookingLink) {
         super(TherapistProfile.THERAPIST_PROFILE);
 
         setId(id);
@@ -225,9 +239,10 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
         setApproach(approach);
         setSessionFormat(sessionFormat);
         setExpectations(expectations);
-        setContactMethod(contactMethod);
-        setContactValue(contactValue);
         setCreatedAt(createdAt);
+        setPhone(phone);
+        setEmail(email);
+        setBookingLink(bookingLink);
         resetChangedOnNotNull();
     }
 }

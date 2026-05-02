@@ -1,6 +1,5 @@
 package com.ai.therapists.api;
 
-import com.ai.therapists.api.profile.ContactMethod;
 import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
@@ -82,8 +81,9 @@ class GeneratePageOpenAiExternalIT {
                 "Integrative",
                 SessionFormat.ONLINE,
                 List.of("Confidentiality", "Respect"),
-                ContactMethod.EMAIL,
-                "external+" + runId + "@example.com"
+                null,
+                "external+" + runId + "@example.com",
+                null
         );
 
         // POST → 202 with job

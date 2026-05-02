@@ -104,19 +104,24 @@ public class TherapistProfile extends TableImpl<TherapistProfileRecord> {
     public final TableField<TherapistProfileRecord, JSONB> EXPECTATIONS = createField(DSL.name("expectations"), SQLDataType.JSONB.nullable(false).defaultValue(DSL.field(DSL.raw("'[]'::jsonb"), SQLDataType.JSONB)), this, "");
 
     /**
-     * The column <code>public.therapist_profile.contact_method</code>.
-     */
-    public final TableField<TherapistProfileRecord, String> CONTACT_METHOD = createField(DSL.name("contact_method"), SQLDataType.VARCHAR(20).nullable(false), this, "");
-
-    /**
-     * The column <code>public.therapist_profile.contact_value</code>.
-     */
-    public final TableField<TherapistProfileRecord, String> CONTACT_VALUE = createField(DSL.name("contact_value"), SQLDataType.VARCHAR(500).nullable(false), this, "");
-
-    /**
      * The column <code>public.therapist_profile.created_at</code>.
      */
     public final TableField<TherapistProfileRecord, OffsetDateTime> CREATED_AT = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false).defaultValue(DSL.field(DSL.raw("now()"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "");
+
+    /**
+     * The column <code>public.therapist_profile.phone</code>.
+     */
+    public final TableField<TherapistProfileRecord, String> PHONE = createField(DSL.name("phone"), SQLDataType.VARCHAR(50), this, "");
+
+    /**
+     * The column <code>public.therapist_profile.email</code>.
+     */
+    public final TableField<TherapistProfileRecord, String> EMAIL = createField(DSL.name("email"), SQLDataType.VARCHAR(255), this, "");
+
+    /**
+     * The column <code>public.therapist_profile.booking_link</code>.
+     */
+    public final TableField<TherapistProfileRecord, String> BOOKING_LINK = createField(DSL.name("booking_link"), SQLDataType.VARCHAR(1000), this, "");
 
     private TherapistProfile(Name alias, Table<TherapistProfileRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);

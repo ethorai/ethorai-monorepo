@@ -68,6 +68,7 @@ export type ContactData = {
   cta_text: string;
   phone: string | null;
   email: string | null;
+  booking_link: string | null;
 };
 
 export type DisclaimerData = {
@@ -110,8 +111,9 @@ export type TherapistInput = {
   approach: string;
   sessionFormat: SessionFormat;
   expectations: string[];
-  contactMethod: ContactMethod;
-  contactValue: string;
+  phone: string | null;
+  email: string | null;
+  bookingLink: string | null;
 };
 
 export type GeneratedPageResponse = {

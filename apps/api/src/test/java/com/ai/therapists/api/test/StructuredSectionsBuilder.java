@@ -65,7 +65,8 @@ public class StructuredSectionsBuilder {
                 "Contactez-moi pour une première séance",
                 "Prendre rendez-vous",
                 null,
-                "hello@example.com"
+                "hello@example.com",
+                null
             ),
             new DisclaimerData("Les séances de psychologie ne se substituent pas à un suivi médical. En cas de crise, veuillez contacter les services d'urgence."),
             new FooterData("Dr Test", "Psychologue", "Paris", null, "hello@example.com")

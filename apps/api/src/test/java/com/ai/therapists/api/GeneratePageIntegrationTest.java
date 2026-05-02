@@ -2,7 +2,6 @@ package com.ai.therapists.api;
 
 import com.ai.therapists.api.generation.AiGenerationService;
 import com.ai.therapists.api.page.SectionType;
-import com.ai.therapists.api.profile.ContactMethod;
 import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
@@ -95,8 +94,9 @@ class GeneratePageIntegrationTest {
             "Integrative",
             SessionFormat.ONLINE,
             java.util.List.of("Confidentiality", "Respect"),
-            ContactMethod.EMAIL,
-            email
+            null,
+            email,
+            null
         );
 
         // Step 1: POST /api/generate → 202 Accepted with job ID

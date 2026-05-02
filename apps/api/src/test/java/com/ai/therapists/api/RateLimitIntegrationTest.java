@@ -3,7 +3,6 @@ package com.ai.therapists.api;
 import com.ai.therapists.api.generation.AiGenerationService;
 import com.ai.therapists.api.generation.GenerationRateLimiter;
 import com.ai.therapists.api.generation.RateLimitExceededException;
-import com.ai.therapists.api.profile.ContactMethod;
 import com.ai.therapists.api.profile.RoleType;
 import com.ai.therapists.api.profile.SessionFormat;
 import com.ai.therapists.api.profile.TherapistInput;
@@ -105,8 +104,9 @@ class RateLimitIntegrationTest {
                 "Integrative",
                 SessionFormat.ONLINE,
                 List.of("Confidentiality"),
-                ContactMethod.EMAIL,
-                "rate@example.com"
+                null,
+                "rate@example.com",
+                null
         );
     }
 

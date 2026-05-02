@@ -54,8 +54,9 @@ public class InputNormalizationService {
                 truncate(sanitizeText(trimOrNull(input.approach())), MAX_APPROACH_LENGTH),
                 input.sessionFormat(),
                 normalizeList(input.expectations()),
-                input.contactMethod(),
-                truncate(trimOrNull(input.contactValue()), MAX_SHORT_TEXT_LENGTH)
+                truncate(trimOrNull(input.phone()), MAX_SHORT_TEXT_LENGTH),
+                truncate(trimOrNull(input.email()), MAX_SHORT_TEXT_LENGTH),
+                truncate(trimOrNull(input.bookingLink()), MAX_SHORT_TEXT_LENGTH)
         );
     }
 

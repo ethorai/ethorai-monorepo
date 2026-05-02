@@ -172,11 +172,16 @@ export function SessionFormatsSection({ data }: { data: SessionFormatsData }) {
 }
 
 export function ContactSection({ data }: { data: ContactData }) {
-  const ctaHref = data.email
-    ? `mailto:${data.email}`
-    : data.phone
-      ? `tel:${data.phone}`
-      : undefined;
+  const ctaHref = data.booking_link
+    ? data.booking_link
+    : data.email
+      ? `mailto:${data.email}`
+      : data.phone
+        ? `tel:${data.phone}`
+        : undefined;
+
+  const hasSecondaryContacts =
+    data.phone || data.email || (data.booking_link && (data.phone || data.email));
 
   return (
     <section className="bg-[linear-gradient(180deg,#f4efe4_0%,#fbe3d3_100%)]">
@@ -190,6 +195,8 @@ export function ContactSection({ data }: { data: ContactData }) {
         {ctaHref ? (
           <a
             href={ctaHref}
+            target={data.booking_link ? "_blank" : undefined}
+            rel={data.booking_link ? "noopener noreferrer" : undefined}
             className="mt-10 inline-flex items-center justify-center rounded-2xl bg-stone-900 px-8 py-4 text-base font-medium text-white transition hover:bg-stone-700"
           >
             {data.cta_text}
@@ -199,7 +206,7 @@ export function ContactSection({ data }: { data: ContactData }) {
             {data.cta_text}
           </span>
         )}
-        {data.phone || data.email ? (
+        {hasSecondaryContacts ? (
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-stone-600">
             {data.email ? (
               <a

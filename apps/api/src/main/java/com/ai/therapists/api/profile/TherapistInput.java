@@ -1,4 +1,5 @@
 package com.ai.therapists.api.profile;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +15,14 @@ public record TherapistInput(
         String approach,
         @NotNull SessionFormat sessionFormat,
         List<String> expectations,
-        @NotNull ContactMethod contactMethod,
-        @NotBlank String contactValue
-) {}
+        String phone,
+        String email,
+        String bookingLink
+) {
+    @AssertTrue(message = "At least one contact method (phone, email, or bookingLink) is required")
+    boolean hasContact() {
+        return (phone != null && !phone.isBlank())
+                || (email != null && !email.isBlank())
+                || (bookingLink != null && !bookingLink.isBlank());
+    }
+}

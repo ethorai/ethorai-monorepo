@@ -72,8 +72,9 @@ public class PromptAssemblyService {
                 - Approach: %s
                 - Session Format: %s
                 - What Clients Can Expect: %s
-                - Contact Method: %s
-                - Contact Value: %s
+                - Phone: %s
+                - Email: %s
+                - Booking Link: %s
 
                 ## JSON Structure (return ONLY this object, no markdown, no explanation):
 
@@ -118,7 +119,8 @@ public class PromptAssemblyService {
                     "description": "description of contact/booking",
                     "cta_text": "3-4 word call to action",
                     "phone": "phone or null",
-                    "email": "email or null"
+                    "email": "email or null",
+                    "booking_link": "booking URL or null"
                   },
                   "DISCLAIMER": {
                     "text": "ethical disclaimer adapted to role"
@@ -140,7 +142,7 @@ public class PromptAssemblyService {
                 - HOW_I_WORK description: 1-2 sentences, process-oriented
                 - WHAT_YOU_CAN_EXPECT statements: 3-5 entries, each with title (3-6 words) + description (1-2 sentences); about the therapeutic environment & values, not outcomes
                 - SESSION_FORMATS formats: 1-2 entries; type MUST be a human-friendly French label (e.g., "En cabinet", "En visio", "Les deux") — never the raw enum (ONLINE/IN_PERSON/BOTH); details: 1-2 sentences with practical info
-                - CONTACT cta_text: 3-4 words, neutral CTA like "Book a session"
+                - CONTACT: copy the provided phone/email/booking_link values exactly; set fields to null if not provided; cta_text: 3-4 words, neutral CTA
                 - DISCLAIMER text: mandatory, calm tone, no legal advice
 
                 Return ONLY the JSON object.
@@ -153,8 +155,9 @@ public class PromptAssemblyService {
                 input.approach() != null ? input.approach() : "Non spécifié",
                 input.sessionFormat().name(),
                 input.expectations() != null ? String.join(", ", input.expectations()) : "Non spécifié",
-                input.contactMethod().name(),
-                input.contactValue()
+                input.phone() != null ? input.phone() : "null",
+                input.email() != null ? input.email() : "null",
+                input.bookingLink() != null ? input.bookingLink() : "null"
         );
     }
 
@@ -178,8 +181,9 @@ public class PromptAssemblyService {
                 - Approach: %s
                 - Session Format: %s
                 - What Clients Can Expect: %s
-                - Contact Method: %s
-                - Contact Value: %s
+                - Phone: %s
+                - Email: %s
+                - Booking Link: %s
 
                 ## Current Content of This Section
                 %s
@@ -202,8 +206,9 @@ public class PromptAssemblyService {
                 input.approach() != null ? input.approach() : "Non spécifié",
                 input.sessionFormat().name(),
                 input.expectations() != null ? String.join(", ", input.expectations()) : "Non spécifié",
-                input.contactMethod().name(),
-                input.contactValue(),
+                input.phone() != null ? input.phone() : "null",
+                input.email() != null ? input.email() : "null",
+                input.bookingLink() != null ? input.bookingLink() : "null",
                 currentContent,
                 sectionSchema
         );
@@ -224,7 +229,7 @@ public class PromptAssemblyService {
             case SESSION_FORMATS -> """
                     { "title": "...", "formats": [{"type": "human label e.g. 'En cabinet' or 'En visio'", "details": "1-2 sentences"}, ...] }""";
             case CONTACT -> """
-                    { "title": "...", "description": "...", "cta_text": "3-4 words", "phone": "... or null", "email": "... or null" }""";
+                    { "title": "...", "description": "...", "cta_text": "3-4 words", "phone": "... or null", "email": "... or null", "booking_link": "... or null" }""";
             case DISCLAIMER -> """
                     { "text": "ethical disclaimer" }""";
             case FOOTER -> """

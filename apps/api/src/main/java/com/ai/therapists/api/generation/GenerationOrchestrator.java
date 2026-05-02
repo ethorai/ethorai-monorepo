@@ -54,8 +54,9 @@ public class GenerationOrchestrator {
                 input.approach(),
                 input.sessionFormat(),
                 input.expectations(),
-                input.contactMethod(),
-                input.contactValue()
+                input.phone(),
+                input.email(),
+                input.bookingLink()
         );
         eventLog.log(EntityType.PROFILE, profileId, EventType.CREATED);
 
@@ -162,8 +163,9 @@ public class GenerationOrchestrator {
                 profile.approach(),
                 profile.sessionFormat(),
                 profile.expectations(),
-                profile.contactMethod(),
-                profile.contactValue()
+                profile.phone(),
+                profile.email(),
+                profile.bookingLink()
         );
     }
 

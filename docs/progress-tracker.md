@@ -22,11 +22,11 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 ### Now
 
 - [ ] 5 user interviews with target therapists (validate generated page output before further product changes)
-- [ ] Wire "View public page" link on admin page detail (`/pages/[id]`) pointing to `/p/{id}`
-- [ ] End-to-end smoke test on production: register → generate → publish → verify public page at `/p/{id}`
+- [ ] End-to-end smoke test: register → onboarding → /page → publish → /p/{id} · Modifier · Régénérer · Se déconnecter
 
 ## Completed Milestones
 
+- [x] Multi-contact onboarding: replaced single contactMethod/contactValue with phone + email + bookingLink (V5 migration, full-stack); ContactScreen multi-select toggle cards + French phone auto-formatter; ContactSection CTA now prefers booking link; 28/28 tests green
 - [x] Enriched `AREAS_OF_SUPPORT` and `WHAT_YOU_CAN_EXPECT` from `List<String>` → `List<{title, description}>` end-to-end (data records, prompt schema + rules, mapper with backward-compat parser, test fixture, frontend types + renderer + editor); sticky header on the public page
 - [x] Public page redesign (Phase 3) — rewrote all 9 section components to match Ethorai brand (warm cream + Fraunces serif + stone palette); replaced blue/gray Bootstrap-era styling; functional CTA with mailto/tel fallback; added `--font-serif` Tailwind theme variable
 - [x] Workspace + cleanup (Phase 1+2) — singleton `/page` workspace replaces `/pages/[id]` (no ID in URL); deleted `/dashboard`, `/generate`, `/pages/[id]`, `/api/pages?profileId=`; new backend `MeController` with `GET /api/me/page` and `GET /api/me/profile` (204 when empty); root `/` redirects to `/page`; "Modifier mes réponses" pre-fills onboarding from profile; "Régénérer" / "Publier" / "Voir public" / "Copier le lien" / "Se déconnecter" actions in sticky top bar; toast on publish-with-clipboard-copy
