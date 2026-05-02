@@ -24,13 +24,14 @@ import {
   ExpectationsScreen,
   FormatScreen,
   IdentityScreen,
+  PhotoScreen,
   RoleScreen,
   SummaryScreen,
   WelcomeScreen,
 } from "./screens";
 
-const TOTAL_INPUT_STEPS = 8;
-const SUMMARY_STEP = 9;
+const TOTAL_INPUT_STEPS = 9;
+const SUMMARY_STEP = 10;
 const POLL_INTERVAL_MS = 2000;
 
 type FlowProps = {
@@ -130,6 +131,7 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
       phone: state.contactPhone.trim() || null,
       email: state.contactEmail.trim() || null,
       bookingLink: state.contactBookingLink.trim() || null,
+      photoUrl: state.photoUrl.trim() || null,
     };
 
     try {
@@ -197,6 +199,9 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
       ) : null}
       {step === 8 ? (
         <ContactScreen state={state} update={update} onNext={next} />
+      ) : null}
+      {step === 9 ? (
+        <PhotoScreen state={state} update={update} onNext={next} />
       ) : null}
       {step === SUMMARY_STEP ? (
         <SummaryScreen

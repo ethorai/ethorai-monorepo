@@ -141,6 +141,7 @@ class GenerationErrorIntegrationTest {
                 java.util.List.of("Confidentiality"),
                 null,
                 "hello@example.com",
+                null,
                 null
         );
 
@@ -185,6 +186,7 @@ class GenerationErrorIntegrationTest {
                 java.util.List.of("Confidentiality", "Respect"),
                 null,
                 "hello@example.com",
+                null,
                 null
         );
     }

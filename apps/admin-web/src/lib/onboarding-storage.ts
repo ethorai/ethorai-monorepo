@@ -12,6 +12,7 @@ export type OnboardingState = {
   contactPhone: string;
   contactEmail: string;
   contactBookingLink: string;
+  photoUrl: string;
 };
 
 export const INITIAL_ONBOARDING_STATE: OnboardingState = {
@@ -26,6 +27,7 @@ export const INITIAL_ONBOARDING_STATE: OnboardingState = {
   contactPhone: "",
   contactEmail: "",
   contactBookingLink: "",
+  photoUrl: "",
 };
 
 export type OnboardingSnapshot = {

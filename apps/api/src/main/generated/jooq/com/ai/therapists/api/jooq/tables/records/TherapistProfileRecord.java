@@ -204,6 +204,20 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
         return (String) get(12);
     }
 
+    /**
+     * Setter for <code>public.therapist_profile.photo_url</code>.
+     */
+    public void setPhotoUrl(String value) {
+        set(13, value);
+    }
+
+    /**
+     * Getter for <code>public.therapist_profile.photo_url</code>.
+     */
+    public String getPhotoUrl() {
+        return (String) get(13);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -227,7 +241,7 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
     /**
      * Create a detached, initialised TherapistProfileRecord
      */
-    public TherapistProfileRecord(UUID id, String fullName, String role, String location, JSONB audiences, JSONB areasOfSupport, String approach, String sessionFormat, JSONB expectations, OffsetDateTime createdAt, String phone, String email, String bookingLink) {
+    public TherapistProfileRecord(UUID id, String fullName, String role, String location, JSONB audiences, JSONB areasOfSupport, String approach, String sessionFormat, JSONB expectations, OffsetDateTime createdAt, String phone, String email, String bookingLink, String photoUrl) {
         super(TherapistProfile.THERAPIST_PROFILE);
 
         setId(id);
@@ -243,6 +257,7 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
         setPhone(phone);
         setEmail(email);
         setBookingLink(bookingLink);
+        setPhotoUrl(photoUrl);
         resetChangedOnNotNull();
     }
 }

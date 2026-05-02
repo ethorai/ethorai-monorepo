@@ -11,5 +11,6 @@ public record GeneratedPageResponse(
         String fullName,
         RoleType role,
         StructuredSections sections,
-        PageStatus status
+        PageStatus status,
+        String photoUrl
 ) {}

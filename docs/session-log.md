@@ -66,15 +66,39 @@
 - Updated CLAUDE.md + `.github/copilot-instructions.md`: commit protocol now requires updating both tracking files in every commit, not just end-of-session
 - 24/24 tests passing throughout
 
+## 2026-05-02
+
+### Done Today
+
+- **Fix publish 502** — `revalidatePath` was inside the `try/catch` in `POST /api/pages/[id]/publish/route.ts`; if it threw (Next.js 16 context issue), the catch returned 502 even though Spring had already returned 204. Split fetch errors and revalidation into separate try/catch blocks; added `console.error` logging for each.
+- **Multi-contact onboarding** (carried over from previous session) — replaced single `contactMethod/contactValue` with three independent nullable fields (`phone`, `email`, `bookingLink`):
+  - Flyway V5: DROP old columns, ADD new columns with data migration
+  - `TherapistInput` Java record updated; `@AssertTrue` cross-field validation
+  - `TherapistProfileRepository`, `GenerationOrchestrator`, `MeController`, `InputNormalizationService`, `PromptAssemblyService`, `ContactData`, `StructuredSectionsMapper` all updated
+  - jOOQ generated sources manually updated (V5 migration applied + codegen re-run)
+  - `ContactScreen` rewritten: multi-select toggle cards (email / phone / Calendly), French phone auto-formatter `06 12 34 56 78`
+  - `ContactSection` renderer: CTA prefers booking_link → mailto → tel; secondary contacts row below CTA
+  - All 28 tests updated and passing
+- **Photo upload** — therapist profile photo end-to-end:
+  - Flyway V6: `ADD COLUMN photo_url VARCHAR(500)` on `therapist_profile`
+  - jOOQ codegen re-run against migrated DB
+  - `TherapistInput` + `GeneratedPageResponse` + all controllers + repository + orchestrator updated to carry `photoUrl`
+  - Next.js upload route `POST /api/upload/photo` → Vercel Blob (5 MB limit, JPEG/PNG/WebP only, auth-gated)
+  - New `PhotoScreen` (step 9) in onboarding — click-to-upload with preview, optional (has "Passer" button)
+  - `HeroSection` redesigned: side-by-side layout (text left, circular photo right on desktop; stacked on mobile)
+  - `next/image` + `remotePatterns` for `*.public.blob.vercel-storage.com`
+  - `BLOB_READ_WRITE_TOKEN` env var required in admin-web (Vercel Blob)
+  - All backend tests passing (BUILD SUCCESS); Next.js build clean
+
 ### Next 3 Tasks
 
-1. Browser test the full flow: register → onboarding → /page workspace → publish → /p/[id] · Modifier mes réponses · Régénérer · Se déconnecter
-2. Phase 4 — close BOOKING_LINK gap: either add `bookingUrl` to `ContactData` or update prompt to put URL in `cta_text`/`description` for users who chose BOOKING_LINK contact method
-3. 5 user interviews with target therapists to validate the generated page output (per product consulting)
+1. Add `BLOB_READ_WRITE_TOKEN` to `.env.local` (run `vercel env pull` or set manually from Vercel dashboard) and browser-test full flow: register → onboarding (incl. photo) → /page → publish → /p/{id}
+2. Wire ethorai.fr / ethorai.com domains to Vercel
+3. 5 user interviews with target therapists
 
 ### Current Blocker
 
-None.
+`BLOB_READ_WRITE_TOKEN` not yet set in local `.env.local` — photo upload will fail locally until added. Set it from Vercel dashboard → Storage → Blob → your store → `.env.local` tab.
 
 ### Exact Resume Command
 
@@ -82,7 +106,7 @@ From repo root:
 `docker compose -f infra/docker-compose.yml up -d`
 
 From `apps/api`:
-`./mvnw spring-boot:run`
+`./mvnw flyway:migrate && ./mvnw spring-boot:run`
 
 From `apps/admin-web`:
 `npm run dev`

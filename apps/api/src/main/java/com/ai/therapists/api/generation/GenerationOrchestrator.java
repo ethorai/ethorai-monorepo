@@ -56,7 +56,8 @@ public class GenerationOrchestrator {
                 input.expectations(),
                 input.phone(),
                 input.email(),
-                input.bookingLink()
+                input.bookingLink(),
+                input.photoUrl()
         );
         eventLog.log(EntityType.PROFILE, profileId, EventType.CREATED);
 
@@ -125,7 +126,8 @@ public class GenerationOrchestrator {
                     profile.fullName(),
                     profile.role(),
                     structuredSectionsMapper.fromStorage(updatedSections),
-                    page.status()
+                    page.status(),
+                    profile.photoUrl()
             );
         } catch (AiGenerationException | GenerationValidationException ex) {
             eventLog.log(
@@ -165,7 +167,8 @@ public class GenerationOrchestrator {
                 profile.expectations(),
                 profile.phone(),
                 profile.email(),
-                profile.bookingLink()
+                profile.bookingLink(),
+                profile.photoUrl()
         );
     }
 

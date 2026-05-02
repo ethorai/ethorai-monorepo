@@ -73,6 +73,7 @@ export function Workspace({ initialPage }: WorkspaceProps) {
         contactPhone: profile.phone ?? "",
         contactEmail: profile.email ?? "",
         contactBookingLink: profile.bookingLink ?? "",
+        photoUrl: profile.photoUrl ?? "",
       };
       saveOnboarding({ state: seeded, step: 1 });
       router.push("/onboarding");
@@ -239,7 +240,7 @@ export function Workspace({ initialPage }: WorkspaceProps) {
         ) : (
           <>
             <HeaderSection data={sections.HEADER} />
-            <HeroSection data={sections.HERO} />
+            <HeroSection data={sections.HERO} photoUrl={page.photoUrl} />
             <AreasOfSupportSection data={sections.AREAS_OF_SUPPORT} />
             <HowIWorkSection data={sections.HOW_I_WORK} />
             <WhatYouCanExpectSection data={sections.WHAT_YOU_CAN_EXPECT} />

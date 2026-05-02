@@ -633,7 +633,104 @@ export function ContactScreen({ state, update, onNext }: ScreenProps) {
   );
 }
 
-// ─── 9. Summary ─────────────────────────────────────────────────
+// ─── 9. Photo ───────────────────────────────────────────────────
+
+export function PhotoScreen({ state, update, onNext }: ScreenProps) {
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  async function handleFile(file: File) {
+    setUploadError("");
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload/photo", { method: "POST", body: form });
+      if (!res.ok) {
+        const body = (await res.json()) as { error?: string };
+        throw new Error(body.error ?? "Upload échoué.");
+      }
+      const { url } = (await res.json()) as { url: string };
+      update({ photoUrl: url });
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : "Upload échoué.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <Question
+      title="Ajoutez une photo de vous."
+      subtitle="Une photo renforce la confiance de vos visiteurs. Vous pouvez passer cette étape."
+      footer={
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onNext}
+            className="rounded-xl border border-stone-300 bg-white px-5 py-3 text-sm font-medium text-stone-600 transition hover:bg-stone-50"
+          >
+            Passer
+          </button>
+          <PrimaryButton disabled={!state.photoUrl} onClick={onNext}>
+            Continuer
+            <ArrowRight />
+          </PrimaryButton>
+        </div>
+      }
+    >
+      <div className="space-y-4">
+        <label className="group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-stone-300 bg-white/60 py-10 transition hover:border-stone-500 hover:bg-white">
+          {state.photoUrl ? (
+            <img
+              src={state.photoUrl}
+              alt="Votre photo"
+              className="h-32 w-32 rounded-full object-cover shadow-md"
+            />
+          ) : uploading ? (
+            <div className="h-10 w-10 animate-spin rounded-full border-2 border-stone-300 border-t-stone-900" />
+          ) : (
+            <>
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-stone-100 text-stone-400 text-3xl">
+                +
+              </div>
+              <p className="mt-3 text-sm font-medium text-stone-600">
+                Cliquez pour choisir une photo
+              </p>
+              <p className="mt-1 text-xs text-stone-400">
+                JPEG, PNG ou WebP · 5 Mo max
+              </p>
+            </>
+          )}
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="absolute inset-0 cursor-pointer opacity-0"
+            disabled={uploading}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void handleFile(file);
+            }}
+          />
+        </label>
+
+        {state.photoUrl && !uploading && (
+          <p className="text-center text-sm text-emerald-600">
+            Photo ajoutée. Vous pouvez en choisir une autre en cliquant dessus.
+          </p>
+        )}
+
+        {uploadError && (
+          <p className="rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            {uploadError}
+          </p>
+        )}
+      </div>
+    </Question>
+  );
+}
+
+// ─── 10. Summary ────────────────────────────────────────────────
 
 type SummaryProps = {
   state: OnboardingState;
@@ -708,6 +805,11 @@ const SUMMARY_ROWS: {
       if (s.contactBookingLink) parts.push(s.contactBookingLink);
       return parts.join(" · ") || "—";
     },
+  },
+  {
+    label: "Photo",
+    step: 9,
+    pick: (s) => (s.photoUrl ? "Photo ajoutée ✓" : "Aucune photo"),
   },
 ];
 

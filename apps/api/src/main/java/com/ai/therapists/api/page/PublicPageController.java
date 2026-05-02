@@ -34,7 +34,8 @@ public class PublicPageController {
                 profile.fullName(),
                 profile.role(),
                 sectionsMapper.fromStorage(page.sections()),
-                page.status()
+                page.status(),
+                profile.photoUrl()
         );
     }
 }

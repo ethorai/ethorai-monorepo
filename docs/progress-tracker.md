@@ -21,11 +21,14 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ### Now
 
+- [ ] Add `BLOB_READ_WRITE_TOKEN` to `.env.local` + browser-test full flow incl. photo upload
+- [ ] Wire ethorai.fr / ethorai.com to Vercel
 - [ ] 5 user interviews with target therapists (validate generated page output before further product changes)
-- [ ] End-to-end smoke test: register → onboarding → /page → publish → /p/{id} · Modifier · Régénérer · Se déconnecter
 
 ## Completed Milestones
 
+- [x] Photo upload: Flyway V6 + Vercel Blob upload route + PhotoScreen (step 9 in onboarding, optional) + HeroSection side-by-side layout with circular photo; `next/image` + remotePatterns; all tests green
+- [x] Fix publish 502: `revalidatePath` was inside the proxy try/catch; split fetch and revalidation into separate error paths
 - [x] Multi-contact onboarding: replaced single contactMethod/contactValue with phone + email + bookingLink (V5 migration, full-stack); ContactScreen multi-select toggle cards + French phone auto-formatter; ContactSection CTA now prefers booking link; 28/28 tests green
 - [x] Enriched `AREAS_OF_SUPPORT` and `WHAT_YOU_CAN_EXPECT` from `List<String>` → `List<{title, description}>` end-to-end (data records, prompt schema + rules, mapper with backward-compat parser, test fixture, frontend types + renderer + editor); sticky header on the public page
 - [x] Public page redesign (Phase 3) — rewrote all 9 section components to match Ethorai brand (warm cream + Fraunces serif + stone palette); replaced blue/gray Bootstrap-era styling; functional CTA with mailto/tel fallback; added `--font-serif` Tailwind theme variable

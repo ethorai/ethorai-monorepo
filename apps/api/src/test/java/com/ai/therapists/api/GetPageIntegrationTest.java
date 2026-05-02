@@ -94,6 +94,7 @@ class GetPageIntegrationTest {
                 java.util.List.of("Privacy"),
                 null,
                 email,
+                null,
                 null
         );
 

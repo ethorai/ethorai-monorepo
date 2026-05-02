@@ -83,6 +83,7 @@ class GeneratePageOpenAiExternalIT {
                 List.of("Confidentiality", "Respect"),
                 null,
                 "external+" + runId + "@example.com",
+                null,
                 null
         );
 

@@ -26,7 +26,8 @@ public class TherapistProfileRepository {
                        List<String> expectations,
                        String phone,
                        String email,
-                       String bookingLink) {
+                       String bookingLink,
+                       String photoUrl) {
 
         return dsl.insertInto(THERAPIST_PROFILE)
                 .set(THERAPIST_PROFILE.FULL_NAME, fullName)
@@ -40,6 +41,7 @@ public class TherapistProfileRepository {
                 .set(THERAPIST_PROFILE.PHONE, phone)
                 .set(THERAPIST_PROFILE.EMAIL, email)
                 .set(THERAPIST_PROFILE.BOOKING_LINK, bookingLink)
+                .set(THERAPIST_PROFILE.PHOTO_URL, photoUrl)
                 .returning(THERAPIST_PROFILE.ID)
                 .fetchOne(THERAPIST_PROFILE.ID);
     }
@@ -62,7 +64,8 @@ public class TherapistProfileRepository {
             List<String> expectations,
             String phone,
             String email,
-            String bookingLink
+            String bookingLink,
+            String photoUrl
     ) {}
 
     private TherapistProfileRow toRow(org.jooq.Record record) {
@@ -78,7 +81,8 @@ public class TherapistProfileRepository {
                 fromJson(record.get(THERAPIST_PROFILE.EXPECTATIONS)),
                 record.get(THERAPIST_PROFILE.PHONE),
                 record.get(THERAPIST_PROFILE.EMAIL),
-                record.get(THERAPIST_PROFILE.BOOKING_LINK)
+                record.get(THERAPIST_PROFILE.BOOKING_LINK),
+                record.get(THERAPIST_PROFILE.PHOTO_URL)
         );
     }
 

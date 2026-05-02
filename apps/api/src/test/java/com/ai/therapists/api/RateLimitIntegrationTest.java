@@ -106,6 +106,7 @@ class RateLimitIntegrationTest {
                 List.of("Confidentiality"),
                 null,
                 "rate@example.com",
+                null,
                 null
         );
     }

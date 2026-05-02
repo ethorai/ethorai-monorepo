@@ -96,7 +96,8 @@ public class PageController {
                 profile.fullName(),
                 profile.role(),
                 structuredSectionsMapper.fromStorage(page.sections()),
-                page.status()
+                page.status(),
+                profile.photoUrl()
         );
     }
 }

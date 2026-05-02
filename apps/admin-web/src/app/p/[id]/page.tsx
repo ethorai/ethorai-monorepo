@@ -48,7 +48,7 @@ export default async function PublicPage({ params }: Props) {
   return (
     <main>
       <HeaderSection data={s.HEADER} />
-      <HeroSection data={s.HERO} />
+      <HeroSection data={s.HERO} photoUrl={page.photoUrl} />
       <AreasOfSupportSection data={s.AREAS_OF_SUPPORT} />
       <HowIWorkSection data={s.HOW_I_WORK} />
       <WhatYouCanExpectSection data={s.WHAT_YOU_CAN_EXPECT} />

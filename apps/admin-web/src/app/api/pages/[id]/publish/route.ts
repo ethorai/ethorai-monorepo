@@ -14,26 +14,14 @@ export async function POST(_request: NextRequest, { params }: Params) {
 
   const { id } = await params;
 
+  let response: Response;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/pages/${id}/publish`, {
+    response = await fetch(`${API_BASE_URL}/api/pages/${id}/publish`, {
       method: "POST",
       headers: { ...authResult.headers },
     });
-
-    const responseText = await response.text();
-
-    if (response.ok) {
-      revalidatePath(`/p/${id}`);
-    }
-
-    return new NextResponse(responseText, {
-      status: response.status,
-      headers: {
-        "Content-Type":
-          response.headers.get("Content-Type") ?? "application/json",
-      },
-    });
-  } catch {
+  } catch (err) {
+    console.error("[publish] fetch to Spring failed:", err);
     return NextResponse.json(
       {
         code: "ADMIN_PROXY_ERROR",
@@ -42,4 +30,22 @@ export async function POST(_request: NextRequest, { params }: Params) {
       { status: 502 },
     );
   }
+
+  const responseText = await response.text();
+
+  if (response.ok) {
+    try {
+      revalidatePath(`/p/${id}`);
+    } catch (err) {
+      console.error("[publish] revalidatePath failed:", err);
+    }
+  }
+
+  return new NextResponse(responseText, {
+    status: response.status,
+    headers: {
+      "Content-Type":
+        response.headers.get("Content-Type") ?? "application/json",
+    },
+  });
 }

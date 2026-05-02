@@ -96,6 +96,7 @@ class GeneratePageIntegrationTest {
             java.util.List.of("Confidentiality", "Respect"),
             null,
             email,
+            null,
             null
         );
 

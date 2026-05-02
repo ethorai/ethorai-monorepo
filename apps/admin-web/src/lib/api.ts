@@ -114,6 +114,7 @@ export type TherapistInput = {
   phone: string | null;
   email: string | null;
   bookingLink: string | null;
+  photoUrl: string | null;
 };
 
 export type GeneratedPageResponse = {
@@ -123,6 +124,7 @@ export type GeneratedPageResponse = {
   role: RoleType;
   sections: GeneratedSections;
   status: PageStatus;
+  photoUrl: string | null;
 };
 
 export type GenerationJobStatus =

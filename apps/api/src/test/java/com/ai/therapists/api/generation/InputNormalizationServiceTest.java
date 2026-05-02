@@ -87,6 +87,7 @@ class InputNormalizationServiceTest {
                 List.of("Confidentiality"),
                 null,
                 "test@example.com",
+                null,
                 null
         );
     }
@@ -103,6 +104,7 @@ class InputNormalizationServiceTest {
                 List.of(),
                 null,
                 "test@example.com",
+                null,
                 null
         );
     }

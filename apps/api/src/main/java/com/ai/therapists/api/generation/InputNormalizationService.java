@@ -56,7 +56,8 @@ public class InputNormalizationService {
                 normalizeList(input.expectations()),
                 truncate(trimOrNull(input.phone()), MAX_SHORT_TEXT_LENGTH),
                 truncate(trimOrNull(input.email()), MAX_SHORT_TEXT_LENGTH),
-                truncate(trimOrNull(input.bookingLink()), MAX_SHORT_TEXT_LENGTH)
+                truncate(trimOrNull(input.bookingLink()), MAX_SHORT_TEXT_LENGTH),
+                trimOrNull(input.photoUrl())
         );
     }
 

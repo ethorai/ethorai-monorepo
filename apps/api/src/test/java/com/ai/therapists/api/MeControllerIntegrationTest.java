@@ -145,6 +145,7 @@ class MeControllerIntegrationTest {
                 List.of("Privacy"),
                 null,
                 "me+" + UUID.randomUUID().toString().substring(0, 8) + "@example.com",
+                null,
                 null
         );
     }

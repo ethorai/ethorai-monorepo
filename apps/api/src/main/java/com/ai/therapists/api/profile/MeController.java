@@ -52,7 +52,8 @@ public class MeController {
                 profile.fullName(),
                 profile.role(),
                 structuredSectionsMapper.fromStorage(page.sections()),
-                page.status()
+                page.status(),
+                profile.photoUrl()
         );
     }
 
@@ -68,7 +69,8 @@ public class MeController {
                 profile.expectations(),
                 profile.phone(),
                 profile.email(),
-                profile.bookingLink()
+                profile.bookingLink(),
+                profile.photoUrl()
         );
     }
 }

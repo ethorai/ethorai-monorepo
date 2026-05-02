@@ -123,6 +123,11 @@ public class TherapistProfile extends TableImpl<TherapistProfileRecord> {
      */
     public final TableField<TherapistProfileRecord, String> BOOKING_LINK = createField(DSL.name("booking_link"), SQLDataType.VARCHAR(1000), this, "");
 
+    /**
+     * The column <code>public.therapist_profile.photo_url</code>.
+     */
+    public final TableField<TherapistProfileRecord, String> PHOTO_URL = createField(DSL.name("photo_url"), SQLDataType.VARCHAR(500), this, "");
+
     private TherapistProfile(Name alias, Table<TherapistProfileRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }

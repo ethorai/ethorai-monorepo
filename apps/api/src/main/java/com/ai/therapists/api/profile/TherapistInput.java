@@ -17,7 +17,8 @@ public record TherapistInput(
         List<String> expectations,
         String phone,
         String email,
-        String bookingLink
+        String bookingLink,
+        String photoUrl
 ) {
     @AssertTrue(message = "At least one contact method (phone, email, or bookingLink) is required")
     boolean hasContact() {

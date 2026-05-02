@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   AreasOfSupportData,
   ContactData,
@@ -39,16 +40,35 @@ export function HeaderSection({ data }: { data: HeaderData }) {
   );
 }
 
-export function HeroSection({ data }: { data: HeroData }) {
+export function HeroSection({
+  data,
+  photoUrl,
+}: {
+  data: HeroData;
+  photoUrl?: string | null;
+}) {
   return (
     <section className="bg-[radial-gradient(ellipse_at_top,#fbe3d3_0%,#f7f5ee_55%,#f4efe4_100%)]">
-      <div className="mx-auto max-w-3xl px-6 py-24 sm:px-10 sm:py-32">
-        <h1 className="text-4xl font-medium leading-[1.08] tracking-tight text-stone-900 sm:text-6xl">
-          {data.heading}
-        </h1>
-        <p className="mt-8 max-w-2xl text-lg leading-relaxed text-stone-700 sm:text-xl">
-          {data.subheading}
-        </p>
+      <div className="mx-auto flex max-w-5xl flex-col-reverse items-center gap-10 px-6 py-24 sm:flex-row sm:items-start sm:px-10 sm:py-32">
+        <div className="flex-1">
+          <h1 className="text-4xl font-medium leading-[1.08] tracking-tight text-stone-900 sm:text-6xl">
+            {data.heading}
+          </h1>
+          <p className="mt-8 max-w-2xl text-lg leading-relaxed text-stone-700 sm:text-xl">
+            {data.subheading}
+          </p>
+        </div>
+        {photoUrl ? (
+          <div className="shrink-0">
+            <Image
+              src={photoUrl}
+              alt=""
+              width={208}
+              height={208}
+              className="h-40 w-40 rounded-full object-cover shadow-lg ring-4 ring-white sm:h-52 sm:w-52"
+            />
+          </div>
+        ) : null}
       </div>
     </section>
   );
