@@ -35,7 +35,13 @@ public class PublicPageController {
                 profile.role(),
                 sectionsMapper.fromStorage(page.sections()),
                 page.status(),
-                profile.photoUrl()
+                profile.photoUrl(),
+                profile.city(),
+                profile.streetAddress(),
+                profile.postalCode(),
+                profile.latitude(),
+                profile.longitude(),
+                profile.sessionFormat().name()
         );
     }
 }

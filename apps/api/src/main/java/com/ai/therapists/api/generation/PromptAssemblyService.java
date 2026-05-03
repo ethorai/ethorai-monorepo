@@ -149,7 +149,7 @@ public class PromptAssemblyService {
                 """.formatted(
                 input.fullName(),
                 input.role().name(),
-                input.location() != null ? input.location() : "Non spécifié",
+                input.city() != null ? input.city() : "Non spécifié",
                 String.join(", ", input.audiences()),
                 String.join(", ", input.areasOfSupport()),
                 input.approach() != null ? input.approach() : "Non spécifié",
@@ -200,7 +200,7 @@ public class PromptAssemblyService {
                 sectionType.name(),
                 input.fullName(),
                 input.role().name(),
-                input.location() != null ? input.location() : "Non spécifié",
+                input.city() != null ? input.city() : "Non spécifié",
                 String.join(", ", input.audiences()),
                 String.join(", ", input.areasOfSupport()),
                 input.approach() != null ? input.approach() : "Non spécifié",

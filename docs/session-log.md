@@ -90,15 +90,31 @@
   - `BLOB_READ_WRITE_TOKEN` env var required in admin-web (Vercel Blob)
   - All backend tests passing (BUILD SUCCESS); Next.js build clean
 
+## 2026-05-03
+
+### Done Today
+
+- **Structured address columns (V7)** — full-stack address refactor:
+  - Flyway V7: `RENAME location → city`, ADD `street_address VARCHAR(255)`, `postal_code VARCHAR(10)`, `latitude DOUBLE PRECISION`, `longitude DOUBLE PRECISION`
+  - jOOQ codegen re-run against migrated DB
+  - Backend: `TherapistInput`, `GeneratedPageResponse`, `TherapistProfileRepository`, `GenerationOrchestrator`, `MeController`, `PageController`, `PublicPageController`, `InputNormalizationService`, `PromptAssemblyService` all updated (`location()` → `city()`, 4 new address fields propagated end-to-end)
+  - All 7 test files updated (constructor arity +4 nulls); `MeControllerIntegrationTest` assertion updated to `$.city`
+  - 28/28 tests green; `./mvnw compile test-compile` clean
+  - Frontend: `api.ts` (`TherapistInput` + `GeneratedPageResponse` updated), `onboarding-storage.ts` (`location → city`, 4 new fields), `flow.tsx` (payload), `workspace.tsx` (seeded state)
+  - `IdentityScreen` in `screens.tsx`: renamed `state.location → state.city`, added address autocomplete widget using French gov API (`api-adresse.data.gouv.fr`) with 300ms debounce — picks city, streetAddress, postalCode, lat/lng from suggestion
+  - Added `LocationMapSection` to `section-renderers.tsx` (Google Maps iframe embed, no API key)
+  - Public page `/p/[id]`: renders `LocationMapSection` only when `sessionFormat` is IN_PERSON or BOTH and location data is present
+  - Next.js build clean (TypeScript + static generation)
+
 ### Next 3 Tasks
 
-1. Add `BLOB_READ_WRITE_TOKEN` to `.env.local` (run `vercel env pull` or set manually from Vercel dashboard) and browser-test full flow: register → onboarding (incl. photo) → /page → publish → /p/{id}
-2. Wire ethorai.fr / ethorai.com domains to Vercel
-3. 5 user interviews with target therapists
+1. Browser-test address autocomplete + map display end-to-end (local dev: fill address in onboarding → generate → publish → /p/{id} with IN_PERSON format should show map)
+2. 5 user interviews with target therapists
+3. Deploy to production (Railway + Vercel) — V7 migration will auto-run on Railway PostgreSQL at startup
 
 ### Current Blocker
 
-`BLOB_READ_WRITE_TOKEN` not yet set in local `.env.local` — photo upload will fail locally until added. Set it from Vercel dashboard → Storage → Blob → your store → `.env.local` tab.
+None — all tests pass, build is clean.
 
 ### Exact Resume Command
 
@@ -106,7 +122,7 @@ From repo root:
 `docker compose -f infra/docker-compose.yml up -d`
 
 From `apps/api`:
-`./mvnw flyway:migrate && ./mvnw spring-boot:run`
+`./mvnw spring-boot:run`
 
 From `apps/admin-web`:
 `npm run dev`

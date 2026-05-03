@@ -43,10 +43,10 @@ export function Workspace({ initialPage }: WorkspaceProps) {
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isPublished = page.status === "PUBLISHED";
-  const publicUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/p/${page.pageId}`
-      : `/p/${page.pageId}`;
+  const publicPath = `/p/${page.pageId}`;
+  function getPublicUrl() {
+    return `${window.location.origin}${publicPath}`;
+  }
 
   function showToast(message: string) {
     setToast(message);
@@ -63,7 +63,7 @@ export function Workspace({ initialPage }: WorkspaceProps) {
 
       const seeded: OnboardingState = {
         fullName: profile.fullName,
-        location: profile.location ?? "",
+        city: profile.city ?? "",
         role: profile.role,
         audiences: profile.audiences,
         areasOfSupport: profile.areasOfSupport,
@@ -74,6 +74,10 @@ export function Workspace({ initialPage }: WorkspaceProps) {
         contactEmail: profile.email ?? "",
         contactBookingLink: profile.bookingLink ?? "",
         photoUrl: profile.photoUrl ?? "",
+        streetAddress: profile.streetAddress ?? "",
+        postalCode: profile.postalCode ?? "",
+        latitude: profile.latitude ?? null,
+        longitude: profile.longitude ?? null,
       };
       saveOnboarding({ state: seeded, step: 1 });
       router.push("/onboarding");
@@ -128,7 +132,7 @@ export function Workspace({ initialPage }: WorkspaceProps) {
       await publishPage(page.pageId);
       setPage({ ...page, status: "PUBLISHED" });
       try {
-        await navigator.clipboard.writeText(publicUrl);
+        await navigator.clipboard.writeText(getPublicUrl());
         showToast("Page publiée. Lien copié dans le presse-papier.");
       } catch {
         showToast("Page publiée.");
@@ -142,7 +146,7 @@ export function Workspace({ initialPage }: WorkspaceProps) {
 
   async function handleCopyLink() {
     try {
-      await navigator.clipboard.writeText(publicUrl);
+      await navigator.clipboard.writeText(getPublicUrl());
       showToast("Lien copié.");
     } catch {
       showToast("Impossible de copier le lien.");
@@ -189,7 +193,7 @@ export function Workspace({ initialPage }: WorkspaceProps) {
                   Copier le lien
                 </button>
                 <a
-                  href={publicUrl}
+                  href={publicPath}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-stone-700"

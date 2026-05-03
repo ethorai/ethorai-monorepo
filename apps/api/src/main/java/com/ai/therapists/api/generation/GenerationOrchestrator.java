@@ -48,7 +48,7 @@ public class GenerationOrchestrator {
         UUID profileId = profileRepo.insert(
                 input.fullName(),
                 input.role(),
-                input.location(),
+                input.city(),
                 input.audiences(),
                 input.areasOfSupport(),
                 input.approach(),
@@ -57,7 +57,11 @@ public class GenerationOrchestrator {
                 input.phone(),
                 input.email(),
                 input.bookingLink(),
-                input.photoUrl()
+                input.photoUrl(),
+                input.streetAddress(),
+                input.postalCode(),
+                input.latitude(),
+                input.longitude()
         );
         eventLog.log(EntityType.PROFILE, profileId, EventType.CREATED);
 
@@ -127,7 +131,13 @@ public class GenerationOrchestrator {
                     profile.role(),
                     structuredSectionsMapper.fromStorage(updatedSections),
                     page.status(),
-                    profile.photoUrl()
+                    profile.photoUrl(),
+                    profile.city(),
+                    profile.streetAddress(),
+                    profile.postalCode(),
+                    profile.latitude(),
+                    profile.longitude(),
+                    profile.sessionFormat().name()
             );
         } catch (AiGenerationException | GenerationValidationException ex) {
             eventLog.log(
@@ -159,7 +169,7 @@ public class GenerationOrchestrator {
         return new TherapistInput(
                 profile.fullName(),
                 profile.role(),
-                profile.location(),
+                profile.city(),
                 profile.audiences(),
                 profile.areasOfSupport(),
                 profile.approach(),
@@ -168,7 +178,11 @@ public class GenerationOrchestrator {
                 profile.phone(),
                 profile.email(),
                 profile.bookingLink(),
-                profile.photoUrl()
+                profile.photoUrl(),
+                profile.streetAddress(),
+                profile.postalCode(),
+                profile.latitude(),
+                profile.longitude()
         );
     }
 

@@ -2,7 +2,7 @@ import type { RoleType, SessionFormat } from "@/lib/api";
 
 export type OnboardingState = {
   fullName: string;
-  location: string;
+  city: string;
   role: RoleType | null;
   audiences: string[];
   areasOfSupport: string[];
@@ -13,11 +13,15 @@ export type OnboardingState = {
   contactEmail: string;
   contactBookingLink: string;
   photoUrl: string;
+  streetAddress: string;
+  postalCode: string;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export const INITIAL_ONBOARDING_STATE: OnboardingState = {
   fullName: "",
-  location: "",
+  city: "",
   role: null,
   audiences: [],
   areasOfSupport: [],
@@ -28,6 +32,10 @@ export const INITIAL_ONBOARDING_STATE: OnboardingState = {
   contactEmail: "",
   contactBookingLink: "",
   photoUrl: "",
+  streetAddress: "",
+  postalCode: "",
+  latitude: null,
+  longitude: null,
 };
 
 export type OnboardingSnapshot = {

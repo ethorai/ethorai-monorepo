@@ -9,7 +9,7 @@ import java.util.List;
 public record TherapistInput(
         @NotBlank String fullName,
         @NotNull RoleType role,
-        String location,
+        String city,
         @NotEmpty List<String> audiences,
         @NotEmpty List<String> areasOfSupport,
         String approach,
@@ -18,7 +18,11 @@ public record TherapistInput(
         String phone,
         String email,
         String bookingLink,
-        String photoUrl
+        String photoUrl,
+        String streetAddress,
+        String postalCode,
+        Double latitude,
+        Double longitude
 ) {
     @AssertTrue(message = "At least one contact method (phone, email, or bookingLink) is required")
     boolean hasContact() {

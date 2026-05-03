@@ -48,7 +48,7 @@ public class InputNormalizationService {
         return new TherapistInput(
                 truncate(trimOrNull(input.fullName()), MAX_SHORT_TEXT_LENGTH),
                 input.role(),
-                truncate(trimOrNull(input.location()), MAX_SHORT_TEXT_LENGTH),
+                truncate(trimOrNull(input.city()), MAX_SHORT_TEXT_LENGTH),
                 normalizeList(input.audiences()),
                 normalizeList(input.areasOfSupport()),
                 truncate(sanitizeText(trimOrNull(input.approach())), MAX_APPROACH_LENGTH),
@@ -57,7 +57,11 @@ public class InputNormalizationService {
                 truncate(trimOrNull(input.phone()), MAX_SHORT_TEXT_LENGTH),
                 truncate(trimOrNull(input.email()), MAX_SHORT_TEXT_LENGTH),
                 truncate(trimOrNull(input.bookingLink()), MAX_SHORT_TEXT_LENGTH),
-                trimOrNull(input.photoUrl())
+                trimOrNull(input.photoUrl()),
+                truncate(trimOrNull(input.streetAddress()), MAX_SHORT_TEXT_LENGTH),
+                truncate(trimOrNull(input.postalCode()), MAX_SHORT_TEXT_LENGTH),
+                input.latitude(),
+                input.longitude()
         );
     }
 

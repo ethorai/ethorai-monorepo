@@ -105,7 +105,7 @@ export type ApiErrorResponse = {
 export type TherapistInput = {
   fullName: string;
   role: RoleType;
-  location: string;
+  city: string;
   audiences: string[];
   areasOfSupport: string[];
   approach: string;
@@ -115,6 +115,10 @@ export type TherapistInput = {
   email: string | null;
   bookingLink: string | null;
   photoUrl: string | null;
+  streetAddress: string | null;
+  postalCode: string | null;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export type GeneratedPageResponse = {
@@ -125,6 +129,12 @@ export type GeneratedPageResponse = {
   sections: GeneratedSections;
   status: PageStatus;
   photoUrl: string | null;
+  city: string | null;
+  streetAddress: string | null;
+  postalCode: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  sessionFormat: string;
 };
 
 export type GenerationJobStatus =

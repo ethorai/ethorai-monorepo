@@ -95,7 +95,8 @@ class GetPageIntegrationTest {
                 null,
                 email,
                 null,
-                null
+                null,
+                null, null, null, null
         );
 
         // Step 1: POST to generate → 202 with job ID

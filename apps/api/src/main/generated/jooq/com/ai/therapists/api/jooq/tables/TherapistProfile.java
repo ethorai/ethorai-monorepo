@@ -74,9 +74,9 @@ public class TherapistProfile extends TableImpl<TherapistProfileRecord> {
     public final TableField<TherapistProfileRecord, String> ROLE = createField(DSL.name("role"), SQLDataType.VARCHAR(50).nullable(false), this, "");
 
     /**
-     * The column <code>public.therapist_profile.location</code>.
+     * The column <code>public.therapist_profile.city</code>.
      */
-    public final TableField<TherapistProfileRecord, String> LOCATION = createField(DSL.name("location"), SQLDataType.VARCHAR(255), this, "");
+    public final TableField<TherapistProfileRecord, String> CITY = createField(DSL.name("city"), SQLDataType.VARCHAR(255), this, "");
 
     /**
      * The column <code>public.therapist_profile.audiences</code>.
@@ -127,6 +127,26 @@ public class TherapistProfile extends TableImpl<TherapistProfileRecord> {
      * The column <code>public.therapist_profile.photo_url</code>.
      */
     public final TableField<TherapistProfileRecord, String> PHOTO_URL = createField(DSL.name("photo_url"), SQLDataType.VARCHAR(500), this, "");
+
+    /**
+     * The column <code>public.therapist_profile.street_address</code>.
+     */
+    public final TableField<TherapistProfileRecord, String> STREET_ADDRESS = createField(DSL.name("street_address"), SQLDataType.VARCHAR(255), this, "");
+
+    /**
+     * The column <code>public.therapist_profile.postal_code</code>.
+     */
+    public final TableField<TherapistProfileRecord, String> POSTAL_CODE = createField(DSL.name("postal_code"), SQLDataType.VARCHAR(10), this, "");
+
+    /**
+     * The column <code>public.therapist_profile.latitude</code>.
+     */
+    public final TableField<TherapistProfileRecord, Double> LATITUDE = createField(DSL.name("latitude"), SQLDataType.DOUBLE, this, "");
+
+    /**
+     * The column <code>public.therapist_profile.longitude</code>.
+     */
+    public final TableField<TherapistProfileRecord, Double> LONGITUDE = createField(DSL.name("longitude"), SQLDataType.DOUBLE, this, "");
 
     private TherapistProfile(Name alias, Table<TherapistProfileRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);

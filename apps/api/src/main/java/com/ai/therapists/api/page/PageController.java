@@ -97,7 +97,13 @@ public class PageController {
                 profile.role(),
                 structuredSectionsMapper.fromStorage(page.sections()),
                 page.status(),
-                profile.photoUrl()
+                profile.photoUrl(),
+                profile.city(),
+                profile.streetAddress(),
+                profile.postalCode(),
+                profile.latitude(),
+                profile.longitude(),
+                profile.sessionFormat().name()
         );
     }
 }

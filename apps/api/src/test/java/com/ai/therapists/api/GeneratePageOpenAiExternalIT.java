@@ -84,7 +84,8 @@ class GeneratePageOpenAiExternalIT {
                 null,
                 "external+" + runId + "@example.com",
                 null,
-                null
+                null,
+                null, null, null, null
         );
 
         // POST → 202 with job

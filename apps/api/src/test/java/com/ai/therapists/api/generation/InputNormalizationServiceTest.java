@@ -88,7 +88,8 @@ class InputNormalizationServiceTest {
                 null,
                 "test@example.com",
                 null,
-                null
+                null,
+                null, null, null, null
         );
     }
 
@@ -105,7 +106,8 @@ class InputNormalizationServiceTest {
                 null,
                 "test@example.com",
                 null,
-                null
+                null,
+                null, null, null, null
         );
     }
 }

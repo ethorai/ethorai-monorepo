@@ -53,7 +53,13 @@ public class MeController {
                 profile.role(),
                 structuredSectionsMapper.fromStorage(page.sections()),
                 page.status(),
-                profile.photoUrl()
+                profile.photoUrl(),
+                profile.city(),
+                profile.streetAddress(),
+                profile.postalCode(),
+                profile.latitude(),
+                profile.longitude(),
+                profile.sessionFormat().name()
         );
     }
 
@@ -61,7 +67,7 @@ public class MeController {
         return new TherapistInput(
                 profile.fullName(),
                 profile.role(),
-                profile.location(),
+                profile.city(),
                 profile.audiences(),
                 profile.areasOfSupport(),
                 profile.approach(),
@@ -70,7 +76,11 @@ public class MeController {
                 profile.phone(),
                 profile.email(),
                 profile.bookingLink(),
-                profile.photoUrl()
+                profile.photoUrl(),
+                profile.streetAddress(),
+                profile.postalCode(),
+                profile.latitude(),
+                profile.longitude()
         );
     }
 }

@@ -107,7 +107,8 @@ class RateLimitIntegrationTest {
                 null,
                 "rate@example.com",
                 null,
-                null
+                null,
+                null, null, null, null
         );
     }
 

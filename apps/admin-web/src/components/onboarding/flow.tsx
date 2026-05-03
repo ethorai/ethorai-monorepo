@@ -122,7 +122,7 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
     const payload: TherapistInput = {
       fullName: state.fullName.trim(),
       role: state.role,
-      location: state.location.trim(),
+      city: state.city.trim(),
       audiences: state.audiences,
       areasOfSupport: state.areasOfSupport,
       approach: state.approach.trim(),
@@ -132,6 +132,10 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
       email: state.contactEmail.trim() || null,
       bookingLink: state.contactBookingLink.trim() || null,
       photoUrl: state.photoUrl.trim() || null,
+      streetAddress: state.streetAddress.trim() || null,
+      postalCode: state.postalCode.trim() || null,
+      latitude: state.latitude,
+      longitude: state.longitude,
     };
 
     try {

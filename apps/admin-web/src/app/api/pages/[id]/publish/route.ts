@@ -39,6 +39,7 @@ export async function POST(_request: NextRequest, { params }: Params) {
     } catch (err) {
       console.error("[publish] revalidatePath failed:", err);
     }
+    return new NextResponse(null, { status: 204 });
   }
 
   return new NextResponse(responseText, {

@@ -7,6 +7,7 @@ import {
   HowIWorkSection,
   WhatYouCanExpectSection,
   SessionFormatsSection,
+  LocationMapSection,
   ContactSection,
   DisclaimerSection,
   FooterSection,
@@ -53,6 +54,15 @@ export default async function PublicPage({ params }: Props) {
       <HowIWorkSection data={s.HOW_I_WORK} />
       <WhatYouCanExpectSection data={s.WHAT_YOU_CAN_EXPECT} />
       <SessionFormatsSection data={s.SESSION_FORMATS} />
+      {(page.sessionFormat === "IN_PERSON" || page.sessionFormat === "BOTH") && (
+        <LocationMapSection
+          streetAddress={page.streetAddress}
+          postalCode={page.postalCode}
+          city={page.city}
+          latitude={page.latitude}
+          longitude={page.longitude}
+        />
+      )}
       <ContactSection data={s.CONTACT} />
       <DisclaimerSection data={s.DISCLAIMER} />
       <FooterSection data={s.FOOTER} />

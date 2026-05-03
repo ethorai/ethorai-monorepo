@@ -1,4 +1,9 @@
 import Image from "next/image";
+
+function formatPhone(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 10);
+  return digits.replace(/(\d{2})(?=\d)/g, "$1 ").trim();
+}
 import {
   AreasOfSupportData,
   ContactData,
@@ -197,7 +202,7 @@ export function ContactSection({ data }: { data: ContactData }) {
     : data.email
       ? `mailto:${data.email}`
       : data.phone
-        ? `tel:${data.phone}`
+        ? `tel:${formatPhone(data.phone)}`
         : undefined;
 
   const hasSecondaryContacts =
@@ -238,14 +243,64 @@ export function ContactSection({ data }: { data: ContactData }) {
             ) : null}
             {data.phone ? (
               <a
-                href={`tel:${data.phone}`}
+                href={`tel:${formatPhone(data.phone)}`}
                 className="transition hover:text-stone-900"
               >
-                {data.phone}
+                {formatPhone(data.phone)}
               </a>
             ) : null}
           </div>
         ) : null}
+      </div>
+    </section>
+  );
+}
+
+export function LocationMapSection({
+  streetAddress,
+  postalCode,
+  city,
+  latitude,
+  longitude,
+}: {
+  streetAddress: string | null;
+  postalCode: string | null;
+  city: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}) {
+  const query = [streetAddress, postalCode, city].filter(Boolean).join(", ");
+  if (!query) return null;
+
+  const coords =
+    latitude != null && longitude != null
+      ? `${latitude},${longitude}`
+      : encodeURIComponent(query);
+
+  const src = `https://maps.google.com/maps?q=${coords}&output=embed&hl=fr`;
+
+  return (
+    <section className="bg-stone-50/60">
+      <div className="mx-auto max-w-4xl px-6 py-20 sm:px-10 sm:py-24">
+        <h2 className="text-3xl font-medium tracking-tight text-stone-900 sm:text-4xl">
+          Où me trouver
+        </h2>
+        {streetAddress || postalCode ? (
+          <p className="mt-4 text-base text-stone-600">
+            {[streetAddress, postalCode, city].filter(Boolean).join(", ")}
+          </p>
+        ) : null}
+        <div className="mt-8 overflow-hidden rounded-2xl border border-stone-200">
+          <iframe
+            title="Localisation du cabinet"
+            src={src}
+            width="100%"
+            height="360"
+            style={{ border: 0 }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
       </div>
     </section>
   );
@@ -286,10 +341,10 @@ export function FooterSection({ data }: { data: FooterData }) {
             ) : null}
             {data.phone ? (
               <a
-                href={`tel:${data.phone}`}
+                href={`tel:${formatPhone(data.phone)}`}
                 className="transition hover:text-stone-900"
               >
-                {data.phone}
+                {formatPhone(data.phone)}
               </a>
             ) : null}
           </div>

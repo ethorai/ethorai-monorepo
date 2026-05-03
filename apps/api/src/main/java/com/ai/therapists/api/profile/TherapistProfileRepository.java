@@ -18,7 +18,7 @@ public class TherapistProfileRepository {
 
     public UUID insert(String fullName,
                        RoleType role,
-                       String location,
+                       String city,
                        List<String> audiences,
                        List<String> areasOfSupport,
                        String approach,
@@ -27,12 +27,16 @@ public class TherapistProfileRepository {
                        String phone,
                        String email,
                        String bookingLink,
-                       String photoUrl) {
+                       String photoUrl,
+                       String streetAddress,
+                       String postalCode,
+                       Double latitude,
+                       Double longitude) {
 
         return dsl.insertInto(THERAPIST_PROFILE)
                 .set(THERAPIST_PROFILE.FULL_NAME, fullName)
                 .set(THERAPIST_PROFILE.ROLE, role.name())
-                .set(THERAPIST_PROFILE.LOCATION, location)
+                .set(THERAPIST_PROFILE.CITY, city)
                 .set(THERAPIST_PROFILE.AUDIENCES, JSONB.jsonb(toJson(audiences)))
                 .set(THERAPIST_PROFILE.AREAS_OF_SUPPORT, JSONB.jsonb(toJson(areasOfSupport)))
                 .set(THERAPIST_PROFILE.APPROACH, approach)
@@ -42,6 +46,10 @@ public class TherapistProfileRepository {
                 .set(THERAPIST_PROFILE.EMAIL, email)
                 .set(THERAPIST_PROFILE.BOOKING_LINK, bookingLink)
                 .set(THERAPIST_PROFILE.PHOTO_URL, photoUrl)
+                .set(THERAPIST_PROFILE.STREET_ADDRESS, streetAddress)
+                .set(THERAPIST_PROFILE.POSTAL_CODE, postalCode)
+                .set(THERAPIST_PROFILE.LATITUDE, latitude)
+                .set(THERAPIST_PROFILE.LONGITUDE, longitude)
                 .returning(THERAPIST_PROFILE.ID)
                 .fetchOne(THERAPIST_PROFILE.ID);
     }
@@ -56,7 +64,7 @@ public class TherapistProfileRepository {
             UUID id,
             String fullName,
             RoleType role,
-            String location,
+            String city,
             List<String> audiences,
             List<String> areasOfSupport,
             String approach,
@@ -65,7 +73,11 @@ public class TherapistProfileRepository {
             String phone,
             String email,
             String bookingLink,
-            String photoUrl
+            String photoUrl,
+            String streetAddress,
+            String postalCode,
+            Double latitude,
+            Double longitude
     ) {}
 
     private TherapistProfileRow toRow(org.jooq.Record record) {
@@ -73,7 +85,7 @@ public class TherapistProfileRepository {
                 record.get(THERAPIST_PROFILE.ID),
                 record.get(THERAPIST_PROFILE.FULL_NAME),
                 RoleType.valueOf(record.get(THERAPIST_PROFILE.ROLE)),
-                record.get(THERAPIST_PROFILE.LOCATION),
+                record.get(THERAPIST_PROFILE.CITY),
                 fromJson(record.get(THERAPIST_PROFILE.AUDIENCES)),
                 fromJson(record.get(THERAPIST_PROFILE.AREAS_OF_SUPPORT)),
                 record.get(THERAPIST_PROFILE.APPROACH),
@@ -82,7 +94,11 @@ public class TherapistProfileRepository {
                 record.get(THERAPIST_PROFILE.PHONE),
                 record.get(THERAPIST_PROFILE.EMAIL),
                 record.get(THERAPIST_PROFILE.BOOKING_LINK),
-                record.get(THERAPIST_PROFILE.PHOTO_URL)
+                record.get(THERAPIST_PROFILE.PHOTO_URL),
+                record.get(THERAPIST_PROFILE.STREET_ADDRESS),
+                record.get(THERAPIST_PROFILE.POSTAL_CODE),
+                record.get(THERAPIST_PROFILE.LATITUDE),
+                record.get(THERAPIST_PROFILE.LONGITUDE)
         );
     }
 

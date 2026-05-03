@@ -4,6 +4,8 @@ import {
   type ChangeEvent,
   type FormEvent,
   type KeyboardEvent,
+  useEffect,
+  useRef,
   useState,
 } from "react";
 import type { RoleType, SessionFormat } from "@/lib/api";
@@ -158,9 +160,80 @@ export function WelcomeScreen({ firstName, onNext }: WelcomeProps) {
 
 // ─── 1. Identity ────────────────────────────────────────────────
 
+type AddressSuggestion = {
+  label: string;
+  city: string;
+  postcode: string;
+  streetAddress: string;
+  lat: number;
+  lon: number;
+};
+
 export function IdentityScreen({ state, update, onNext }: ScreenProps) {
   const nameFilled = state.fullName.trim().length >= 2;
-  const canContinue = nameFilled && state.location.trim().length >= 2;
+  const canContinue = nameFilled && state.city.trim().length >= 2;
+
+  const [addressQuery, setAddressQuery] = useState(
+    state.streetAddress || state.city || "",
+  );
+  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const q = addressQuery.trim();
+    if (q.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=5`,
+        );
+        const data = (await res.json()) as {
+          features: {
+            properties: {
+              label: string;
+              city: string;
+              postcode: string;
+              name: string;
+              type: string;
+            };
+            geometry: { coordinates: [number, number] };
+          }[];
+        };
+        setSuggestions(
+          data.features.map((f) => ({
+            label: f.properties.label,
+            city: f.properties.city,
+            postcode: f.properties.postcode,
+            streetAddress:
+              f.properties.type === "housenumber" ||
+              f.properties.type === "street"
+                ? f.properties.name
+                : "",
+            lat: f.geometry.coordinates[1],
+            lon: f.geometry.coordinates[0],
+          })),
+        );
+      } catch {
+        setSuggestions([]);
+      }
+    }, 300);
+  }, [addressQuery]);
+
+  function pickSuggestion(s: AddressSuggestion) {
+    update({
+      city: s.city,
+      streetAddress: s.streetAddress,
+      postalCode: s.postcode,
+      latitude: s.lat,
+      longitude: s.lon,
+    });
+    setAddressQuery(s.label);
+    setSuggestions([]);
+  }
 
   return (
     <Question
@@ -189,24 +262,48 @@ export function IdentityScreen({ state, update, onNext }: ScreenProps) {
 
         <div
           className={`overflow-hidden transition-all duration-500 ${
-            nameFilled ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+            nameFilled ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
           <label className="block">
             <span className="mb-2 block text-sm font-medium text-stone-600">
-              Et dans quelle ville exercez-vous ?
+              Où exercez-vous ? (ville ou adresse complète)
             </span>
-            <input
-              className={INPUT_CLASSES}
-              placeholder="Paris, Lyon, Bordeaux..."
-              value={state.location}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                update({ location: e.target.value })
-              }
-              onKeyDown={submitOnEnter(() => {
-                if (canContinue) onNext();
-              })}
-            />
+            <div className="relative">
+              <input
+                className={INPUT_CLASSES}
+                placeholder="Paris, 12 rue de la Paix..."
+                value={addressQuery}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setAddressQuery(e.target.value);
+                  update({
+                    city: e.target.value,
+                    streetAddress: "",
+                    postalCode: "",
+                    latitude: null,
+                    longitude: null,
+                  });
+                }}
+                onKeyDown={submitOnEnter(() => {
+                  if (canContinue) onNext();
+                })}
+              />
+              {suggestions.length > 0 && (
+                <ul className="absolute z-10 mt-1 w-full rounded-2xl border border-stone-200 bg-white shadow-lg">
+                  {suggestions.map((s, i) => (
+                    <li key={i}>
+                      <button
+                        type="button"
+                        className="w-full px-4 py-3 text-left text-sm text-stone-700 transition hover:bg-stone-50 first:rounded-t-2xl last:rounded-b-2xl"
+                        onClick={() => pickSuggestion(s)}
+                      >
+                        {s.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </label>
         </div>
       </div>
@@ -749,7 +846,7 @@ const SUMMARY_ROWS: {
     label: "Identité",
     step: 1,
     pick: (s) =>
-      [s.fullName, s.location].filter(Boolean).join(" · ") || "—",
+      [s.fullName, s.city].filter(Boolean).join(" · ") || "—",
   },
   {
     label: "Métier",

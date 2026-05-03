@@ -97,7 +97,8 @@ class GeneratePageIntegrationTest {
             null,
             email,
             null,
-            null
+            null,
+            null, null, null, null
         );
 
         // Step 1: POST /api/generate → 202 Accepted with job ID

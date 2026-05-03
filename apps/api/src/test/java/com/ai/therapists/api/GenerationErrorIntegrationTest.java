@@ -142,7 +142,8 @@ class GenerationErrorIntegrationTest {
                 null,
                 "hello@example.com",
                 null,
-                null
+                null,
+                null, null, null, null
         );
 
         mockMvc.perform(post("/api/generate")
@@ -187,7 +188,8 @@ class GenerationErrorIntegrationTest {
                 null,
                 "hello@example.com",
                 null,
-                null
+                null,
+                null, null, null, null
         );
     }
 

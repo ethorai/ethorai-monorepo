@@ -128,7 +128,7 @@ class MeControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.fullName", is("Dr Me Profile")))
                 .andExpect(jsonPath("$.role", is("PSYCHOLOGIST")))
-                .andExpect(jsonPath("$.location", is("Lyon")))
+                .andExpect(jsonPath("$.city", is("Lyon")))
                 .andExpect(jsonPath("$.audiences[0]", is("Adultes")))
                 .andExpect(jsonPath("$.email", notNullValue()));
     }
@@ -146,7 +146,8 @@ class MeControllerIntegrationTest {
                 null,
                 "me+" + UUID.randomUUID().toString().substring(0, 8) + "@example.com",
                 null,
-                null
+                null,
+                null, null, null, null
         );
     }
 

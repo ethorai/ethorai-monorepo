@@ -65,16 +65,16 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
     }
 
     /**
-     * Setter for <code>public.therapist_profile.location</code>.
+     * Setter for <code>public.therapist_profile.city</code>.
      */
-    public void setLocation(String value) {
+    public void setCity(String value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>public.therapist_profile.location</code>.
+     * Getter for <code>public.therapist_profile.city</code>.
      */
-    public String getLocation() {
+    public String getCity() {
         return (String) get(3);
     }
 
@@ -218,6 +218,62 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
         return (String) get(13);
     }
 
+    /**
+     * Setter for <code>public.therapist_profile.street_address</code>.
+     */
+    public void setStreetAddress(String value) {
+        set(14, value);
+    }
+
+    /**
+     * Getter for <code>public.therapist_profile.street_address</code>.
+     */
+    public String getStreetAddress() {
+        return (String) get(14);
+    }
+
+    /**
+     * Setter for <code>public.therapist_profile.postal_code</code>.
+     */
+    public void setPostalCode(String value) {
+        set(15, value);
+    }
+
+    /**
+     * Getter for <code>public.therapist_profile.postal_code</code>.
+     */
+    public String getPostalCode() {
+        return (String) get(15);
+    }
+
+    /**
+     * Setter for <code>public.therapist_profile.latitude</code>.
+     */
+    public void setLatitude(Double value) {
+        set(16, value);
+    }
+
+    /**
+     * Getter for <code>public.therapist_profile.latitude</code>.
+     */
+    public Double getLatitude() {
+        return (Double) get(16);
+    }
+
+    /**
+     * Setter for <code>public.therapist_profile.longitude</code>.
+     */
+    public void setLongitude(Double value) {
+        set(17, value);
+    }
+
+    /**
+     * Getter for <code>public.therapist_profile.longitude</code>.
+     */
+    public Double getLongitude() {
+        return (Double) get(17);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -241,13 +297,13 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
     /**
      * Create a detached, initialised TherapistProfileRecord
      */
-    public TherapistProfileRecord(UUID id, String fullName, String role, String location, JSONB audiences, JSONB areasOfSupport, String approach, String sessionFormat, JSONB expectations, OffsetDateTime createdAt, String phone, String email, String bookingLink, String photoUrl) {
+    public TherapistProfileRecord(UUID id, String fullName, String role, String city, JSONB audiences, JSONB areasOfSupport, String approach, String sessionFormat, JSONB expectations, OffsetDateTime createdAt, String phone, String email, String bookingLink, String photoUrl, String streetAddress, String postalCode, Double latitude, Double longitude) {
         super(TherapistProfile.THERAPIST_PROFILE);
 
         setId(id);
         setFullName(fullName);
         setRole(role);
-        setLocation(location);
+        setCity(city);
         setAudiences(audiences);
         setAreasOfSupport(areasOfSupport);
         setApproach(approach);
@@ -258,6 +314,10 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
         setEmail(email);
         setBookingLink(bookingLink);
         setPhotoUrl(photoUrl);
+        setStreetAddress(streetAddress);
+        setPostalCode(postalCode);
+        setLatitude(latitude);
+        setLongitude(longitude);
         resetChangedOnNotNull();
     }
 }

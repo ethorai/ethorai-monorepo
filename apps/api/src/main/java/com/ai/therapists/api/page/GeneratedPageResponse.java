@@ -12,5 +12,11 @@ public record GeneratedPageResponse(
         RoleType role,
         StructuredSections sections,
         PageStatus status,
-        String photoUrl
+        String photoUrl,
+        String city,
+        String streetAddress,
+        String postalCode,
+        Double latitude,
+        Double longitude,
+        String sessionFormat
 ) {}
