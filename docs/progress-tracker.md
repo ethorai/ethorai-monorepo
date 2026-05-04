@@ -26,6 +26,9 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ## Completed Milestones
 
+- [x] Conformité RGPD/LCEN (quick win pré-interview): page `/mentions-legales` (éditeur, hébergeurs, données, cookies, OpenAI), notice sur `/login` + `/register`, lien dans le footer des pages publiques
+- [x] Prompt quality: SESSION_FORMATS toujours 2 entrées séparées pour BOTH (jamais "Les deux"); WHAT_YOU_CAN_EXPECT descriptions doivent répondre "concrètement en séance ?" sans paraphraser le titre
+- [x] UX fixes: autocomplete address dropdown visible (overflow-hidden retiré quand visible); LocationMapSection ajouté au workspace (visible avant publication); Google Maps embed restauré
 - [x] Structured address columns (V7 migration): `location → city`, ADD `street_address`, `postal_code`, `latitude`, `longitude (DOUBLE)`; French gov address autocomplete in onboarding (`api-adresse.data.gouv.fr`); `LocationMapSection` Google Maps embed (IN_PERSON/BOTH only); full-stack: backend (migration, jOOQ codegen, all controllers/repo/services/tests) + frontend (api.ts, onboarding-storage, screens, flow, workspace, section-renderers, public page); 28/28 tests green, Next.js build clean
 - [x] Domains wired: ethorai.fr (3 years) + ethorai.com (1 year) pointed to Vercel; BLOB_READ_WRITE_TOKEN configured; full flow browser-tested end-to-end
 - [x] Photo upload: Flyway V6 + Vercel Blob upload route + PhotoScreen (step 9 in onboarding, optional) + HeroSection side-by-side layout with circular photo; `next/image` + remotePatterns; all tests green

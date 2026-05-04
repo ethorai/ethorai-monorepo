@@ -159,6 +159,17 @@ export default function LoginPage() {
             Create one
           </Link>
         </p>
+
+        <p className="text-center text-xs text-stone-400">
+          En utilisant ce service, vous acceptez que vos données soient
+          utilisées pour générer votre page.{" "}
+          <Link
+            href="/mentions-legales"
+            className="underline hover:text-stone-600"
+          >
+            Mentions légales
+          </Link>
+        </p>
       </div>
     </div>
   );

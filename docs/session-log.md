@@ -90,6 +90,23 @@
   - `BLOB_READ_WRITE_TOKEN` env var required in admin-web (Vercel Blob)
   - All backend tests passing (BUILD SUCCESS); Next.js build clean
 
+## 2026-05-04
+
+### Done Today
+
+- **Conformité RGPD/LCEN** — quick win pré-interview:
+  - Page `/mentions-legales` statique: éditeur (Mohamed Najib Slassi + email), hébergeurs (Vercel + Railway), données personnelles RGPD, cookies (session only, exemptés), mention OpenAI
+  - Notice discrète (`text-xs`) sur `/login` ET `/register` — couvre les utilisateurs Google qui ne passent jamais par le register
+  - Lien "Mentions légales" dans le footer des pages publiques `/p/[id]`, à côté de "Page générée avec Ethorai"
+- **Prompt quality** — deux améliorations de génération:
+  - `SESSION_FORMATS`: quand BOTH, toujours 2 entrées séparées ("En cabinet" + "En visio") — jamais une seule entrée "Les deux". Même correction dans le prompt de régénération de section
+  - `WHAT_YOU_CAN_EXPECT`: descriptions ne doivent plus paraphraser le titre (ex: titre "Bienveillance" → description "Un environnement bienveillant..."). Prompt force maintenant "répondre concrètement à ce que ça veut dire en séance"
+  - `humanizeFormatType` côté frontend: fallback pour les pages déjà générées avec "Les deux" → "En cabinet et en visio"
+- **UX fixes**:
+  - Dropdown autocomplete adresse masquée par `overflow-hidden` du parent — déplacé sur la classe `max-h-0` seulement (visible quand ouvert)
+  - `LocationMapSection` ajouté au workspace `/page` — la carte est visible avant de publier
+  - Google Maps embed restauré (était passé à OSM temporairement)
+
 ## 2026-05-03
 
 ### Done Today
@@ -108,13 +125,13 @@
 
 ### Next 3 Tasks
 
-1. Browser-test address autocomplete + map display end-to-end (local dev: fill address in onboarding → generate → publish → /p/{id} with IN_PERSON format should show map)
-2. 5 user interviews with target therapists
-3. Deploy to production (Railway + Vercel) — V7 migration will auto-run on Railway PostgreSQL at startup
+1. Deploy sur Railway + Vercel (V7 migration auto au démarrage)
+2. Préparer le script d'interview (5 thérapeutes cibles)
+3. Lancer les interviews
 
 ### Current Blocker
 
-None — all tests pass, build is clean.
+Aucun — build clean, 28/28 tests.
 
 ### Exact Resume Command
 
