@@ -318,33 +318,55 @@ export function FooterSection({ data }: { data: FooterData }) {
   const meta = [data.role, data.location].filter(Boolean).join(" · ");
   return (
     <footer className="border-t border-stone-200 bg-stone-100">
-      <div className="mx-auto max-w-5xl px-6 py-10 sm:flex sm:items-baseline sm:justify-between sm:px-10 sm:py-12">
-        <div>
-          <p className="font-serif text-base font-medium text-stone-900">
-            {data.name}
-          </p>
-          {meta ? <p className="mt-1 text-sm text-stone-500">{meta}</p> : null}
-        </div>
-        {data.phone || data.email ? (
-          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-stone-500 sm:mt-0">
-            {data.email ? (
-              <a
-                href={`mailto:${data.email}`}
-                className="transition hover:text-stone-900"
-              >
-                {data.email}
-              </a>
-            ) : null}
-            {data.phone ? (
-              <a
-                href={`tel:${formatPhone(data.phone)}`}
-                className="transition hover:text-stone-900"
-              >
-                {formatPhone(data.phone)}
-              </a>
+      <div className="mx-auto max-w-5xl px-6 py-10 sm:px-10 sm:py-12">
+        <div className="sm:flex sm:items-baseline sm:justify-between">
+          <div>
+            <p className="font-serif text-base font-medium text-stone-900">
+              {data.name}
+            </p>
+            {meta ? (
+              <p className="mt-1 text-sm text-stone-500">{meta}</p>
             ) : null}
           </div>
-        ) : null}
+          {data.phone || data.email ? (
+            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-stone-500 sm:mt-0">
+              {data.email ? (
+                <a
+                  href={`mailto:${data.email}`}
+                  className="transition hover:text-stone-900"
+                >
+                  {data.email}
+                </a>
+              ) : null}
+              {data.phone ? (
+                <a
+                  href={`tel:${formatPhone(data.phone)}`}
+                  className="transition hover:text-stone-900"
+                >
+                  {formatPhone(data.phone)}
+                </a>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+        <p className="mt-6 text-xs text-stone-400">
+          Page générée avec{" "}
+          <a
+            href="https://ethorai.fr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-stone-600"
+          >
+            Ethorai
+          </a>{" "}
+          ·{" "}
+          <a
+            href="/mentions-legales"
+            className="underline hover:text-stone-600"
+          >
+            Mentions légales
+          </a>
+        </p>
       </div>
     </footer>
   );
