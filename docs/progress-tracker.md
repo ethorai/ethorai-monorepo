@@ -21,8 +21,11 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ### Now
 
-- [ ] 5 user interviews with target therapists (validate generated page output before further product changes)
-- [ ] Browser-test address autocomplete + map display end-to-end on local dev
+- [ ] 5 user interviews avec des thérapeutes cibles — voir `docs/user-interviews.md`
+
+### Later
+
+- [ ] Vercel Analytics (5 min, zero cookie, GDPR-compliant) — intégrer quand la phase interviews est terminée et qu'on ouvre à plus d'utilisateurs
 
 ## Completed Milestones
 
