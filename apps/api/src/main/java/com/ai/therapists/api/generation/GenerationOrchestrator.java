@@ -45,6 +45,8 @@ public class GenerationOrchestrator {
     public GenerationJobResponse submitAsync(TherapistInput rawInput, UUID userId) {
         TherapistInput input = normalizationService.normalize(rawInput);
 
+        String subdomain = generateUniqueSubdomain(input.fullName());
+
         UUID profileId = profileRepo.insert(
                 input.fullName(),
                 input.role(),
@@ -61,7 +63,8 @@ public class GenerationOrchestrator {
                 input.streetAddress(),
                 input.postalCode(),
                 input.latitude(),
-                input.longitude()
+                input.longitude(),
+                subdomain
         );
         eventLog.log(EntityType.PROFILE, profileId, EventType.CREATED);
 
@@ -137,7 +140,8 @@ public class GenerationOrchestrator {
                     profile.postalCode(),
                     profile.latitude(),
                     profile.longitude(),
-                    profile.sessionFormat().name()
+                    profile.sessionFormat().name(),
+                    profile.subdomain()
             );
         } catch (AiGenerationException | GenerationValidationException ex) {
             eventLog.log(
@@ -184,6 +188,29 @@ public class GenerationOrchestrator {
                 profile.latitude(),
                 profile.longitude()
         );
+    }
+
+    private String generateUniqueSubdomain(String fullName) {
+        String base = fullName.toLowerCase()
+                .replaceAll("[àáâãäå]", "a")
+                .replaceAll("[èéêë]", "e")
+                .replaceAll("[ìíîï]", "i")
+                .replaceAll("[òóôõö]", "o")
+                .replaceAll("[ùúûü]", "u")
+                .replaceAll("[ýÿ]", "y")
+                .replaceAll("[ç]", "c")
+                .replaceAll("[ñ]", "n")
+                .replaceAll("[^a-z0-9]", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-|-$", "");
+
+        if (!profileRepo.subdomainExists(base)) return base;
+
+        for (int i = 2; i <= 99; i++) {
+            String candidate = base + "-" + i;
+            if (!profileRepo.subdomainExists(candidate)) return candidate;
+        }
+        return base + "-" + System.currentTimeMillis();
     }
 
     private String toFailurePayload(Exception ex) {

@@ -11,7 +11,9 @@ import com.ai.therapists.api.jooq.tables.LandingPage.LandingPagePath;
 import com.ai.therapists.api.jooq.tables.records.TherapistProfileRecord;
 
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import org.jooq.Condition;
@@ -148,6 +150,11 @@ public class TherapistProfile extends TableImpl<TherapistProfileRecord> {
      */
     public final TableField<TherapistProfileRecord, Double> LONGITUDE = createField(DSL.name("longitude"), SQLDataType.DOUBLE, this, "");
 
+    /**
+     * The column <code>public.therapist_profile.subdomain</code>.
+     */
+    public final TableField<TherapistProfileRecord, String> SUBDOMAIN = createField(DSL.name("subdomain"), SQLDataType.VARCHAR(100), this, "");
+
     private TherapistProfile(Name alias, Table<TherapistProfileRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -218,6 +225,11 @@ public class TherapistProfile extends TableImpl<TherapistProfileRecord> {
     @Override
     public UniqueKey<TherapistProfileRecord> getPrimaryKey() {
         return Keys.THERAPIST_PROFILE_PKEY;
+    }
+
+    @Override
+    public List<UniqueKey<TherapistProfileRecord>> getUniqueKeys() {
+        return Arrays.asList(Keys.THERAPIST_PROFILE_SUBDOMAIN_KEY);
     }
 
     private transient GenerationJobPath _generationJob;

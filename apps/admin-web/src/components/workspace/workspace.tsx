@@ -46,6 +46,9 @@ export function Workspace({ initialPage }: WorkspaceProps) {
   const isPublished = page.status === "PUBLISHED";
   const publicPath = `/p/${page.pageId}`;
   function getPublicUrl() {
+    if (page.subdomain) {
+      return `https://${page.subdomain}.ethorai.fr`;
+    }
     return `${window.location.origin}${publicPath}`;
   }
 
@@ -194,7 +197,7 @@ export function Workspace({ initialPage }: WorkspaceProps) {
                   Copier le lien
                 </button>
                 <a
-                  href={publicPath}
+                  href={page.subdomain ? `https://${page.subdomain}.ethorai.fr` : publicPath}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-stone-700"

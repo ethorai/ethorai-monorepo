@@ -1,0 +1,72 @@
+import { notFound } from "next/navigation";
+import type { GeneratedPageResponse } from "@/lib/api";
+import {
+  HeaderSection,
+  HeroSection,
+  AreasOfSupportSection,
+  HowIWorkSection,
+  WhatYouCanExpectSection,
+  SessionFormatsSection,
+  LocationMapSection,
+  ContactSection,
+  DisclaimerSection,
+  FooterSection,
+} from "@/components/section-renderers";
+
+export const revalidate = 3600;
+
+const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8080";
+
+async function fetchPageBySubdomain(
+  slug: string,
+): Promise<GeneratedPageResponse | null> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/public/pages/subdomain/${slug}`,
+    { next: { revalidate: 3600 } },
+  );
+  if (!response.ok) return null;
+  return response.json() as Promise<GeneratedPageResponse>;
+}
+
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params;
+  const page = await fetchPageBySubdomain(slug);
+  if (!page) return {};
+  return {
+    title: `${page.fullName} — Therapist`,
+    description: page.sections.HERO?.subheading ?? "",
+  };
+}
+
+export default async function SubdomainPage({ params }: Props) {
+  const { slug } = await params;
+  const page = await fetchPageBySubdomain(slug);
+  if (!page) notFound();
+
+  const s = page.sections;
+
+  return (
+    <main>
+      <HeaderSection data={s.HEADER} />
+      <HeroSection data={s.HERO} photoUrl={page.photoUrl} />
+      <AreasOfSupportSection data={s.AREAS_OF_SUPPORT} />
+      <HowIWorkSection data={s.HOW_I_WORK} />
+      <WhatYouCanExpectSection data={s.WHAT_YOU_CAN_EXPECT} />
+      <SessionFormatsSection data={s.SESSION_FORMATS} />
+      {(page.sessionFormat === "IN_PERSON" || page.sessionFormat === "BOTH") && (
+        <LocationMapSection
+          streetAddress={page.streetAddress}
+          postalCode={page.postalCode}
+          city={page.city}
+          latitude={page.latitude}
+          longitude={page.longitude}
+        />
+      )}
+      <ContactSection data={s.CONTACT} />
+      <DisclaimerSection data={s.DISCLAIMER} />
+      <FooterSection data={s.FOOTER} />
+    </main>
+  );
+}

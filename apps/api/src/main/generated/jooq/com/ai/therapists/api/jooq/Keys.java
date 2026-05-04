@@ -45,6 +45,7 @@ public class Keys {
     public static final UniqueKey<OauthAccountRecord> OAUTH_ACCOUNT_PKEY = Internal.createUniqueKey(OauthAccount.OAUTH_ACCOUNT, DSL.name("oauth_account_pkey"), new TableField[] { OauthAccount.OAUTH_ACCOUNT.ID }, true);
     public static final UniqueKey<OauthAccountRecord> OAUTH_ACCOUNT_PROVIDER_PROVIDER_ACCOUNT_ID_KEY = Internal.createUniqueKey(OauthAccount.OAUTH_ACCOUNT, DSL.name("oauth_account_provider_provider_account_id_key"), new TableField[] { OauthAccount.OAUTH_ACCOUNT.PROVIDER, OauthAccount.OAUTH_ACCOUNT.PROVIDER_ACCOUNT_ID }, true);
     public static final UniqueKey<TherapistProfileRecord> THERAPIST_PROFILE_PKEY = Internal.createUniqueKey(TherapistProfile.THERAPIST_PROFILE, DSL.name("therapist_profile_pkey"), new TableField[] { TherapistProfile.THERAPIST_PROFILE.ID }, true);
+    public static final UniqueKey<TherapistProfileRecord> THERAPIST_PROFILE_SUBDOMAIN_KEY = Internal.createUniqueKey(TherapistProfile.THERAPIST_PROFILE, DSL.name("therapist_profile_subdomain_key"), new TableField[] { TherapistProfile.THERAPIST_PROFILE.SUBDOMAIN }, true);
     public static final UniqueKey<VerificationTokenRecord> VERIFICATION_TOKEN_PKEY = Internal.createUniqueKey(VerificationToken.VERIFICATION_TOKEN, DSL.name("verification_token_pkey"), new TableField[] { VerificationToken.VERIFICATION_TOKEN.IDENTIFIER, VerificationToken.VERIFICATION_TOKEN.TOKEN }, true);
 
     // -------------------------------------------------------------------------

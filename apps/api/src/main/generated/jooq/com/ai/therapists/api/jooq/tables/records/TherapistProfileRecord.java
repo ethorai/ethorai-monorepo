@@ -274,6 +274,20 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
         return (Double) get(17);
     }
 
+    /**
+     * Setter for <code>public.therapist_profile.subdomain</code>.
+     */
+    public void setSubdomain(String value) {
+        set(18, value);
+    }
+
+    /**
+     * Getter for <code>public.therapist_profile.subdomain</code>.
+     */
+    public String getSubdomain() {
+        return (String) get(18);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -297,7 +311,7 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
     /**
      * Create a detached, initialised TherapistProfileRecord
      */
-    public TherapistProfileRecord(UUID id, String fullName, String role, String city, JSONB audiences, JSONB areasOfSupport, String approach, String sessionFormat, JSONB expectations, OffsetDateTime createdAt, String phone, String email, String bookingLink, String photoUrl, String streetAddress, String postalCode, Double latitude, Double longitude) {
+    public TherapistProfileRecord(UUID id, String fullName, String role, String city, JSONB audiences, JSONB areasOfSupport, String approach, String sessionFormat, JSONB expectations, OffsetDateTime createdAt, String phone, String email, String bookingLink, String photoUrl, String streetAddress, String postalCode, Double latitude, Double longitude, String subdomain) {
         super(TherapistProfile.THERAPIST_PROFILE);
 
         setId(id);
@@ -318,6 +332,7 @@ public class TherapistProfileRecord extends UpdatableRecordImpl<TherapistProfile
         setPostalCode(postalCode);
         setLatitude(latitude);
         setLongitude(longitude);
+        setSubdomain(subdomain);
         resetChangedOnNotNull();
     }
 }

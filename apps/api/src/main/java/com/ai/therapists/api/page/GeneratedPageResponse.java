@@ -18,5 +18,6 @@ public record GeneratedPageResponse(
         String postalCode,
         Double latitude,
         Double longitude,
-        String sessionFormat
+        String sessionFormat,
+        String subdomain
 ) {}

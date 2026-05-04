@@ -31,7 +31,8 @@ public class TherapistProfileRepository {
                        String streetAddress,
                        String postalCode,
                        Double latitude,
-                       Double longitude) {
+                       Double longitude,
+                       String subdomain) {
 
         return dsl.insertInto(THERAPIST_PROFILE)
                 .set(THERAPIST_PROFILE.FULL_NAME, fullName)
@@ -50,6 +51,7 @@ public class TherapistProfileRepository {
                 .set(THERAPIST_PROFILE.POSTAL_CODE, postalCode)
                 .set(THERAPIST_PROFILE.LATITUDE, latitude)
                 .set(THERAPIST_PROFILE.LONGITUDE, longitude)
+                .set(THERAPIST_PROFILE.SUBDOMAIN, subdomain)
                 .returning(THERAPIST_PROFILE.ID)
                 .fetchOne(THERAPIST_PROFILE.ID);
     }
@@ -58,6 +60,16 @@ public class TherapistProfileRepository {
         return dsl.selectFrom(THERAPIST_PROFILE)
                 .where(THERAPIST_PROFILE.ID.eq(id))
                 .fetchOptional(this::toRow);
+    }
+
+    public Optional<TherapistProfileRow> findBySubdomain(String subdomain) {
+        return dsl.selectFrom(THERAPIST_PROFILE)
+                .where(THERAPIST_PROFILE.SUBDOMAIN.eq(subdomain))
+                .fetchOptional(this::toRow);
+    }
+
+    public boolean subdomainExists(String subdomain) {
+        return dsl.fetchExists(THERAPIST_PROFILE, THERAPIST_PROFILE.SUBDOMAIN.eq(subdomain));
     }
 
     public record TherapistProfileRow(
@@ -77,7 +89,8 @@ public class TherapistProfileRepository {
             String streetAddress,
             String postalCode,
             Double latitude,
-            Double longitude
+            Double longitude,
+            String subdomain
     ) {}
 
     private TherapistProfileRow toRow(org.jooq.Record record) {
@@ -98,7 +111,8 @@ public class TherapistProfileRepository {
                 record.get(THERAPIST_PROFILE.STREET_ADDRESS),
                 record.get(THERAPIST_PROFILE.POSTAL_CODE),
                 record.get(THERAPIST_PROFILE.LATITUDE),
-                record.get(THERAPIST_PROFILE.LONGITUDE)
+                record.get(THERAPIST_PROFILE.LONGITUDE),
+                record.get(THERAPIST_PROFILE.SUBDOMAIN)
         );
     }
 

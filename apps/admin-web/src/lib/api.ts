@@ -135,6 +135,7 @@ export type GeneratedPageResponse = {
   latitude: number | null;
   longitude: number | null;
   sessionFormat: string;
+  subdomain: string | null;
 };
 
 export type GenerationJobStatus =

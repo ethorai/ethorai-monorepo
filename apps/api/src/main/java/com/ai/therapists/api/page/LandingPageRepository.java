@@ -42,6 +42,15 @@ public class LandingPageRepository {
                 .fetchOptional(this::toRow);
     }
 
+    public Optional<LandingPageRow> findLatestPublishedByProfileId(UUID profileId) {
+        return dsl.selectFrom(LANDING_PAGE)
+                .where(LANDING_PAGE.PROFILE_ID.eq(profileId))
+                .and(LANDING_PAGE.STATUS.eq(PageStatus.PUBLISHED.name()))
+                .orderBy(LANDING_PAGE.CREATED_AT.desc())
+                .limit(1)
+                .fetchOptional(this::toRow);
+    }
+
     public Optional<LandingPageRow> findByIdPublic(UUID id) {
         return dsl.selectFrom(LANDING_PAGE)
                 .where(LANDING_PAGE.ID.eq(id))

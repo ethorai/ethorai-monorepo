@@ -94,6 +94,18 @@
 
 ### Done Today
 
+- **Wildcard subdomain feature** (`marie-dupont.ethorai.fr`) — full-stack:
+  - Flyway V8: `ADD COLUMN subdomain VARCHAR(100) UNIQUE` on `therapist_profile`
+  - jOOQ codegen re-run against migrated DB (linter revert issue → always run codegen, never edit generated files manually)
+  - `TherapistProfileRepository`: `insert()` prend `String subdomain`, `findBySubdomain()`, `subdomainExists()`, `TherapistProfileRow` inclut `subdomain`
+  - `GenerationOrchestrator`: `generateUniqueSubdomain()` — normalise accents (é→e, à→a, etc.) + slugify + suffixe numérique `-2`, `-3`... si conflit
+  - `GeneratedPageResponse`: champ `subdomain` ajouté (backend + `api.ts` frontend)
+  - `PublicPageController`: nouveau endpoint `GET /api/public/pages/subdomain/{slug}`
+  - Next.js `/s/[slug]/page.tsx`: ISR server component fetching `GET /api/public/pages/subdomain/{slug}`
+  - `proxy.ts` middleware: détecte `*.ethorai.fr` → rewrite vers `/s/{slug}`, sinon auth normal; `/s/` exclu du matcher auth
+  - Workspace: "Voir comme un visiteur" et "Copier le lien" utilisent `https://{subdomain}.ethorai.fr` quand disponible
+  - 28/28 tests green; Next.js build clean
+
 - **Conformité RGPD/LCEN** — quick win pré-interview:
   - Page `/mentions-legales` statique: éditeur (Mohamed Najib Slassi + email), hébergeurs (Vercel + Railway), données personnelles RGPD, cookies (session only, exemptés), mention OpenAI
   - Notice discrète (`text-xs`) sur `/login` ET `/register` — couvre les utilisateurs Google qui ne passent jamais par le register
@@ -125,13 +137,13 @@
 
 ### Next 3 Tasks
 
-1. Deploy sur Railway + Vercel (V7 migration auto au démarrage)
-2. Préparer le script d'interview (5 thérapeutes cibles)
-3. Lancer les interviews
+1. Config DNS + Vercel : CNAME wildcard `*.ethorai.fr` → `cname.vercel-dns.com` + ajouter domaine wildcard `*.ethorai.fr` dans Vercel project settings
+2. Deploy sur Railway + Vercel (V8 migration auto au démarrage)
+3. Lancer les 5 interviews thérapeutes (voir `docs/user-interviews.md`)
 
 ### Current Blocker
 
-Aucun — build clean, 28/28 tests.
+Aucun — build clean, 28/28 tests. Étape manuelle requise : config DNS wildcard + Vercel domain.
 
 ### Exact Resume Command
 

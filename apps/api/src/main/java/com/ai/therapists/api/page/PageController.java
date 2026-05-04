@@ -103,7 +103,8 @@ public class PageController {
                 profile.postalCode(),
                 profile.latitude(),
                 profile.longitude(),
-                profile.sessionFormat().name()
+                profile.sessionFormat().name(),
+                profile.subdomain()
         );
     }
 }

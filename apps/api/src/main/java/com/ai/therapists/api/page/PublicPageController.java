@@ -27,6 +27,15 @@ public class PublicPageController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/pages/subdomain/{subdomain}")
+    public ResponseEntity<GeneratedPageResponse> getPublishedPageBySubdomain(@PathVariable String subdomain) {
+        return profileRepo.findBySubdomain(subdomain)
+                .flatMap(profile -> pageRepo.findLatestPublishedByProfileId(profile.id())
+                        .map(page -> toResponse(page, profile)))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     private GeneratedPageResponse toResponse(LandingPageRow page, TherapistProfileRow profile) {
         return new GeneratedPageResponse(
                 page.id(),
@@ -41,7 +50,8 @@ public class PublicPageController {
                 profile.postalCode(),
                 profile.latitude(),
                 profile.longitude(),
-                profile.sessionFormat().name()
+                profile.sessionFormat().name(),
+                profile.subdomain()
         );
     }
 }

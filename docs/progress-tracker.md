@@ -21,6 +21,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ### Now
 
+- [ ] Config DNS + Vercel : CNAME wildcard `*.ethorai.fr` → `cname.vercel-dns.com` + ajouter domaine wildcard dans Vercel project settings
 - [ ] 5 user interviews avec des thérapeutes cibles — voir `docs/user-interviews.md`
 
 ### Later
@@ -29,6 +30,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ## Completed Milestones
 
+- [x] Wildcard subdomain feature (`marie-dupont.ethorai.fr`): Flyway V8 (`subdomain VARCHAR(100) UNIQUE`), jOOQ codegen, slug auto-generation avec normalisation accents (é→e, etc.) + résolution conflits numérotés, `findBySubdomain`/`subdomainExists` dans repo, `GET /api/public/pages/subdomain/{slug}`, `/s/[slug]` route Next.js, middleware `proxy.ts` rewrite `*.ethorai.fr → /s/[slug]`, `subdomain` champ dans `GeneratedPageResponse`/`api.ts`, "Voir comme un visiteur" utilise l'URL subdomain quand disponible; 28/28 tests green, build clean
 - [x] Conformité RGPD/LCEN (quick win pré-interview): page `/mentions-legales` (éditeur, hébergeurs, données, cookies, OpenAI), notice sur `/login` + `/register`, lien dans le footer des pages publiques
 - [x] Prompt quality: SESSION_FORMATS toujours 2 entrées séparées pour BOTH (jamais "Les deux"); WHAT_YOU_CAN_EXPECT descriptions doivent répondre "concrètement en séance ?" sans paraphraser le titre
 - [x] UX fixes: autocomplete address dropdown visible (overflow-hidden retiré quand visible); LocationMapSection ajouté au workspace (visible avant publication); Google Maps embed restauré
