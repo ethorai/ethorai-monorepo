@@ -6,9 +6,10 @@ const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const hostname = req.headers.get("host") ?? "";
+  const RESERVED = new Set(["www", "api", "admin", "mail", "smtp", "ftp"]);
   const subdomainMatch = hostname.match(/^([^.]+)\.ethorai\.fr$/);
 
-  if (subdomainMatch) {
+  if (subdomainMatch && !RESERVED.has(subdomainMatch[1])) {
     const slug = subdomainMatch[1];
     const url = req.nextUrl.clone();
     url.pathname = `/s/${slug}`;
