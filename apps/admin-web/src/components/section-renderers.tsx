@@ -79,11 +79,7 @@ export function HeroSection({
   );
 }
 
-export function AreasOfSupportSection({
-  data,
-}: {
-  data: AreasOfSupportData;
-}) {
+export function AreasOfSupportSection({ data }: { data: AreasOfSupportData }) {
   return (
     <section className="bg-white">
       <div className="mx-auto max-w-4xl px-6 py-20 sm:px-10 sm:py-24">
@@ -165,7 +161,7 @@ function humanizeFormatType(type: string): string {
   if (upper === "ONLINE" || upper === "VISIO") return "En visio";
   if (upper === "IN_PERSON" || upper === "IN-PERSON" || upper === "INPERSON")
     return "En cabinet";
-  if (upper === "BOTH") return "En cabinet et en visio";
+  if (upper === "BOTH" || upper === "LES DEUX") return "En cabinet et en visio";
   return type;
 }
 
@@ -206,7 +202,9 @@ export function ContactSection({ data }: { data: ContactData }) {
         : undefined;
 
   const hasSecondaryContacts =
-    data.phone || data.email || (data.booking_link && (data.phone || data.email));
+    data.phone ||
+    data.email ||
+    (data.booking_link && (data.phone || data.email));
 
   return (
     <section className="bg-[linear-gradient(180deg,#f4efe4_0%,#fbe3d3_100%)]">
@@ -269,27 +267,25 @@ export function LocationMapSection({
   latitude: number | null;
   longitude: number | null;
 }) {
-  const query = [streetAddress, postalCode, city].filter(Boolean).join(", ");
-  if (!query) return null;
+  const addressLine = [streetAddress, postalCode, city]
+    .filter(Boolean)
+    .join(", ");
+  if (!addressLine) return null;
 
   const coords =
     latitude != null && longitude != null
       ? `${latitude},${longitude}`
-      : encodeURIComponent(query);
+      : encodeURIComponent(addressLine);
 
   const src = `https://maps.google.com/maps?q=${coords}&output=embed&hl=fr`;
 
   return (
     <section className="bg-stone-50/60">
-      <div className="mx-auto max-w-4xl px-6 py-20 sm:px-10 sm:py-24">
+      <div className="mx-auto max-w-4xl px-6 pb-20 sm:px-10 sm:pb-24">
         <h2 className="text-3xl font-medium tracking-tight text-stone-900 sm:text-4xl">
           Où me trouver
         </h2>
-        {streetAddress || postalCode ? (
-          <p className="mt-4 text-base text-stone-600">
-            {[streetAddress, postalCode, city].filter(Boolean).join(", ")}
-          </p>
-        ) : null}
+        <p className="mt-4 text-base text-stone-600">{addressLine}</p>
         <div className="mt-8 overflow-hidden rounded-2xl border border-stone-200">
           <iframe
             title="Localisation du cabinet"

@@ -104,7 +104,7 @@ public class PromptAssemblyService {
                   "WHAT_YOU_CAN_EXPECT": {
                     "title": "section title",
                     "statements": [
-                      {"title": "short value or principle (3-6 words)", "description": "1-2 sentences elaborating on this principle; calm professional tone, environment-focused"},
+                      {"title": "short value or principle (3-6 words)", "description": "1-2 sentences that answer 'what does this look like in a session?' — never rephrase the title, add concrete grounded detail about the session environment or relationship"},
                       ...
                     ]
                   },
@@ -140,8 +140,8 @@ public class PromptAssemblyService {
                 - HERO heading: maximum 12 words
                 - AREAS_OF_SUPPORT items: 3-7 entries, each with title (3-6 words) + description (1-2 sentences); neutral & descriptive, topic-focused, never frame items as problems to be solved
                 - HOW_I_WORK description: 1-2 sentences, process-oriented
-                - WHAT_YOU_CAN_EXPECT statements: 3-5 entries, each with title (3-6 words) + description (1-2 sentences); about the therapeutic environment & values, not outcomes
-                - SESSION_FORMATS formats: 1-2 entries; type MUST be a human-friendly French label (e.g., "En cabinet", "En visio", "Les deux") — never the raw enum (ONLINE/IN_PERSON/BOTH); details: 1-2 sentences with practical info
+                - WHAT_YOU_CAN_EXPECT statements: 3-5 entries, each with title (3-6 words) + description (1-2 sentences); the description MUST elaborate concretely on what the title means in practice for the patient — never rephrase or restate the title; answer "what does this look like in a session?" with specific, grounded details; focus on the therapeutic environment, the relationship, or the session structure — not outcomes
+                - SESSION_FORMATS formats: if IN_PERSON → exactly 1 entry with type "En cabinet"; if ONLINE → exactly 1 entry with type "En visio"; if BOTH → exactly 2 separate entries: first type "En cabinet", then type "En visio" — NEVER merge into a single "Les deux" entry; details: 1-2 sentences (location/address for in-person, platform for online)
                 - CONTACT: copy the provided phone/email/booking_link values exactly; set fields to null if not provided; cta_text: 3-4 words, neutral CTA
                 - DISCLAIMER text: mandatory, calm tone, no legal advice
 
@@ -227,7 +227,7 @@ public class PromptAssemblyService {
             case WHAT_YOU_CAN_EXPECT -> """
                     { "title": "...", "statements": [{"title": "principle (3-6 words)", "description": "1-2 sentences"}, ...] }""";
             case SESSION_FORMATS -> """
-                    { "title": "...", "formats": [{"type": "human label e.g. 'En cabinet' or 'En visio'", "details": "1-2 sentences"}, ...] }""";
+                    { "title": "...", "formats": [{"type": "'En cabinet' or 'En visio' — never 'Les deux', always 2 separate entries if BOTH", "details": "1-2 sentences"}, ...] }""";
             case CONTACT -> """
                     { "title": "...", "description": "...", "cta_text": "3-4 words", "phone": "... or null", "email": "... or null", "booking_link": "... or null" }""";
             case DISCLAIMER -> """

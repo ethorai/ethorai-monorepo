@@ -22,6 +22,7 @@ import {
   HeaderSection,
   HeroSection,
   HowIWorkSection,
+  LocationMapSection,
   SessionFormatsSection,
   WhatYouCanExpectSection,
 } from "@/components/section-renderers";
@@ -249,6 +250,15 @@ export function Workspace({ initialPage }: WorkspaceProps) {
             <HowIWorkSection data={sections.HOW_I_WORK} />
             <WhatYouCanExpectSection data={sections.WHAT_YOU_CAN_EXPECT} />
             <SessionFormatsSection data={sections.SESSION_FORMATS} />
+            {(page.sessionFormat === "IN_PERSON" || page.sessionFormat === "BOTH") && (
+              <LocationMapSection
+                streetAddress={page.streetAddress}
+                postalCode={page.postalCode}
+                city={page.city}
+                latitude={page.latitude}
+                longitude={page.longitude}
+              />
+            )}
             <ContactSection data={sections.CONTACT} />
             <DisclaimerSection data={sections.DISCLAIMER} />
             <FooterSection data={sections.FOOTER} />
