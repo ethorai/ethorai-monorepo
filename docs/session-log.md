@@ -1,5 +1,44 @@
 # Session Log
 
+## 2026-05-21
+
+### Done Today
+
+- **Onboarding-first auth flow** — refactor de conversion : l'utilisateur remplit les 8 questions SANS auth (réduit friction d'entrée). Auth gate déclenché au "Continuer" du Summary (step 9):
+  - `proxy.ts` : ajoute `onboarding` aux exclusions matcher
+  - `app/page.tsx` : redirige vers `/onboarding` si non-authentifié, sinon `/page`
+  - `app/onboarding/page.tsx` : auth optionnelle (`await auth().catch(() => null)`), passe `isAuthenticated` à `OnboardingFlow`
+  - `flow.tsx` : `TOTAL_INPUT_STEPS=8`, `SUMMARY_STEP=9`, `PHOTO_STEP=10`. Photo déplacée APRÈS summary (post-auth car upload nécessite auth). `continueFromSummary()` : si pas authed → save state at step=10 + `router.push('/login?next=/onboarding')`, si authed → setStep(10)
+  - `screens.tsx` : `SummaryScreen` perd `onGenerate`/`generating`/`error`, gagne `onContinue` (bouton "Continuer" au lieu de "Générer ma page"); `PhotoScreen` gagne `onGenerate`/`generating`/`error` (bouton "Générer ma page" + spinner inline); row "Photo" retirée du SUMMARY_ROWS
+  - `login/page.tsx` + `register/page.tsx` : Suspense wrapper + `useSearchParams` pour récupérer `?next=`, propagé au Google OAuth callbackUrl + redirect credentials + lien register/login. Pattern : `next === "/" ? "/login" : "/login?next=..."`
+  - `shell.tsx` : prop `isAuthenticated` (passée depuis FlowInner), affiche "Se connecter" (Link) ou "Se déconnecter" (signOut) selon état
+- **Prod fix critique — Flyway en prod** : Spring Boot 4.0 a divisé les auto-configurations en modules séparés (`spring-boot-jdbc`, `spring-boot-jooq`, `spring-boot-security`, etc.). Sans `spring-boot-flyway` dans pom.xml, Flyway est dans le classpath mais Spring ne l'auto-configure pas → migrations ne tournent pas au démarrage de l'app, uniquement via le plugin Maven (`./mvnw flyway:migrate`). Symptôme : sur Railway, après recréation du service Postgres, l'app démarrait en 3.6s sans logs HikariCP/Flyway, et `UserDetailsServiceAutoConfiguration` se déclenchait (warning generated security password) en parallèle (mais c'était inoffensif, notre SecurityFilterChain était bien actif). Fix : ajout de `<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-flyway</artifactId></dependency>`. Debug via `java -jar app.jar --debug` + grep "Flyway"/"Hikari" dans le rapport d'auto-config.
+- **Subdomain wildcard deploy** : nameservers délégués à Vercel (`ns1.vercel-dns.com`, `ns2.vercel-dns.com` chez Hostinger). DNS records dans Vercel : A `@` → `76.76.21.21`, CNAME `www` → `cname.vercel-dns.com`, CNAME `*` → `cname.vercel-dns.com`. Wildcard `*.ethorai.fr` nécessite délégation NS (gratuit) OU Vercel Pro (avec DNS externe). Bug bonus fixé : middleware capturait `www` comme slug → ajout d'une liste `RESERVED = ["www", "api", "admin", "mail", "smtp", "ftp"]`. Bug bonus 2 : `API_BASE_URL` manquait `https://` dans Vercel env vars → erreur `ERR_INVALID_URL`.
+- **Bouton "Se déconnecter" pendant l'onboarding** : ajouté dans le header `Shell` (auparavant aucun moyen de logout depuis onboarding)
+
+### Next 3 Tasks
+
+1. Lancer les 5 interviews thérapeutes (voir `docs/user-interviews.md`)
+2. Vercel Analytics (post-interview)
+3. Itérer sur le feedback recueilli
+
+### Current Blocker
+
+Aucun.
+
+### Exact Resume Command
+
+From repo root:
+`docker compose -f infra/docker-compose.yml up -d`
+
+From `apps/api`:
+`./mvnw spring-boot:run`
+
+From `apps/admin-web`:
+`npm run dev`
+
+---
+
 ## 2026-04-26
 
 ### Done Today

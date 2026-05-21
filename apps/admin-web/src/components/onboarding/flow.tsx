@@ -30,18 +30,20 @@ import {
   WelcomeScreen,
 } from "./screens";
 
-const TOTAL_INPUT_STEPS = 9;
-const SUMMARY_STEP = 10;
+const TOTAL_INPUT_STEPS = 8;
+const SUMMARY_STEP = 9;
+const PHOTO_STEP = 10;
 const POLL_INTERVAL_MS = 2000;
 
 type FlowProps = {
   firstName?: string;
+  isAuthenticated?: boolean;
 };
 
 // Two-stage component: outer reads localStorage on mount, inner takes
 // the resolved snapshot as initial state. This avoids setState-in-effect
 // while keeping hydration SSR-safe.
-export function OnboardingFlow({ firstName }: FlowProps) {
+export function OnboardingFlow({ firstName, isAuthenticated = false }: FlowProps) {
   const [snapshot, setSnapshot] = useState<OnboardingSnapshot | null>(null);
 
   useEffect(() => {
@@ -58,6 +60,7 @@ export function OnboardingFlow({ firstName }: FlowProps) {
   return (
     <FlowInner
       firstName={firstName}
+      isAuthenticated={isAuthenticated}
       initialState={snapshot.state}
       initialStep={snapshot.step}
     />
@@ -66,11 +69,12 @@ export function OnboardingFlow({ firstName }: FlowProps) {
 
 type InnerProps = {
   firstName?: string;
+  isAuthenticated: boolean;
   initialState: OnboardingState;
   initialStep: number;
 };
 
-function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
+function FlowInner({ firstName, isAuthenticated, initialState, initialStep }: InnerProps) {
   const router = useRouter();
   const [state, setState] = useState<OnboardingState>(initialState);
   const [step, setStep] = useState(initialStep);
@@ -93,7 +97,7 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
   }
 
   function next() {
-    setStep((s) => Math.min(s + 1, SUMMARY_STEP));
+    setStep((s) => Math.min(s + 1, PHOTO_STEP));
   }
 
   function back() {
@@ -104,6 +108,16 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
   function goTo(target: number) {
     setStep(target);
     setError("");
+  }
+
+  function continueFromSummary() {
+    if (!isAuthenticated) {
+      // Save state at PHOTO_STEP so the user lands on the photo screen after login
+      saveOnboarding({ state, step: PHOTO_STEP });
+      router.push(`/login?next=${encodeURIComponent("/onboarding")}`);
+      return;
+    }
+    setStep(PHOTO_STEP);
   }
 
   async function generate() {
@@ -176,6 +190,7 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
       step={step}
       totalSteps={TOTAL_INPUT_STEPS}
       onBack={showBack ? back : undefined}
+      isAuthenticated={isAuthenticated}
     >
       {step === 0 ? (
         <WelcomeScreen firstName={firstName} onNext={next} />
@@ -204,13 +219,18 @@ function FlowInner({ firstName, initialState, initialStep }: InnerProps) {
       {step === 8 ? (
         <ContactScreen state={state} update={update} onNext={next} />
       ) : null}
-      {step === 9 ? (
-        <PhotoScreen state={state} update={update} onNext={next} />
-      ) : null}
       {step === SUMMARY_STEP ? (
         <SummaryScreen
           state={state}
           onEdit={goTo}
+          onContinue={continueFromSummary}
+          error={error}
+        />
+      ) : null}
+      {step === PHOTO_STEP ? (
+        <PhotoScreen
+          state={state}
+          update={update}
           onGenerate={generate}
           generating={generating}
           error={error}

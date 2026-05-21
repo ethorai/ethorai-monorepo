@@ -1,5 +1,10 @@
 import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
-export default function Home() {
-  redirect("/page");
+export default async function Home() {
+  const session = await auth();
+  if (session?.user?.springToken) {
+    redirect("/page");
+  }
+  redirect("/onboarding");
 }

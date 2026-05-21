@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
-export default function RegisterPage() {
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,9 +43,12 @@ export default function RegisterPage() {
 
     if (result?.error) {
       // Registration worked but auto-login failed — redirect to login
-      window.location.href = "/login?registered=1";
+      const loginUrl = next === "/"
+        ? "/login?registered=1"
+        : `/login?registered=1&next=${encodeURIComponent(next)}`;
+      window.location.href = loginUrl;
     } else {
-      window.location.href = "/";
+      window.location.href = next;
     }
   }
 
@@ -62,7 +68,7 @@ export default function RegisterPage() {
         {/* Google */}
         <button
           type="button"
-          onClick={() => signIn("google", { callbackUrl: "/" })}
+          onClick={() => signIn("google", { callbackUrl: next })}
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-stone-300 bg-white px-4 py-3 text-sm font-medium text-stone-700 shadow-sm transition hover:bg-stone-50"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -173,7 +179,7 @@ export default function RegisterPage() {
         <p className="text-center text-sm text-stone-500">
           Already have an account?{" "}
           <Link
-            href="/login"
+            href={next === "/" ? "/login" : `/login?next=${encodeURIComponent(next)}`}
             className="font-medium text-stone-800 hover:underline"
           >
             Sign in
@@ -189,5 +195,13 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }

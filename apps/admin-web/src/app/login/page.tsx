@@ -15,7 +15,9 @@ function RegisteredBanner() {
   );
 }
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -37,7 +39,7 @@ export default function LoginPage() {
     if (result?.error) {
       setError("Invalid email or password");
     } else {
-      window.location.href = "/";
+      window.location.href = next;
     }
   }
 
@@ -61,7 +63,7 @@ export default function LoginPage() {
         {/* Google */}
         <button
           type="button"
-          onClick={() => signIn("google", { callbackUrl: "/" })}
+          onClick={() => signIn("google", { callbackUrl: next })}
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-stone-300 bg-white px-4 py-3 text-sm font-medium text-stone-700 shadow-sm transition hover:bg-stone-50"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -153,7 +155,7 @@ export default function LoginPage() {
         <p className="text-center text-sm text-stone-500">
           Don&apos;t have an account?{" "}
           <Link
-            href="/register"
+            href={next === "/" ? "/register" : `/register?next=${encodeURIComponent(next)}`}
             className="font-medium text-stone-800 hover:underline"
           >
             Create one
@@ -172,5 +174,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

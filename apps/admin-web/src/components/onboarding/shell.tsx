@@ -1,16 +1,19 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Link from "next/link";
+import { signOut } from "next-auth/react";
 import { BackArrow } from "./primitives";
 
 type ShellProps = {
   step: number;
   totalSteps: number;
   onBack?: () => void;
+  isAuthenticated?: boolean;
   children: ReactNode;
 };
 
-export function Shell({ step, totalSteps, onBack, children }: ShellProps) {
+export function Shell({ step, totalSteps, onBack, isAuthenticated = false, children }: ShellProps) {
   const isInputStep = step >= 1 && step <= totalSteps;
   const progress = isInputStep
     ? (step / totalSteps) * 100
@@ -50,6 +53,23 @@ export function Shell({ step, totalSteps, onBack, children }: ShellProps) {
               </>
             ) : null}
           </div>
+
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="text-sm text-stone-500 transition hover:text-stone-900"
+            >
+              Se déconnecter
+            </button>
+          ) : (
+            <Link
+              href={`/login?next=${encodeURIComponent("/onboarding")}`}
+              className="text-sm text-stone-500 transition hover:text-stone-900"
+            >
+              Se connecter
+            </Link>
+          )}
         </div>
       </header>
 
