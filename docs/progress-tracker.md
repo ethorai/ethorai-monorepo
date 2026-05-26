@@ -22,6 +22,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 ### Now
 
 - [ ] 5 user interviews avec des thérapeutes cibles — voir `docs/user-interviews.md`
+- [ ] Seed `is_admin = true` sur l'account fondateur en prod (`UPDATE app_user SET is_admin = true WHERE email = 'mednajib.slassi@gmail.com'`)
 
 ### Later
 
@@ -29,6 +30,7 @@ Authentication layer: Spring Security JWT filter + Auth.js v5 (Google OAuth + cr
 
 ## Completed Milestones
 
+- [x] Admin platform Phase A (read-only): V9 migration (`is_admin` boolean), `isAdmin` JWT claim baked at login/oauth, `ROLE_ADMIN` authority in Spring Security, `GET /api/admin/users` (window-function join) + `GET /api/admin/users/{userId}`, Next.js `/admin/users` + `/admin/users/[userId]` server pages with section-renderers preview, `admin/layout.tsx` guard, `isAdmin` in Auth.js session; 34/34 tests green, build clean
 - [x] Onboarding-first auth flow (conversion-driven): user fills 8 questions WITHOUT auth, auth gate déclenché au "Continuer" du Summary (step 9) → redirect `/login?next=/onboarding`, après login retombe sur step 10 (Photo, post-auth car upload nécessite l'auth), bouton "Générer ma page" déclenche generate; `/onboarding` exclu du middleware auth; root `/` redirige vers `/page` si authentifié sinon `/onboarding`; login + register pages acceptent `?next=` et le propagent à Google OAuth + credentials; Shell affiche "Se connecter" ou "Se déconnecter" selon état (prop `isAuthenticated` server-side)
 - [x] Production prod fix: Spring Boot 4.0 a divisé les auto-configurations en modules séparés — `spring-boot-flyway` ajouté au pom.xml (sans lui les migrations Flyway ne tournent pas au démarrage de l'app, seulement via le plugin Maven). Cause des tables manquantes sur Railway après recréation du service Postgres + tout DB-dependent silencieusement cassé
 - [x] Wildcard subdomain feature (`marie-dupont.ethorai.fr`): Flyway V8 (`subdomain VARCHAR(100) UNIQUE`), jOOQ codegen, slug auto-generation avec normalisation accents (é→e, etc.) + résolution conflits numérotés, `findBySubdomain`/`subdomainExists` dans repo, `GET /api/public/pages/subdomain/{slug}`, `/s/[slug]` route Next.js, middleware `proxy.ts` rewrite `*.ethorai.fr → /s/[slug]` (exclut `www`, `api`, `admin`, `mail`, `smtp`, `ftp`), `subdomain` champ dans `GeneratedPageResponse`/`api.ts`, "Voir comme un visiteur" utilise l'URL subdomain quand disponible; 28/28 tests green, build clean. Vercel: nameservers délégués (`ns1.vercel-dns.com`, `ns2.vercel-dns.com`), `*.ethorai.fr` wildcard domain ajouté.

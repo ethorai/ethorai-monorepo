@@ -20,10 +20,11 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(UUID userId) {
+    public String generateToken(UUID userId, boolean isAdmin) {
         requireSecret();
         return Jwts.builder()
                 .subject(userId.toString())
+                .claim("isAdmin", isAdmin)
                 .issuedAt(new Date())
                 .expiration(Date.from(Instant.now().plus(7, ChronoUnit.DAYS)))
                 .signWith(signingKey())
@@ -32,6 +33,11 @@ public class JwtService {
 
     public String extractUserId(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    public boolean extractIsAdmin(String token) {
+        Boolean isAdmin = parseClaims(token).get("isAdmin", Boolean.class);
+        return Boolean.TRUE.equals(isAdmin);
     }
 
     public boolean isTokenValid(String token) {

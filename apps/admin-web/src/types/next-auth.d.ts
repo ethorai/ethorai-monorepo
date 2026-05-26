@@ -9,16 +9,19 @@ declare module "next-auth" {
       name?: string | null;
       image?: string | null;
       springToken: string;
+      isAdmin: boolean;
     };
   }
 
   interface User {
     springToken?: string;
+    isAdmin?: boolean;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     springToken?: string;
+    isAdmin?: boolean;
   }
 }

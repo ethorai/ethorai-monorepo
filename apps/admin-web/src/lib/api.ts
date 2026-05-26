@@ -260,3 +260,44 @@ export async function regenerateSection(
 
   return parseApiResponse<GeneratedPageResponse>(response);
 }
+
+// Admin API
+
+export type AdminUserSummary = {
+  userId: string;
+  email: string;
+  name: string | null;
+  createdAt: string;
+  profileId: string | null;
+  fullName: string | null;
+  pageId: string | null;
+  pageStatus: PageStatus | null;
+  pageCreatedAt: string | null;
+  subdomain: string | null;
+};
+
+export type AdminUserDetail = {
+  userId: string;
+  email: string;
+  name: string | null;
+  createdAt: string;
+  page: GeneratedPageResponse | null;
+};
+
+export async function getAdminUsers(): Promise<AdminUserSummary[]> {
+  const response = await fetch("/api/admin/users", {
+    method: "GET",
+    cache: "no-store",
+  });
+  return parseApiResponse<AdminUserSummary[]>(response);
+}
+
+export async function getAdminUserDetail(
+  userId: string,
+): Promise<AdminUserDetail> {
+  const response = await fetch(`/api/admin/users/${userId}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+  return parseApiResponse<AdminUserDetail>(response);
+}

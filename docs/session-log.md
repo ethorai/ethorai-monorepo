@@ -4,6 +4,24 @@
 
 ### Done Today
 
+- **Admin platform Phase A** — read-only admin complet:
+  - Flyway V9: `ALTER TABLE app_user ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT false`; jOOQ codegen re-run
+  - `JwtService.generateToken(UUID, boolean isAdmin)` — claim `isAdmin` dans le JWT; `extractIsAdmin()` pour la lecture
+  - `JwtAuthenticationFilter` — extrait le claim, attribue `ROLE_ADMIN` authority si admin
+  - `AuthController` — login + oauth lisent `is_admin` depuis la DB avant de signer le JWT
+  - `AdminController` (nouveau package `admin`) — `GET /api/admin/users` avec window function `ROW_NUMBER()` pour la latest page par user; `GET /api/admin/users/{userId}` réutilise les repos existants
+  - `SecurityConfig` — `.requestMatchers("/api/admin/**").hasRole("ADMIN")`
+  - `AdminControllerIntegrationTest` — 6 tests: 403 non-admin, 200 admin list, list contient user, detail ok, detail avec page, 404 user inconnu; suite totale 34/34 green
+  - `next-auth.d.ts` — `isAdmin: boolean` dans Session/User/JWT
+  - `auth.ts` — `decodeIsAdmin()` parse base64url du JWT Spring pour extraire le claim; stocké dans `token.isAdmin` + `session.user.isAdmin`
+  - Proxy routes Next.js: `/api/admin/users/route.ts` + `/api/admin/users/[userId]/route.ts`
+  - `api.ts` — types `AdminUserSummary` + `AdminUserDetail`, fonctions `getAdminUsers()` + `getAdminUserDetail()`
+  - `app/admin/layout.tsx` — redirect `/` si non-admin
+  - `app/admin/users/page.tsx` — table: email (lien), fullName, subdomain, status badge, date
+  - `app/admin/users/[userId]/page.tsx` — card user + preview page read-only avec les 9 section renderers
+  - `npm run build` clean — routes `/admin/users` et `/admin/users/[userId]` présentes
+  - **Seed prod requis (manuel)**: `UPDATE app_user SET is_admin = true WHERE email = 'mednajib.slassi@gmail.com';`
+
 - **Onboarding-first auth flow** — refactor de conversion : l'utilisateur remplit les 8 questions SANS auth (réduit friction d'entrée). Auth gate déclenché au "Continuer" du Summary (step 9):
   - `proxy.ts` : ajoute `onboarding` aux exclusions matcher
   - `app/page.tsx` : redirige vers `/onboarding` si non-authentifié, sinon `/page`
@@ -18,13 +36,13 @@
 
 ### Next 3 Tasks
 
-1. Lancer les 5 interviews thérapeutes (voir `docs/user-interviews.md`)
-2. Vercel Analytics (post-interview)
-3. Itérer sur le feedback recueilli
+1. Seed `is_admin = true` en prod pour le compte fondateur (SQL ci-dessus)
+2. Lancer les 5 interviews thérapeutes (voir `docs/user-interviews.md`)
+3. Vercel Analytics (post-interview)
 
 ### Current Blocker
 
-Aucun.
+Aucun — 34/34 tests, build clean. Seule étape manuelle : SQL prod pour activer l'admin.
 
 ### Exact Resume Command
 
@@ -36,6 +54,8 @@ From `apps/api`:
 
 From `apps/admin-web`:
 `npm run dev`
+
+Naviguer vers `/admin/users` après seed SQL prod.
 
 ---
 

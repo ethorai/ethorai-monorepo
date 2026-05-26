@@ -60,7 +60,8 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String token = jwtService.generateToken(record.getId());
+        boolean isAdmin = Boolean.TRUE.equals(record.getIsAdmin());
+        String token = jwtService.generateToken(record.getId(), isAdmin);
         return ResponseEntity.ok(new LoginResponse(token, record.getId().toString()));
     }
 
@@ -96,7 +97,11 @@ public class AuthController {
                 .doNothing()
                 .execute();
 
-        String token = jwtService.generateToken(userId);
+        boolean isAdmin = dsl.select(APP_USER.IS_ADMIN)
+                .from(APP_USER)
+                .where(APP_USER.ID.eq(userId))
+                .fetchOne(APP_USER.IS_ADMIN);
+        String token = jwtService.generateToken(userId, Boolean.TRUE.equals(isAdmin));
         return ResponseEntity.ok(new LoginResponse(token, userId.toString()));
     }
 }

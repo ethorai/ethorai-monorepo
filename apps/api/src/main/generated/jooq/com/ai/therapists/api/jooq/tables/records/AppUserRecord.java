@@ -133,6 +133,20 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> {
         return (OffsetDateTime) get(7);
     }
 
+    /**
+     * Setter for <code>public.app_user.is_admin</code>.
+     */
+    public void setIsAdmin(Boolean value) {
+        set(8, value);
+    }
+
+    /**
+     * Getter for <code>public.app_user.is_admin</code>.
+     */
+    public Boolean getIsAdmin() {
+        return (Boolean) get(8);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -156,7 +170,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> {
     /**
      * Create a detached, initialised AppUserRecord
      */
-    public AppUserRecord(UUID id, String name, String email, OffsetDateTime emailVerified, String image, String passwordHash, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+    public AppUserRecord(UUID id, String name, String email, OffsetDateTime emailVerified, String image, String passwordHash, OffsetDateTime createdAt, OffsetDateTime updatedAt, Boolean isAdmin) {
         super(AppUser.APP_USER);
 
         setId(id);
@@ -167,6 +181,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> {
         setPasswordHash(passwordHash);
         setCreatedAt(createdAt);
         setUpdatedAt(updatedAt);
+        setIsAdmin(isAdmin);
         resetChangedOnNotNull();
     }
 }

@@ -6,10 +6,12 @@ import { authConfig } from "@/auth.config";
 const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:8080";
 const INTERNAL_SECRET = process.env.INTERNAL_SECRET ?? "";
 
+type SpringAuthResponse = { token: string; userId: string };
+
 async function springLogin(
   email: string,
   password: string,
-): Promise<{ token: string; userId: string } | null> {
+): Promise<SpringAuthResponse | null> {
   try {
     const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: "POST",
@@ -17,7 +19,7 @@ async function springLogin(
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) return null;
-    return res.json() as Promise<{ token: string; userId: string }>;
+    return res.json() as Promise<SpringAuthResponse>;
   } catch {
     return null;
   }
@@ -28,7 +30,7 @@ async function springOAuth(
   name: string,
   provider: string,
   providerAccountId: string,
-): Promise<{ token: string; userId: string } | null> {
+): Promise<SpringAuthResponse | null> {
   try {
     const res = await fetch(`${API_BASE_URL}/api/auth/oauth`, {
       method: "POST",
@@ -39,9 +41,20 @@ async function springOAuth(
       body: JSON.stringify({ email, name, provider, providerAccountId }),
     });
     if (!res.ok) return null;
-    return res.json() as Promise<{ token: string; userId: string }>;
+    return res.json() as Promise<SpringAuthResponse>;
   } catch {
     return null;
+  }
+}
+
+function decodeIsAdmin(token: string): boolean {
+  try {
+    const payload = JSON.parse(
+      Buffer.from(token.split(".")[1], "base64url").toString(),
+    );
+    return payload.isAdmin === true;
+  } catch {
+    return false;
   }
 }
 
@@ -77,6 +90,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user?.springToken) {
         token.sub = user.id ?? token.sub;
         token.springToken = user.springToken;
+        token.isAdmin = decodeIsAdmin(user.springToken);
       }
       if (account?.provider === "google" && profile?.email) {
         const result = await springOAuth(
@@ -88,6 +102,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (result) {
           token.sub = result.userId;
           token.springToken = result.token;
+          token.isAdmin = decodeIsAdmin(result.token);
         }
       }
       return token;
@@ -95,6 +110,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       session.user.id = token.sub ?? "";
       session.user.springToken = token.springToken ?? "";
+      session.user.isAdmin = token.isAdmin ?? false;
       return session;
     },
   },
