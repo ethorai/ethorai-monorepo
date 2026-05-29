@@ -10,7 +10,7 @@ function RegisteredBanner() {
   if (searchParams.get("registered") !== "1") return null;
   return (
     <div className="rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">
-      Account created! Sign in to get started.
+      Compte créé ! Connectez-vous pour commencer.
     </div>
   );
 }
@@ -37,7 +37,7 @@ function LoginForm() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Invalid email or password");
+      setError("Email ou mot de passe incorrect.");
     } else {
       window.location.href = next;
     }
@@ -49,10 +49,10 @@ function LoginForm() {
         {/* Header */}
         <div className="text-center">
           <h1 className="font-(family-name:--font-heading) text-3xl font-semibold text-stone-800">
-            AI Therapists
+            Ethorai
           </h1>
           <p className="mt-2 text-sm text-stone-500">
-            Sign in to manage your landing pages
+            Connectez-vous pour gérer votre page
           </p>
         </div>
 
@@ -84,7 +84,7 @@ function LoginForm() {
               fill="#EA4335"
             />
           </svg>
-          Continue with Google
+          Continuer avec Google
         </button>
 
         {/* Divider */}
@@ -94,7 +94,7 @@ function LoginForm() {
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="bg-stone-50 px-2 text-stone-400">
-              or sign in with email
+              ou avec votre email
             </span>
           </div>
         </div>
@@ -130,7 +130,7 @@ function LoginForm() {
               htmlFor="password"
               className="block text-sm font-medium text-stone-700"
             >
-              Password
+              Mot de passe
             </label>
             <input
               id="password"
@@ -148,17 +148,17 @@ function LoginForm() {
             disabled={loading}
             className="w-full rounded-lg bg-stone-800 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-stone-700 disabled:opacity-50"
           >
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? "Connexion…" : "Se connecter"}
           </button>
         </form>
 
         <p className="text-center text-sm text-stone-500">
-          Don&apos;t have an account?{" "}
+          Pas encore de compte ?{" "}
           <Link
             href={next === "/" ? "/register" : `/register?next=${encodeURIComponent(next)}`}
             className="font-medium text-stone-800 hover:underline"
           >
-            Create one
+            Créer un compte
           </Link>
         </p>
 

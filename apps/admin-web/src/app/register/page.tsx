@@ -27,7 +27,7 @@ function RegisterForm() {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(data.error ?? "Registration failed. Please try again.");
+      setError(data.error ?? "Erreur lors de la création du compte. Veuillez réessayer.");
       setLoading(false);
       return;
     }
@@ -58,10 +58,10 @@ function RegisterForm() {
         {/* Header */}
         <div className="text-center">
           <h1 className="font-(family-name:--font-heading) text-3xl font-semibold text-stone-800">
-            Create your account
+            Créer votre compte
           </h1>
           <p className="mt-2 text-sm text-stone-500">
-            Start generating compliant landing pages in minutes
+            Générez votre page professionnelle en quelques minutes
           </p>
         </div>
 
@@ -89,7 +89,7 @@ function RegisterForm() {
               fill="#EA4335"
             />
           </svg>
-          Continue with Google
+          Continuer avec Google
         </button>
 
         {/* Divider */}
@@ -99,7 +99,7 @@ function RegisterForm() {
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="bg-stone-50 px-2 text-stone-400">
-              or register with email
+              ou avec votre email
             </span>
           </div>
         </div>
@@ -117,7 +117,7 @@ function RegisterForm() {
               htmlFor="name"
               className="block text-sm font-medium text-stone-700"
             >
-              Full name
+              Nom complet
             </label>
             <input
               id="name"
@@ -126,7 +126,7 @@ function RegisterForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-stone-500 focus:ring-1 focus:ring-stone-500"
-              placeholder="Dr. Jane Smith"
+              placeholder="Dr. Marie Dupont"
             />
           </div>
 
@@ -153,7 +153,7 @@ function RegisterForm() {
               htmlFor="password"
               className="block text-sm font-medium text-stone-700"
             >
-              Password
+              Mot de passe
             </label>
             <input
               id="password"
@@ -163,7 +163,7 @@ function RegisterForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-stone-500 focus:ring-1 focus:ring-stone-500"
-              placeholder="At least 8 characters"
+              placeholder="8 caractères minimum"
             />
           </div>
 
@@ -172,17 +172,17 @@ function RegisterForm() {
             disabled={loading}
             className="w-full rounded-lg bg-stone-800 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-stone-700 disabled:opacity-50"
           >
-            {loading ? "Creating account…" : "Create account"}
+            {loading ? "Création en cours…" : "Créer mon compte"}
           </button>
         </form>
 
         <p className="text-center text-sm text-stone-500">
-          Already have an account?{" "}
+          Déjà un compte ?{" "}
           <Link
             href={next === "/" ? "/login" : `/login?next=${encodeURIComponent(next)}`}
             className="font-medium text-stone-800 hover:underline"
           >
-            Sign in
+            Se connecter
           </Link>
         </p>
 
